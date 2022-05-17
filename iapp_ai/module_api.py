@@ -5,9 +5,13 @@ class api():
     def __init__(self, apikey):
         self.apikey = apikey
     
-    def idcard_front(self, file_path):
+    def idcard_front(self, file_path, additional_headers={}, additional_data_payload={}, additional_files=[]):
+        headers = {"apikey":self.apikey, **additional_headers}
+        data_payload = {**additional_data_payload}
         files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
-        response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers={"apikey":self.apikey},files=files)
+        files.extend(additional_files)
+        
+        response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers=headers, data=data_payload, files=files)
         print(response.json())
         return response.json()  #Return as the Object
 
