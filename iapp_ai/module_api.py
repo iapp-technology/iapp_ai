@@ -10,6 +10,10 @@ class api():
         data_payload = {**additional_data_payload}
         files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
         files.extend(additional_files)
+
+        print(headers)
+        print(data_payload)
+        print(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers=headers, data=data_payload, files=files)
         print(response.json())
