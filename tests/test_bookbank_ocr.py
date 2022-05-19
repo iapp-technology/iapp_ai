@@ -6,7 +6,7 @@ import pytest
 from test_globals import apikey
 import iapp_ai
 
-def test_bookbank_ocr():
+def test():
     api = iapp_ai.api(apikey)
     resp = api.book_bank_api("media/E7393203-15.jpg")
     print(resp.json())

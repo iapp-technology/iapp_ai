@@ -5,11 +5,11 @@ import iapp_ai
 api = iapp_ai.api("iapp-website")
 #Normal usage
 
-api.idcard_front("media/id-card-front.jpg")
+#api.idcard_front("media/id-card-front.jpg")
 
-api.idcard_back("media/id-card-back.jpg")
+#api.idcard_back("media/id-card-back.jpg")
 
-api.book_bank_api("media/E7393203-15.jpg")
+#api.book_bank_api("media/E7393203-15.jpg")
 
 taskGuid = api.face_liveness("media/passport.jpg")
 api.info_face_liveness(taskGuid=str(taskGuid))
@@ -21,7 +21,7 @@ api.power_meter(headers={'Content-Type': 'application/json'}, image="media/base6
 api.water_meter_binary("media/wm.jpg")
 api.water_meter_base64(image="media/water-meter.txt")
 
-api.thai_qa_api(headers={'Content-Type': 'application/json'}, question="แค็วม์เป็นแค่หมู่บ้านใช่หรือไม่", document="จังหวัดแค็วม์โปแลนด์คือหน่วยการปกครองท้องถิ่นของประเทศโปแลนด์ในช่วงปี ค.ศ.1975 - ค.ศ.1998 จังหวัดได้รับการรวมเข้ากับจังหวัดลูบลินมีเมืองหลักคือแค็วม์ใน ปี ค.ศ.1998 มีพื้นที่ประมาณ 3865 ตารางกิโลเมตรและมีประชากร 248800 คน")
+# api.thai_qa_api(question="แค็วม์เป็นแค่หมู่บ้านใช่หรือไม่", document="จังหวัดแค็วม์โปแลนด์คือหน่วยการปกครองท้องถิ่นของประเทศโปแลนด์ในช่วงปี ค.ศ.1975 - ค.ศ.1998 จังหวัดได้รับการรวมเข้ากับจังหวัดลูบลินมีเมืองหลักคือแค็วม์ใน ปี ค.ศ.1998 มีพื้นที่ประมาณ 3865 ตารางกิโลเมตรและมีประชากร 248800 คน")
 api.thai_qgen_api(text="ผมพูดภาษาไทย")
 
 api.thai_asr_api("media/data.wav")

@@ -91,7 +91,7 @@ class api():
         return response
 
     def thai_qa_api(self, headers={}, question= {}, document={}):
-        request_headers = {"apikey":self.apikey, **headers}
+        request_headers = {"apikey":self.apikey, 'Content-Type': 'application/json', **headers}
         request_data_payload = json.dumps({
             'question': question,
             'document': document})
