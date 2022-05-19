@@ -59,7 +59,7 @@ Slient Test
 ``$ pytest``
 
 Verbose Test
-``$ pytest -s ``
+``$ pytest -s``
 
 Credits
 -------
