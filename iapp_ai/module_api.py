@@ -11,14 +11,8 @@ class api():
         request_data_payload = {**data_payload}
         request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
         request_files.extend(files)
-
-        # print(request_headers)
-        # print(request_data_payload)
-        # print(request_files)
-        
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.json())
-        return response.json()  #Return as the Object
+        return response
 
     def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -27,8 +21,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/back", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.json())
-        return response.json()  #Return as the Object
+        return response
 
     def book_bank_api(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -37,8 +30,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/book-bank-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.text)
-        # return response.json()  #Return as the Object
+        return response 
 
     def face_liveness(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -47,17 +39,14 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/passive-face-liveness-detection", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.json())
-
-        return response.json()  #Return as the Object
+        return response
 
     def info_face_liveness(self, headers={}, taskGuid={}):
         request_headers = {"apikey":self.apikey, **headers}
         request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
 
         response = requests.request("GET", request_url, headers=request_headers)
-        print(response.json())
-        return response.json()  #Return as the Object
+        return response
     
     def signature_detect(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -66,8 +55,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/book-bank-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.text)
-        # return response.json() #Return as the Object
+        return response
 
     def power_meter(self, headers={}, image= {}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -79,8 +67,7 @@ class api():
             'image': data})
 
         response = requests.request("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/", headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
+        return response
     
     def water_meter_binary(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -89,8 +76,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/meter-number-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.text)
-        return response.text  #Return as the Object
+        return response
     
     def water_meter_base64(self, headers={}, image={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -102,10 +88,7 @@ class api():
             'image': data})
 
         response = requests.request("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/", headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
-
-     
+        return response
 
     def thai_qa_api(self, headers={}, question= {}, document={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -114,8 +97,7 @@ class api():
             'document': document})
 
         response = requests.request("POST", "https://api.iapp.co.th/thai-qa/inference", headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
+        return response
     
     def thai_qgen_api(self, text={}, headers={}, data_payload={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -126,8 +108,7 @@ class api():
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
 
-        print(response.json())
-        return response.json()  
+        return response
     
     def thai_asr_api(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -136,8 +117,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/asr", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.json())
-        return response.json()  #Return as the Object
+        return response
 
     def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={} ):
         request_headers = {"apikey":self.apikey, **headers}
@@ -145,7 +125,6 @@ class api():
         request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
 
         response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
         return response.text
 
     def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
@@ -154,7 +133,6 @@ class api():
         request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
 
         response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
         return response.text
 
     def face_verification(self, file_path1, file_path2, company_name, min_score, headers={}, data_payload={}, files=[]):
@@ -164,8 +142,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/face_compare", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.text)
-        return response.json()  #Return as the Object
+        return response
 
     def face_ver2(self, file_path1, file_path2, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -174,8 +151,7 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/face-verification/v2/face_compare", headers=request_headers, data=request_data_payload, files=request_files)
-        print(response.text)
-        return response.text  #Return as the Object 
+        return response
         
     def face_detect_single(self,  file_path, company_name, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -184,9 +160,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_detect_single", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
 
     def face_detect_multi(self,  file_path, company_name, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -195,9 +169,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_detect_multi", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text  
+        return response
     
     def face_detect_config_score(self, detect_value, company_name, company_password, headers={}, data_payload={}):
 
@@ -211,9 +183,7 @@ class api():
         url = "https://api.iapp.co.th/face_config_score?detection&company="+company_name+"&password="+company_password
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-
-        print(response.text)
-        return response.text
+        return response
 
     
     def face_recog_single(self, file_path, company_name, headers={}, data_payload={}, files=[]):
@@ -223,9 +193,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_recog_single", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
     
     def face_recog_multi(self, file_path, company_name, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -234,9 +202,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_recog_multi", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
     
     def face_recog_facecrop(self, file_path, company_name, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -245,9 +211,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_recog_facecrop", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
     
     def face_recog_add(self, file_path, company_name, name, password, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -256,9 +220,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_recog_add", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
 
     def face_recog_import(self, file_path, company_name, password, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -267,9 +229,7 @@ class api():
         request_files.extend(files)
    
         response = requests.request("POST", "https://api.iapp.co.th/face_recog_import", headers=request_headers, data=request_data_payload, files=request_files)
-
-        print(response.text)
-        return response.text
+        return response
     
     def face_recog_check(self, company_name, company_password, headers={}, data_payload={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -282,9 +242,7 @@ class api():
         url = "https://api.iapp.co.th/face_recog_check?company="+ company_name+ "&password="+ company_password +"&save_file"
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-
-        print(response.text)
-        return response.text
+        return response
     
     def face_recog_export(self, company_name, company_password, headers={}, data_payload={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -297,9 +255,7 @@ class api():
         url = "https://api.iapp.co.th/face_recog_export?company="+company_name+"&type_file=excel&password="+company_password
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-
-        print(response.text)
-        return response.text
+        return response
     
     
     def face_recog_remove(self, company_name, name, company_password, date, face_id, headers={}, data_payload={}):
@@ -315,9 +271,7 @@ class api():
         url = "https://api.iapp.co.th/face_recog_remove?company="+company_name+"&name="+name+"&password="+company_password+"&face_id="+ face_id
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-
-        print(response.text)
-        return response.text
+        return response
 
     def face_recog_config_score(self, detect_value, recog_value, company_name, company_password, headers={}, data_payload={}):
 
@@ -331,9 +285,7 @@ class api():
         url = "https://api.iapp.co.th/face_config_score?detection&recognition&company="+company_name+"&password="+company_password
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-
-        print(response.text)
-        return response.text
+        return response
 
     def img_bg_removal(self, file_path, headers={}):
         request_headers = {"apikey":self.apikey,'Content-Type': 'application/json', **headers}
@@ -354,6 +306,4 @@ class api():
      
 
         response = requests.request("POST", "https://api.iapp.co.th/face-extractor/predict" , headers=request_headers, data=request_data_payload)
-
-        print(response.json())
-        return response.json()
+        return response
