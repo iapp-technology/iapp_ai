@@ -43,8 +43,11 @@ class api():
 
     def info_face_liveness(self, headers={}, taskGuid={}):
         request_headers = {"apikey":self.apikey, **headers}
-        request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
-
+        request_url = 'https://api.iapp.co.th/passive-face-liveness-detection/{taskGuid}'
+        try:
+            request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
+        except:
+            print("No taskGuid")
         response = requests.request("GET", request_url, headers=request_headers)
         return response
     
@@ -54,7 +57,7 @@ class api():
         request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
         request_files.extend(files)
         
-        response = requests.request("POST", "https://api.iapp.co.th/book-bank-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
+        response = requests.request("POST", "https://api.iapp.co.th/signature-detection/file", headers=request_headers, data=request_data_payload, files=request_files)
         return response
 
     def power_meter(self, headers={}, image= {}):
@@ -104,7 +107,7 @@ class api():
         request_data_payload = {**data_payload}
 
         url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
-        print(url)
+        
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
 
@@ -143,6 +146,22 @@ class api():
         
         response = requests.request("POST", "https://api.iapp.co.th/face_compare", headers=request_headers, data=request_data_payload, files=request_files)
         return response
+    
+    def face_ver_config_score(self, detect_value, compare_value, company_name, company_password, headers={}, data_payload={}):
+
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **data_payload}
+        
+        # Config Score
+        "https://api.iapp.co.th/face_config_score?detection="+ detect_value+"&comparison="+compare_value+"&company="+company_name+"&password="+company_password
+
+        # Show Score
+        url = "https://api.iapp.co.th/face_config_score?detection&comparison&company="+company_name+"&password="+company_password
+
+
+        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+        return response
+
 
     def face_ver2(self, file_path1, file_path2, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}

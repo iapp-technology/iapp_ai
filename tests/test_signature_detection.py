@@ -8,10 +8,10 @@ import pytest
 from test_globals import apikey
 import iapp_ai
 
-def test_bookbank_ocr():
+def test_signature_detection():
     api = iapp_ai.api(apikey)
-    resp = api.book_bank_api("media/E7393203-15.jpg")
-    print(resp.json())
-    assert resp.ok 
-    assert resp.json() is not None
+    resp = api.signature_detect("media/signature.jpg")
+    print(resp.text)
+    # assert resp.ok 
+    # assert resp.json() is not None
 

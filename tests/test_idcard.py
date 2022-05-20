@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 """Tests for `iapp_ai` package."""
+# Bring your packages onto the path
+# Bring your packages onto the path
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('.', '')))
 
 import pytest
 from test_globals import apikey
