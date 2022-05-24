@@ -11,14 +11,13 @@ import iapp_ai
 def test_tts_kaitom():
     api = iapp_ai.api(apikey)
     resp = api.thai_thaitts_kaitom("Hello")
-    # print(resp.text)
-    # assert resp.ok 
-    # assert resp.json() is not None
+    print(resp)
+    assert resp
+    assert resp is not None
 
 def test_tts_cee():
     api = iapp_ai.api(apikey)
     resp = api.thai_thaitts_cee("Hello")
-    # print(resp.text)
-    # assert resp.ok 
-    # assert resp.json() is not None
-
+    print(resp)
+    assert resp 
+    assert resp is not None

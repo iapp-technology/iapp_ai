@@ -43,11 +43,9 @@ class api():
 
     def info_face_liveness(self, headers={}, taskGuid={}):
         request_headers = {"apikey":self.apikey, **headers}
-        request_url = 'https://api.iapp.co.th/passive-face-liveness-detection/{taskGuid}'
-        try:
-            request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
-        except:
-            print("No taskGuid")
+        
+        request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
+        
         response = requests.request("GET", request_url, headers=request_headers)
         return response
     

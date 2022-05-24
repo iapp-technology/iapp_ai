@@ -72,12 +72,3 @@ def test_face_recog_configscore():
     # assert resp.ok 
     # assert resp.json() is not None
 
-test_face_recog_single()
-test_face_recog_multi()
-test_face_recog_facecrop()
-test_face_recog_add()
-test_face_recog_import()
-test_face_recog_check()
-test_face_recog_export()
-test_face_recog_remove()
-test_face_recog_configscore()

@@ -29,6 +29,3 @@ def test_face_ver_config():
     # assert resp.ok 
     # assert resp.json() is not None
 
-# test_face_ver1()
-# test_face_ver2()
-# test_face_ver_config()

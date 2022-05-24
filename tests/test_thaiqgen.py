@@ -14,5 +14,3 @@ def test_thai_qgen():
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
-
-test_thai_qgen()

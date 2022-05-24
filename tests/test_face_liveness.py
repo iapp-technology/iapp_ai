@@ -14,14 +14,13 @@ def test_face_liveness():
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
+    return resp.json()
 
-def test_info_face_liveness():
+def test_info_face_liveness(taskGuid=test_face_liveness()):
     api = iapp_ai.api(apikey)
     # print(str_taskGuid)
-    resp = api.info_face_liveness()
+    resp = api.info_face_liveness(taskGuid=str(taskGuid))
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
 
-test_face_liveness()
-test_info_face_liveness()

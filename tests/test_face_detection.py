@@ -28,7 +28,3 @@ def test_face_detection_config():
     # print(resp.json())
     # assert resp.ok 
     # assert resp.json() is not None
-
-test_face_detection_single()
-# test_face_detection_multi()
-# test_face_detection_config()
