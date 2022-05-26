@@ -12,6 +12,7 @@ class api():
         request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
         request_files.extend(files)
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers=request_headers, data=request_data_payload, files=request_files)
+        print(response.text)
         return response
 
     def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
@@ -21,7 +22,18 @@ class api():
         request_files.extend(files)
         
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/back", headers=request_headers, data=request_data_payload, files=request_files)
+        print(response.text)
         return response
+    
+    def license_plate_ocr(self, file_path, headers={}, data_payload={}, files=[]):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
+        request_files.extend(files)
+        
+        response = requests.request("POST", "https://api.iapp.co.th/license-plate-recognition/file", headers=request_headers, data=request_data_payload, files=request_files)
+        print(response.text)
+        return response 
 
     def book_bank_api(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
@@ -110,6 +122,15 @@ class api():
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
 
         return response
+    
+    def thai_text_summarization(self, text={}, output_length={}, headers={}, data_payload={}):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+
+        url = "https://api.iapp.co.th/text-summarization?text=" + str(text) + "&output_length=" + str(output_length)
+
+        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+        return response.json()
     
     def thai_asr_api(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
