@@ -25,7 +25,7 @@ class api():
         print(response.text)
         return response
     
-    def license_plate_ocr(self, file_path, headers={}, data_payload={}, files=[]):
+    def license_plate_lpr(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}
         request_data_payload = {**data_payload}
         request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
@@ -61,14 +61,15 @@ class api():
         response = requests.request("GET", request_url, headers=request_headers)
         return response
     
-    def signature_detect(self, file_path, headers={}, data_payload={}, files=[]):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-        request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+    # #TODO: Not yet ready
+    # def signature_detect(self, file_path, headers={}, data_payload={}, files=[]):
+    #     request_headers = {"apikey":self.apikey, **headers}
+    #     request_data_payload = {**data_payload}
+    #     request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
+    #     request_files.extend(files)
         
-        response = requests.request("POST", "https://api.iapp.co.th/signature-detection/file", headers=request_headers, data=request_data_payload, files=request_files)
-        return response
+    #     response = requests.request("POST", "https://api.iapp.co.th/signature-detection/file", headers=request_headers, data=request_data_payload, files=request_files)
+    #     return response
 
     def power_meter(self, headers={}, image= {}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -82,14 +83,15 @@ class api():
         response = requests.request("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/", headers=request_headers, data=request_data_payload)
         return response
     
-    def water_meter_binary(self, file_path, headers={}, data_payload={}, files=[]):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-        request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+    # #TODO: Not yet ready
+    # def water_meter_binary(self, file_path, headers={}, data_payload={}, files=[]):
+    #     request_headers = {"apikey":self.apikey, **headers}
+    #     request_data_payload = {**data_payload}
+    #     request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
+    #     request_files.extend(files)
         
-        response = requests.request("POST", "https://api.iapp.co.th/meter-number-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
-        return response
+    #     response = requests.request("POST", "https://api.iapp.co.th/meter-number-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
+    #     return response
     
     def water_meter_base64(self, headers={}, image={}):
         request_headers = {"apikey":self.apikey, **headers}
@@ -130,7 +132,7 @@ class api():
         url = "https://api.iapp.co.th/text-summarization?text=" + str(text) + "&output_length=" + str(output_length)
 
         response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-        return response.json()
+        return response
     
     def thai_asr_api(self, file_path, headers={}, data_payload={}, files=[]):
         request_headers = {"apikey":self.apikey, **headers}

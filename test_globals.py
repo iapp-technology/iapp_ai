@@ -1,2 +1,1 @@
-
-apikey = "iapp-website"
+apikey = "XXXXXtest-apikeyXXXXXX"

@@ -15,17 +15,19 @@ def test_face_ver1():
     assert resp.ok 
     assert resp.json() is not None
 
-def test_face_ver2():
-    api = iapp_ai.api(apikey)
-    resp = api.face_ver2("media/id-card-front.jpg", "media/id-card-front.jpg")
-    print(resp.text)
+# # TODO: Not yet support faceVer2 yet
+# def test_face_ver2():
+#     api = iapp_ai.api(apikey)
+#     resp = api.face_ver2("media/id-card-front.jpg", "media/id-card-front.jpg")
+#     print(resp.text)
     # assert resp.ok 
     # assert resp.json() is not None
 
-def test_face_ver_config():
-    api = iapp_ai.api(apikey)
-    resp = api.face_ver_config_score("0.5","0.5","iApp", "1234")
-    print(resp.text)
+# # TODO: Not yet support faceVerConfig yet
+# def test_face_ver_config():
+#     api = iapp_ai.api(apikey)
+#     resp = api.face_ver_config_score("0.5","0.5","iApp", "1234")
+#     print(resp.text)
     # assert resp.ok 
     # assert resp.json() is not None
 

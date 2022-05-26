@@ -23,7 +23,7 @@ import iapp_ai
 def test_idcard_front():
     api = iapp_ai.api(apikey)
     resp = api.idcard_front("media/id-card-front.jpg")
-    print(resp.json())
+    # print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
 
@@ -31,6 +31,6 @@ def test_idcard_front():
 def test_idcard_back():
     api = iapp_ai.api(apikey)
     resp = api.idcard_back("media/id-card-back.jpg")
-    print(resp.json())
+    # print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
