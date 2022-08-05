@@ -20,7 +20,7 @@ import iapp_ai
 def test_water_meter_base64():
     api = iapp_ai.api(apikey)
     resp = api.water_meter_base64(image="media/water-meter.txt")
-    print(resp.text)
+    print(resp.json())
     assert resp.ok 
-    assert resp.json() is not None
+    assert resp.text is not None
 

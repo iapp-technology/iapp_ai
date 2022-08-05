@@ -7,20 +7,35 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join('.', '')))
 from test_globals import apikey
 import iapp_ai
+import time
+guid=''
 
 def test_face_liveness():
+    global guid
     api = iapp_ai.api(apikey)
-    resp = api.face_liveness("media/E7393203-15.jpg")
-    print(resp.json())
-    assert resp.ok 
-    assert resp.json() is not None
-    return resp.json()
+    resp = api.face_liveness("media/face.jpg")
+    guid = resp.text
+    assert resp.ok
+    assert resp.text is not None
 
-def test_info_face_liveness(taskGuid=test_face_liveness()):
+    return resp
+
+def test_info_face_liveness():
+    global guid
+    taskGuid  =   guid
     api = iapp_ai.api(apikey)
-    # print(str_taskGuid)
-    resp = api.info_face_liveness(taskGuid=str(taskGuid))
-    print(resp.json())
+    
+    status= None
+
+    while status is None:
+        resp = api.info_face_liveness(taskGuid=str(taskGuid).replace('"',''))
+        resps = resp.json()
+        if 'status' in resps:
+            status = resps['status']
+        time.sleep(0.5)
+    print(resp.text)
     assert resp.ok 
-    assert resp.json() is not None
+    assert resp.text is not None
+    
+    return resp
 

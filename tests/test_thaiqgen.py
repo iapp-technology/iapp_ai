@@ -10,7 +10,7 @@ import iapp_ai
 
 def test_thai_qgen():
     api = iapp_ai.api(apikey)
-    resp = api.thai_qgen_api(text="ผมพูดภาษาไทย")
-    print(resp.json())
+    resp = api.thai_qgen_api(text="แค็วม์เป็นแค่หมู่บ้านใช่หรือไม่")
+    # print(resp.json())
     assert resp.ok 
-    assert resp.json() is not None
+    assert resp.text is not None

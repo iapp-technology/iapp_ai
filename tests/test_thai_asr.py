@@ -10,8 +10,8 @@ import iapp_ai
 
 def test_thai_asr():
     api = iapp_ai.api(apikey)
-    resp = api.thai_asr_api("media/data.wav")
-    print(resp.json())
+    resp = api.thai_asr_api("media/kaitomm.mp3")
+    # print(resp.json())
     assert resp.ok 
-    assert resp.json() is not None
+    assert resp.text is not None
 

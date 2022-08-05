@@ -10,7 +10,7 @@ import iapp_ai
 
 def test_bookbank_ocr():
     api = iapp_ai.api(apikey)
-    resp = api.book_bank_api("media/E7393203-15.jpg")
+    resp = api.book_bank_api("media/1.jpg")
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None

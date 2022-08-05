@@ -48,6 +48,12 @@ Slient Test
 Verbose Test
 ``$ pytest -s``
 
+Filter Test
+``pytest -rP tests/test_thai_asr.py``
+
+Filter Test with specific method
+``pytest -rP tests/test_idcard.py::test_idcard_front``
+
 Credits
 -------
 
