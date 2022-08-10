@@ -94,15 +94,16 @@ class api():
         response = requests.request("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/", headers=request_headers, data=request_data_payload)
         return response
     
-    # #TODO: Not yet ready
-    # def water_meter_binary(self, file_path, headers={}, data_payload={}, files=[]):
-    #     request_headers = {"apikey":self.apikey, **headers}
-    #     request_data_payload = {**data_payload}
-    #     request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
-    #     request_files.extend(files)
+   
+    def water_meter_binary(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
+        request_files.extend(files)
         
-    #     response = requests.request("POST", "https://api.iapp.co.th/meter-number-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
-    #     return response
+        response = requests.request("POST", "https://api.iapp.co.th/meter-number-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
+        return response
     
     def water_meter_base64(self, headers={}, image={}):
         request_headers = {"apikey":self.apikey, **headers}

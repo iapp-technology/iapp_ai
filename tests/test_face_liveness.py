@@ -25,7 +25,7 @@ def test_info_face_liveness():
     taskGuid  =   guid
     api = iapp_ai.api(apikey)
     
-    status= None
+    status = None
 
     while status is None:
         resp = api.info_face_liveness(taskGuid=str(taskGuid).replace('"',''))
