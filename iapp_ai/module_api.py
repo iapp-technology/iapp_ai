@@ -6,7 +6,67 @@ class api():
     apikey = ""
     def __init__(self, apikey):
         self.apikey = apikey
+
     
+    ################## Thai Natural Language Processing ##################
+    
+    def thai_qa_api(self, headers={}, question= {}, document={}):
+        request_headers = {"apikey":self.apikey, 'Content-Type': 'application/json', **headers}
+        request_data_payload = json.dumps({
+            'question': question,
+            'document': document})
+
+        response = requests.request("POST", "https://api.iapp.co.th/thai-qa/inference", headers=request_headers, data=request_data_payload)
+        # print(response.text)
+        return response
+    
+    def thai_qgen_api(self, text={}, headers={}, data_payload={}):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+
+        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
+        
+
+        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+        # print(response.json())
+        return response
+    
+    def thai_text_summarization(self, text={}, output_length={}, headers={}, data_payload={}):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+
+        url = "https://api.iapp.co.th/text-summarization?text=" + str(text) + "&output_length=" + str(output_length)
+
+        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+        return response
+    
+    def eng_thai_translate(self, text={}, headers={}, data_payload={}):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+
+        url = "https://api.iapp.co.th/translate/auto?text="+text
+
+        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+
+        print(json.loads(response.text))
+        return response
+        
+    # #TODO: Will be Fixed
+    # def thai_text_parser(self, text={}, headers={}, data_payload={}):
+    #     request_headers = {"apikey":self.apikey, 'Content-Type': 'application/json', **headers}
+    #     request_data_payload = {**data_payload}
+
+    #     url = "https://api.iapp.co.th/text-thai-parser/parse/"+text
+
+    #     response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
+
+    #     print(json.loads(response.text))
+    #     return response
+
+
+
+    ################## Image Recognition ##################
+
     def idcard_front(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_headers = {"apikey":self.apikey, **headers}
@@ -49,6 +109,51 @@ class api():
         response = requests.request("POST", "https://api.iapp.co.th/book-bank-ocr/file", headers=request_headers, data=request_data_payload, files=request_files)
         print(response.json())
         return response 
+    
+    def passport_ocr(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb')))]
+        request_files.extend(files)
+
+        response = requests.request("POST", "https://api.iapp.co.th/passport-ocr/ocr", headers=request_headers, data=request_data_payload, files=request_files)
+        print(response.json())
+        return response
+
+    def document_ocr_plaintext(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb')))]
+        request_files.extend(files)
+
+        response = requests.request("POST",  "https://api.iapp.co.th/document-ocr/ocr" , headers=request_headers, data=request_data_payload, files=request_files)
+        # print(response.json())
+        return response
+    
+    def document_ocr_json_layout(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb')))]
+        request_files.extend(files)
+
+        response = requests.request("POST",  "https://api.iapp.co.th/document-ocr/layout" , headers=request_headers, data=request_data_payload, files=request_files)
+        # print(response.json())
+        return response
+
+    def document_ocr_docx(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb')))]
+        request_files.extend(files)
+
+        response = requests.request("POST",  "https://api.iapp.co.th/document-ocr/docx" , headers=request_headers, data=request_data_payload, files=request_files)
+        print(response.text)
+        return response
+
 
     def face_liveness(self, file_path, headers={}, data_payload={}, files=[]):
         global taskGuid
@@ -117,64 +222,6 @@ class api():
         response = requests.request("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/", headers=request_headers, data=request_data_payload)
         # print( response.json())
         return response
-
-    def thai_qa_api(self, headers={}, question= {}, document={}):
-        request_headers = {"apikey":self.apikey, 'Content-Type': 'application/json', **headers}
-        request_data_payload = json.dumps({
-            'question': question,
-            'document': document})
-
-        response = requests.request("POST", "https://api.iapp.co.th/thai-qa/inference", headers=request_headers, data=request_data_payload)
-        # print(response.text)
-        return response
-    
-    def thai_qgen_api(self, text={}, headers={}, data_payload={}):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-
-        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
-        
-
-        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-        # print(response.json())
-        return response
-    
-    def thai_text_summarization(self, text={}, output_length={}, headers={}, data_payload={}):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-
-        url = "https://api.iapp.co.th/text-summarization?text=" + str(text) + "&output_length=" + str(output_length)
-
-        response = requests.request("GET", url, headers=request_headers, data=request_data_payload)
-        return response
-    
-    def thai_asr_api(self, file_path, headers={}, data_payload={}, files=[]):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-        request_files = [('file',(file_path, open(file_path,'rb'),'audio/mpga'))]
-        request_files.extend(files)
-        
-        response = requests.request("POST", "https://api.iapp.co.th/asr", headers=request_headers, data=request_data_payload, files=request_files)
-        # print(response.json())
-        return response
-
-    def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={} ):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-        request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
-
-        response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
-
-    def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
-        request_headers = {"apikey":self.apikey, **headers}
-        request_data_payload = {**data_payload}
-        request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
-
-        response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
 
     def face_verification(self, file_path1, file_path2, company_name, min_score, headers={}, data_payload={}, files=[]):
         filename1 = os.path.basename(file_path1)
@@ -361,3 +408,37 @@ class api():
 
         response = requests.request("POST", "https://api.iapp.co.th/face-extractor/predict" , headers=request_headers, data=request_data_payload)
         return response
+
+
+
+    ################## Voice and Speech ##################
+
+    def thai_asr_api(self, file_path, headers={}, data_payload={}, files=[]):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(file_path, open(file_path,'rb'),'audio/mpga'))]
+        request_files.extend(files)
+        
+        response = requests.request("POST", "https://api.iapp.co.th/asr", headers=request_headers, data=request_data_payload, files=request_files)
+        # print(response.json())
+        return response
+
+    def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={} ):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
+
+        response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
+        print(response.text)
+        return response.text
+
+    def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
+
+        response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
+        print(response.text)
+        return response.text
+
+    

@@ -7,11 +7,13 @@ sys.path.append(os.path.abspath(os.path.join('.', '')))
 import pytest
 from test_globals import apikey
 import iapp_ai
+import json
 
-def test_thai_asr():
+def test_eng_thai_translate():
     api = iapp_ai.api(apikey)
-    resp = api.thai_asr_api("media/2ppl.wav")
-    print(resp.json())
+    # resp = api.eng_thai_translate("This is me.")
+    resp = api.eng_thai_translate("นี่คือฉัน")
+    print(json.loads(resp.text))
     assert resp.ok 
-    assert resp.text is not None
+    assert resp.json() is not None
 

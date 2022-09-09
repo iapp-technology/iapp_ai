@@ -8,10 +8,11 @@ import pytest
 from test_globals import apikey
 import iapp_ai
 
-def test_thai_asr():
+def test_passport_ocr():
     api = iapp_ai.api(apikey)
-    resp = api.thai_asr_api("media/2ppl.wav")
+    resp = api.passport_ocr("media/ukr-passport.jpeg")
+    # resp = api.passport_ocr("media/thai-passport.jpeg")
     print(resp.json())
     assert resp.ok 
-    assert resp.text is not None
+    assert resp.json() is not None
 
