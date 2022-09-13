@@ -29,7 +29,7 @@ api = iapp_ai.api("rL3eZA5M3Or78dKgYWtXh3EDylXpao68")
 
 # api.document_ocr_plaintext("media/pdf02.pdf")
 # api.document_ocr_json_layout("media/pdf02.pdf")
-api.document_ocr_docx("media/pdf02.pdf")
+# api.document_ocr_docx("media/pdf02.pdf")
 
 # api.signature_detect("media/signature.jpg")
 
@@ -72,6 +72,9 @@ api.document_ocr_docx("media/pdf02.pdf")
 # api.thai_asr_api("media/2ppl.wav")
 # api.thai_thaitts_kaitom("Hello")
 # api.thai_thaitts_cee("Hello")
+
+# with open("kaitom.mp3", "wb") as f:
+#   f.write(api.thai_thaitts_kaitom("Hello"))
 
 ################## Optimization and Prediction ##################
 """ Avaible Soon: Automatic Route Optimization, Stock Trading Prediction """

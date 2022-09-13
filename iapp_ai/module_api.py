@@ -429,8 +429,8 @@ class api():
         request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
 
         response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
+        # print(response.content)
+        return response
 
     def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
         request_headers = {"apikey":self.apikey, **headers}
@@ -438,7 +438,7 @@ class api():
         request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
 
         response = requests.request("GET", request_url, headers=request_headers, data=request_data_payload)
-        print(response.text)
-        return response.text
+        # print(response.text)
+        return response
 
     
