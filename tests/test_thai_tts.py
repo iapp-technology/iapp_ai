@@ -10,14 +10,14 @@ import iapp_ai
 
 def test_tts_kaitom():
     api = iapp_ai.api(apikey)
-    resp = api.thai_thaitts_kaitom("Hello")
+    resp = api.thai_thaitts_kaitom("ภาษาไทย")
     print(resp)
     assert resp
     assert resp is not None
 
 def test_tts_cee():
     api = iapp_ai.api(apikey)
-    resp = api.thai_thaitts_cee("Hello")
+    resp = api.thai_thaitts_cee("นี่คือฉัน")
     print(resp)
     assert resp 
     assert resp is not None

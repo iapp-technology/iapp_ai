@@ -10,14 +10,14 @@ import iapp_ai
 
 def test_document_ocr_plaintext():
     api = iapp_ai.api(apikey)
-    resp = api.document_ocr_plaintext("media/pdf01.pdf")
+    resp = api.document_ocr_plaintext(file_path="media/pdf01.pdf")
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None
 
 def test_document_json_layout():
     api = iapp_ai.api(apikey)
-    resp = api.document_ocr_json_layout("media/pdf01.pdf")
+    resp = api.document_ocr_json_layout(file_path="media/pdf01.pdf")
     print(resp.json())
     assert resp.ok 
     assert resp.json() is not None

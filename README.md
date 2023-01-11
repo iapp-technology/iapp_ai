@@ -14,15 +14,16 @@ Features
 --------
 
 * iApp Image Recognition Service
-  1. Thai National ID Card OCR
-  1. Passport OCR
+  1. Thai National ID Card OCR [NEW]
+  1. Passport OCR [NEW]
   1. Thai Vehicle License Plate
   1. Book Bank OCR
   1. Face Verification (Comparison)
   1. Face Recognition
   1. Face Detection
   1. Face Passive Liveness Detection
-  1. Document OCR
+  1. Thai Document OCR [NEW]
+  1. Thai Driver License Card OCR [NEW]
   1. Power Meter OCR
   1. Water Meter OCR
   1. Image Background Remover
@@ -35,7 +36,7 @@ Features
   1. Thai Text Summarization
 
 * iApp Voice and Speech Service
-  1. Thai Automatic Speech Recognition (ASR)
+  1. Thai Automatic Speech Recognition (ASR) [NEW]
   2. Thai Text to Speech (TTS)
   3. Music Source Seperator
   4. Noise Subtraction

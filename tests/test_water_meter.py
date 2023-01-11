@@ -19,7 +19,7 @@ def test_water_meter_file():
 
 def test_water_meter_base64():
     api = iapp_ai.api(apikey)
-    resp = api.water_meter_base64(image="media/water-meter.txt")
+    resp = api.water_meter_base64(image="media/wm_base64.txt")
     print(resp.json())
     assert resp.ok 
     assert resp.text is not None

@@ -15,6 +15,7 @@ def test_face_liveness():
     api = iapp_ai.api(apikey)
     resp = api.face_liveness("media/face.jpg")
     guid = resp.text
+    print(resp.text)
     assert resp.ok
     assert resp.text is not None
 
