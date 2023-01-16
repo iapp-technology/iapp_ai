@@ -14,7 +14,8 @@ Features
 --------
 
 * iApp Image Recognition Service
-  1. Thai National ID Card OCR [NEW]
+  1. Thai National ID Card OCR (Support Card) [NEW]
+  1. Thai National ID Card OCR (Support Photocopied)[NEW]
   1. Passport OCR [NEW]
   1. Thai Vehicle License Plate
   1. Book Bank OCR

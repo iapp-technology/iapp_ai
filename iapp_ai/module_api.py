@@ -76,7 +76,17 @@ class api():
         response = requests.request("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front", headers=request_headers, data=request_data_payload, files=request_files)
        
         return response
-
+       
+    def idcard_front_photocopied(self, file_path, headers={}, data_payload={}, files=[]):
+        filename = os.path.basename(file_path)
+        request_headers = {"apikey":self.apikey, **headers}
+        request_data_payload = {**data_payload}
+        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
+        request_files.extend(files)
+        response = requests.request("POST", " https://api.iapp.co.th/thai-national-id-card-with-signature/front", headers=request_headers, data=request_data_payload, files=request_files)
+        
+        return response
+        
     def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_headers = {"apikey":self.apikey, **headers}

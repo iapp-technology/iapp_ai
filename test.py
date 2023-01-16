@@ -4,7 +4,7 @@
 import iapp_ai
 ################## api key ##################
 
-api = iapp_ai.api("XXXXXX YOUR API  KEY XXXXXX")
+api = iapp_ai.api("XXX API KEY XXX")
 
 # Normal usage
 
@@ -21,6 +21,8 @@ api = iapp_ai.api("XXXXXX YOUR API  KEY XXXXXX")
 ################## Image Recognition ##################
 
 # api.idcard_front(file_path="media/id-card-front.jpg", data_payload={'fields':'id_number, en_name', 'options':'get_image,get_original' })
+
+# api.idcard_front_photocopied(file_path="media/copy_of_thai_idcard_trial.png")
 
 # api.idcard_back(file_path="media/id-card-back.jpg", data_payload={'options':'get_image,get_original'})
 

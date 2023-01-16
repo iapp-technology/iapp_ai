@@ -23,8 +23,14 @@ import iapp_ai
 def test_idcard_front():
     api = iapp_ai.api(apikey)
     resp = api.idcard_front(file_path="media/id-card-front.jpg", data_payload={'fields':'id_number', 'options':'get_image,get_original' })
-    
-    # print(resp.json())
+
+    assert resp.ok 
+    assert resp.json() is not None
+
+def test_idcard_photocopied():
+    api = iapp_ai.api(apikey)
+    resp = api.idcard_front_photocopied(file_path="media/copy_of_thai_idcard_trial.png")
+  
     assert resp.ok 
     assert resp.json() is not None
 
@@ -32,6 +38,6 @@ def test_idcard_front():
 def test_idcard_back():
     api = iapp_ai.api(apikey)
     resp = api.idcard_back(file_path="media/id-card-back.jpg", data_payload={'options':'get_image,get_original'})
-    # print(resp.json())
+    
     assert resp.ok 
     assert resp.json() is not None
