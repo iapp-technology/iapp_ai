@@ -8,6 +8,7 @@
 * Free software: MIT license
 * Documentation: https://docs.iapp.co.th
 * Request API Key: https://ai.iapp.co.th
+* Full Google Colab Example: https://colab.research.google.com/drive/1CH3NlohPMn1BpepXvJS9sgG-_isrYHPC?usp=sharing
 
 
 Features
