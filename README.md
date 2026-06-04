@@ -19,7 +19,11 @@
 ## Prerequisites
 
 - Python 3.10+
-- An iApp API key — get one free at [iapp.co.th](https://iapp.co.th)
+- An iApp API key:
+  1. Login / register at [iapp.co.th](https://iapp.co.th)
+  2. Go to **API Keys** in the control panel
+  3. Click **Create New API Key**, name it, and create
+  4. Copy the key — it is only shown once!
 
 ## Installation
 
@@ -93,6 +97,11 @@ Once connected, ask your AI assistant things like:
 - Most tools consume iApp credits (IC) per call — costs are documented in each tool description.
 - File-based tools accept **local file paths**; generated audio/images are saved to the path you specify.
 - Large base64 blobs in API responses (e.g. cropped face images) are truncated in tool output to keep context small.
+
+## Support
+
+- Documentation: [iapp.co.th/docs/intro](https://iapp.co.th/docs/intro)
+- Email: support@iapp.co.th
 
 ## License
 
