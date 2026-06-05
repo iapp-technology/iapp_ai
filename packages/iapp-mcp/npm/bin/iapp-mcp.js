@@ -2,7 +2,7 @@
 /**
  * npm wrapper for the iApp AI MCP server.
  *
- * The actual server is a Python package (`iapp-ai` on PyPI). This wrapper
+ * The actual server is a Python package (`iapp-mcp` on PyPI). This wrapper
  * launches it via `uvx`, which fetches and runs the package automatically.
  * Requires uv: https://docs.astral.sh/uv/getting-started/installation/
  */
@@ -10,7 +10,7 @@
 
 const { spawn } = require("node:child_process");
 
-const child = spawn("uvx", ["iapp-ai", ...process.argv.slice(2)], {
+const child = spawn("uvx", ["iapp-mcp", ...process.argv.slice(2)], {
   stdio: "inherit",
   env: process.env,
 });
@@ -19,7 +19,7 @@ child.on("error", (err) => {
   if (err.code === "ENOENT") {
     console.error(
       [
-        "iapp-ai: `uvx` was not found on your PATH.",
+        "iapp-mcp: `uvx` was not found on your PATH.",
         "",
         "The iApp AI MCP server runs on Python and is launched through uv.",
         "Install uv first (one-time, ~10 seconds):",
@@ -31,12 +31,12 @@ child.on("error", (err) => {
         "  brew install uv",
         "",
         "then re-run this command. Alternatively, install the server directly",
-        "from PyPI with `pip install iapp-ai` and run `iapp-ai`.",
+        "from PyPI with `pip install iapp-mcp` and run `iapp-mcp`.",
       ].join("\n")
     );
     process.exit(127);
   }
-  console.error(`iapp-ai: failed to launch server: ${err.message}`);
+  console.error(`iapp-mcp: failed to launch server: ${err.message}`);
   process.exit(1);
 });
 

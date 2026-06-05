@@ -1,9 +1,9 @@
 {
-  "name": "iapp-ai",
+  "name": "iapp-mcp",
   "version": "2.0.0",
   "description": "MCP server for the iApp AI Marketplace (https://iapp.co.th) — Thai OCR, eKYC, NLP, LLM, Speech, Image/Video Generation",
   "bin": {
-    "iapp-ai": "bin/iapp-ai.js"
+    "iapp-mcp": "bin/iapp-mcp.js"
   },
   "files": [
     "bin"
@@ -27,7 +27,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iapp-ai/iapp-ai.git"
+    "url": "git+https://github.com/iapp-technology/iapp_ai.git"
   },
   "homepage": "https://iapp.co.th"
 }

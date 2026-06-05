@@ -5,7 +5,7 @@
 Thai-focused AI APIs: OCR, eKYC, Thai NLP, LLMs, speech, and image/video generation.
 
 This npm package is a thin launcher for the Python server
-([`iapp-ai` on PyPI](https://pypi.org/project/iapp-ai/)). It requires
+([`iapp-mcp` on PyPI](https://pypi.org/project/iapp-mcp/)). It requires
 [uv](https://docs.astral.sh/uv/getting-started/installation/) to be installed.
 
 ## Usage
@@ -15,9 +15,9 @@ Add to your MCP client's configuration file:
 ```json
 {
   "mcpServers": {
-    "iapp-ai": {
+    "iapp-mcp": {
       "command": "npx",
-      "args": ["-y", "iapp-ai"],
+      "args": ["-y", "iapp-mcp"],
       "env": {
         "IAPP_API_KEY": "YOUR_API_KEY"
       }
@@ -28,7 +28,7 @@ Add to your MCP client's configuration file:
 
 Get an API key at [iapp.co.th](https://iapp.co.th) → **API Keys** → **Create New API Key**.
 
-Full documentation: https://github.com/iapp-ai/iapp-ai
+Full documentation: https://github.com/iapp-technology/iapp_ai
 
 ## Support
 
