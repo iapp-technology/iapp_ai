@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iapp-core"
+version = "0.1.0"
+description = "Shared transport, auth, error handling and formatting for iApp AI Marketplace clients (https://iapp.co.th)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [
+    { name = "iApp Technology Co., Ltd.", email = "dev@iapp.co.th" },
+]
+keywords = ["iapp", "thai", "ai", "http", "client"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "requests>=2.20.0",
+]
+
+[project.optional-dependencies]
+# The async transport (used by the MCP server) needs httpx. The sync SDK path
+# does not, so httpx is kept out of the base install.
+async = ["httpx>=0.27.0"]
+
+[project.urls]
+Homepage = "https://iapp.co.th"
+Repository = "https://github.com/iapp-technology/iapp_ai"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/iapp_core"]
