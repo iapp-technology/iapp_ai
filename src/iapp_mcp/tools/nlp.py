@@ -78,7 +78,7 @@ async def iapp_summarize(
         body = {"text": text, "style": style, "language": language}
         if max_output_tokens is not None:
             body["max_output_tokens"] = max_output_tokens
-        response = await request("POST", "/v3/store/nlp/thai-text-summary/v2", json_body=body)
+        response = await request("POST", "/v3/store/nlp/thai-text-summary", json_body=body)
         return format_json_response(response)
     except IAppAPIError as e:
         return str(e)
@@ -145,8 +145,6 @@ async def iapp_thai_qa(question: str, document: str) -> str:
         JSON string with the answer. Cost: 1 IC per 400 chars.
     """
     try:
-        # Note: the documented /v3/store/nlp/question/answer path returns 404;
-        # the working route is /thai-qa (verified 2026-06).
         response = await request(
             "POST",
             "/thai-qa",
@@ -172,7 +170,7 @@ async def iapp_question_generation(text: str) -> str:
     """
     try:
         response = await request(
-            "POST", "/v3/store/nlp/question/generation", json_body={"text": text}
+            "GET", "/v3/store/nlp/question/generation", params={"text": text}
         )
         return format_json_response(response)
     except IAppAPIError as e:

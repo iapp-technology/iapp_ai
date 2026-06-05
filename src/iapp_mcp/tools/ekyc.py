@@ -110,7 +110,7 @@ async def iapp_passport_ocr(file_path: str, segmentation: bool = False) -> str:
         data = {"options": "segmentation"} if segmentation else None
         response = await request(
             "POST",
-            "/v3/store/ekyc/passport/v2",
+            "/v3/store/ekyc/passport",
             data=data,
             file_fields=[("file", file_path)],
         )

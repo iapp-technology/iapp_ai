@@ -44,8 +44,7 @@ async def iapp_image_generation(
         Confirmation message with the saved image path, plus any text the model returned.
         Latency 5-30 seconds.
     """
-    # Note: the docs list the Pro path as /v3/image/image/... (typo, returns 404);
-    # the working route is /v3/image/generation/google/nanobananapro/generate (verified 2026-06).
+    # Both routes confirmed correct with the iApp team (verified 2026-06).
     endpoint = (
         "/v3/image/generation/google/nanobanana/generate"
         if model == "nanobanana"
