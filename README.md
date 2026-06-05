@@ -27,20 +27,13 @@
 
 ## Installation
 
-No installation needed if you use [uv](https://docs.astral.sh/uv/) — see the configuration below (`uvx` fetches and runs the server automatically).
+No installation needed if you use [uv](https://docs.astral.sh/uv/) or `npx` — see the
+configuration below (the server is fetched and run automatically).
 
-To install manually:
-
-```bash
-pip install git+https://github.com/iapp-ai/iapp-ai.git
-```
-
-Or from source:
+To install manually from [PyPI](https://pypi.org/project/iapp-ai/):
 
 ```bash
-git clone https://github.com/iapp-ai/iapp-ai
-cd iapp-ai
-pip install -e .
+pip install iapp-ai
 ```
 
 ## Configuration
@@ -52,7 +45,23 @@ Add the server to your MCP client's configuration file (with [uv](https://docs.a
   "mcpServers": {
     "iapp-ai": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/iapp-ai/iapp-ai", "iapp-mcp"],
+      "args": ["iapp-ai"],
+      "env": {
+        "IAPP_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Via [npm](https://www.npmjs.com/package/iapp-ai) (requires uv):
+
+```json
+{
+  "mcpServers": {
+    "iapp-ai": {
+      "command": "npx",
+      "args": ["-y", "iapp-ai"],
       "env": {
         "IAPP_API_KEY": "YOUR_API_KEY"
       }
@@ -67,7 +76,7 @@ Or if you installed with pip:
 {
   "mcpServers": {
     "iapp-ai": {
-      "command": "iapp-mcp",
+      "command": "iapp-ai",
       "env": {
         "IAPP_API_KEY": "YOUR_API_KEY"
       }
@@ -77,8 +86,7 @@ Or if you installed with pip:
 ```
 
 The server runs over stdio, so any MCP client can launch it with the command
-`uvx --from git+https://github.com/iapp-ai/iapp-ai iapp-mcp` and the
-`IAPP_API_KEY` environment variable set.
+`uvx iapp-ai` and the `IAPP_API_KEY` environment variable set.
 
 ## Usage Examples
 

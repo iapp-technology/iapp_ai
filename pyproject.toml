@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "iapp-mcp"
-version = "0.1.0"
+name = "iapp-ai"
+version = "2.0.0"
 description = "MCP server for iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, LLM, Speech, Image/Video Generation"
 readme = "README.md"
 license = { text = "MIT" }
@@ -32,10 +32,11 @@ dependencies = [
 [project.urls]
 Homepage = "https://iapp.co.th"
 Documentation = "https://iapp.co.th/docs/intro"
+Repository = "https://github.com/iapp-ai/iapp-ai"
 "API Marketplace" = "https://iapp.co.th"
 
 [project.scripts]
-iapp-mcp = "iapp_mcp.server:main"
+iapp-ai = "iapp_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/iapp_mcp"]
