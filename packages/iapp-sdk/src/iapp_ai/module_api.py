@@ -165,7 +165,6 @@ class api():
             response = request_sync("POST", "https://api.iapp.co.th/document-ocr/docx",
                                     apikey=self.apikey, headers=headers,
                                     data={**data_payload}, files=request_files)
-            print(response.text)
             return response
 
 
