@@ -8,10 +8,9 @@ Ensures that:
    even if an exception occurs inside the 'with' block.
 """
 
-import os
 import pytest
 from urllib.parse import urlparse, parse_qs
-from iapp_core import build_url, open_input_files, IAppAPIError
+from iapp_core import build_url, open_input_files
 
 def test_verify_build_url_encoding():
     # Test with Thai text and spaces
