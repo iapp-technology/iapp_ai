@@ -11,11 +11,17 @@ keep separate bodies because their file-handling contracts differ:
 """
 
 import os
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from .config import API_BASE, CONNECT_TIMEOUT, READ_TIMEOUT
 from .errors import IAppAPIError, status_error_message
 from .formatting import resolve_input_file
+
+
+def _is_retryable_status(status: int) -> bool:
+    """Transient statuses worth retrying: rate limiting and server errors."""
+    return status == 429 or 500 <= status < 600
 
 
 def request_sync(
@@ -30,6 +36,8 @@ def request_sync(
     files: Optional[Any] = None,
     raise_for_error: bool = False,
     timeout: Optional[float] = None,
+    retries: int = 0,
+    backoff_factor: float = 0.5,
 ):
     """Make an authenticated sync request and return the raw ``requests.Response``.
 
@@ -38,22 +46,35 @@ def request_sync(
     verbatim (callers pick their own field names and content types). The
     ``apikey`` header is injected first; any ``headers`` provided by the caller
     are merged on top (so a caller can add e.g. ``Content-Type``).
+
+    Retry/backoff is opt-in and off by default (``retries=0``), so existing
+    callers are unaffected. When ``retries`` > 0, transient responses (429 and
+    5xx) are retried up to ``retries`` extra times with exponential backoff
+    (``backoff_factor * 2**attempt`` seconds). Retries re-send the request as-is,
+    so use it for calls without an already-consumed file body.
     """
     import requests
 
     request_headers = {"apikey": apikey}
     if headers:
         request_headers.update(headers)
-    response = requests.request(
-        method,
-        url,
-        headers=request_headers,
-        params=params,
-        data=data,
-        json=json_body,
-        files=files,
-        timeout=timeout,
-    )
+    attempt = 0
+    while True:
+        response = requests.request(
+            method,
+            url,
+            headers=request_headers,
+            params=params,
+            data=data,
+            json=json_body,
+            files=files,
+            timeout=timeout,
+        )
+        if attempt < retries and _is_retryable_status(response.status_code):
+            time.sleep(backoff_factor * (2 ** attempt))
+            attempt += 1
+            continue
+        break
     if raise_for_error and response.status_code >= 400:
         raise IAppAPIError(status_error_message(response.status_code, response.text))
     return response
