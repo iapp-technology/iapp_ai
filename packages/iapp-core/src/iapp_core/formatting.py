@@ -9,7 +9,8 @@ import json
 import os
 import re
 import wave
-from typing import Any
+from contextlib import contextmanager
+from typing import Any, Iterator, List
 
 from .errors import IAppAPIError
 
@@ -45,6 +46,29 @@ def resolve_output_path(output_path: str) -> str:
     path = os.path.abspath(os.path.expanduser(output_path))
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     return path
+
+
+@contextmanager
+def open_input_files(file_paths: List[str], mode: str = "rb") -> Iterator[List]:
+    """Open several input files and guarantee every handle is closed.
+
+    Many SDK methods open files for multipart upload but never close them, so
+    handles leak (defect D-01). Wrap the open/use in this context manager and
+    every handle is closed on exit — even if the request raises::
+
+        with open_input_files([img1, img2]) as (fh1, fh2):
+            request_sync(..., files=[("file1", (name1, fh1)), ...])
+
+    Each path is validated through :func:`resolve_input_file` first.
+    """
+    handles: List = []
+    try:
+        for file_path in file_paths:
+            handles.append(open(resolve_input_file(file_path), mode))
+        yield handles
+    finally:
+        for handle in handles:
+            handle.close()
 
 
 def truncate_blobs(value: Any) -> Any:
