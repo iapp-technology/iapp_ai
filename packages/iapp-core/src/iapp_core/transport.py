@@ -11,7 +11,7 @@ keep separate bodies because their file-handling contracts differ:
 """
 
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .config import API_BASE, CONNECT_TIMEOUT, READ_TIMEOUT
 from .errors import IAppAPIError, status_error_message
@@ -29,7 +29,7 @@ def request_sync(
     json_body: Optional[Any] = None,
     files: Optional[Any] = None,
     raise_for_error: bool = False,
-    timeout: Optional[float] = None,
+    timeout: Optional[Union[float, Tuple[float, float]]] = None,
 ):
     """Make an authenticated sync request and return the raw ``requests.Response``.
 
@@ -38,9 +38,15 @@ def request_sync(
     verbatim (callers pick their own field names and content types). The
     ``apikey`` header is injected first; any ``headers`` provided by the caller
     are merged on top (so a caller can add e.g. ``Content-Type``).
+
+    ``timeout`` defaults to ``(CONNECT_TIMEOUT, READ_TIMEOUT)`` from
+    :mod:`iapp_core.config` so a stalled connection can never hang forever;
+    callers may pass their own float or ``(connect, read)`` tuple to override.
     """
     import requests
 
+    if timeout is None:
+        timeout = (CONNECT_TIMEOUT, READ_TIMEOUT)
     request_headers = {"apikey": apikey}
     if headers:
         request_headers.update(headers)
