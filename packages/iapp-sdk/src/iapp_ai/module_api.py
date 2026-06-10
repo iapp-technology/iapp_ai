@@ -362,7 +362,10 @@ class api():
         response = request_sync("POST", "https://api.iapp.co.th/passive-face-liveness-detection",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
-        taskGuid = response
+        try:
+            taskGuid = response.json().get("taskGuid", "")
+        except Exception:
+            taskGuid = ""
 
         return response
 
