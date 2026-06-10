@@ -427,13 +427,16 @@ class api():
                             apikey=self.apikey, headers=headers,
                             data=request_data_payload, files=request_files)
 
+    def _face_config_score(self, data_payload, headers=None):
+        if headers is None:
+            headers = {}
+        return request_sync("POST", "https://api.iapp.co.th/face_config_score",
+                            apikey=self.apikey, headers=headers,
+                            data=data_payload)
+
     def face_ver_config_score(self, detect_value, compare_value, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **data_payload}
-
-        url = "https://api.iapp.co.th/face_config_score"
-
-        return request_sync("POST", url, apikey=self.apikey, headers=headers,
-                            data=request_data_payload)
+        return self._face_config_score(request_data_payload, headers=headers)
 
 
     def face_ver2(self, file_path1, file_path2, headers={}, data_payload={}, files=[]):
@@ -467,12 +470,7 @@ class api():
 
     def face_detect_config_score(self, detect_value, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'detect_value': detect_value, 'company': company_name, 'password': company_password, **data_payload}
-
-        # Configure Score
-        url = "https://api.iapp.co.th/face_config_score"
-
-        return request_sync("POST", url, apikey=self.apikey, headers=headers,
-                            data=request_data_payload)
+        return self._face_config_score(request_data_payload, headers=headers)
 
 
     def face_recog_single(self, file_path, company_name, headers={}, data_payload={}, files=[]):
@@ -549,11 +547,7 @@ class api():
 
     def face_recog_config_score(self, detect_value, recog_value, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'detect_value': detect_value,'recog_value':recog_value, 'company': company_name, 'password': company_password, **data_payload}
-
-        # Configure Score
-        url = "https://api.iapp.co.th/face_config_score"
-        return request_sync("POST", url, apikey=self.apikey, headers=headers,
-                            data=request_data_payload)
+        return self._face_config_score(request_data_payload, headers=headers)
 
     def img_bg_removal_base64(self,headers={}, data_payload={}):
         request_data_payload = json.dumps({
