@@ -356,18 +356,20 @@ class api():
 
     def face_liveness(self, file_path, headers={}, data_payload={}, files=[]):
         global taskGuid
-        request_files = [('file',(file_path, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        response = request_sync("POST", "https://api.iapp.co.th/passive-face-liveness-detection",
-                                apikey=self.apikey, headers=headers,
-                                data={**data_payload}, files=request_files)
-        try:
-            taskGuid = response.json().get("taskGuid", "")
-        except Exception:
-            taskGuid = ""
+            response = request_sync("POST", "https://api.iapp.co.th/passive-face-liveness-detection",
+                                    apikey=self.apikey, headers=headers,
+                                    data={**data_payload}, files=request_files)
+            try:
+                taskGuid = response.json().get("taskGuid", "")
+            except Exception:
+                taskGuid = ""
 
-        return response
+            return response
 
     def info_face_liveness(self, headers={}, taskGuid='', url=[]):
         request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
@@ -420,12 +422,13 @@ class api():
         filename1 = os.path.basename(file_path1)
         filename2 = os.path.basename(file_path2)
         request_data_payload = {'company': company_name,'min_score': min_score, **data_payload}
-        request_files = [('file1',(filename1, open(file_path1,'rb'),'application/octet-stream')),('file2',(filename2, open(file_path2,'rb'),'application/octet-stream')) ]
-        request_files.extend(files)
+        with open_input_files([file_path1, file_path2]) as [fh1, fh2]:
+            request_files = [('file1',(filename1, fh1,'application/octet-stream')),('file2',(filename2, fh2,'application/octet-stream')) ]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_compare",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_compare",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def _face_config_score(self, data_payload, headers=None):
         if headers is None:
@@ -442,31 +445,34 @@ class api():
     def face_ver2(self, file_path1, file_path2, headers={}, data_payload={}, files=[]):
         filename1 = os.path.basename(file_path1)
         filename2 = os.path.basename(file_path2)
-        request_files = [('file1',(filename1, open(file_path1,'rb'),'image/jpg')),('file2',(filename2, open(file_path2,'rb'),'image/jpg')) ]
-        request_files.extend(files)
+        with open_input_files([file_path1, file_path2]) as [fh1, fh2]:
+            request_files = [('file1',(filename1, fh1,'image/jpg')),('file2',(filename2, fh2,'image/jpg')) ]
+            request_files.extend(files)
 
-        return request_sync("POST", 'https://api.iapp.co.th/face-verification/v2/face_compare',
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", 'https://api.iapp.co.th/face-verification/v2/face_compare',
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def face_detect_single(self,  file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_detect_single",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_detect_single",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def face_detect_multi(self,  file_path, company_name, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_detect_multi",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_detect_multi",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_detect_config_score(self, detect_value, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'detect_value': detect_value, 'company': company_name, 'password': company_password, **data_payload}
@@ -476,52 +482,57 @@ class api():
     def face_recog_single(self, file_path, company_name, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_recog_single",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_recog_single",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_recog_multi(self, file_path, company_name, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_recog_multi",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_recog_multi",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_recog_facecrop(self, file_path, company_name, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_recog_facecrop",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_recog_facecrop",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_recog_add(self, file_path, company_name, name, password, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, 'name': name, 'password': password, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpeg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpeg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_recog_add",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_recog_add",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_recog_import(self, file_path, company_name, password, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
         request_data_payload = {'company': company_name, 'password': password, **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'text/csv'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'text/csv'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/face_recog_import",
-                            apikey=self.apikey, headers=headers,
-                            data=request_data_payload, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/face_recog_import",
+                                apikey=self.apikey, headers=headers,
+                                data=request_data_payload, files=request_files)
 
     def face_recog_check(self, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'company': company_name, 'password': company_password, **data_payload}
@@ -564,15 +575,16 @@ class api():
         request_data_payload = {
              "rotateIfPortiat": True,
              **data_payload}
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        response = request_sync("POST", "https://api.iapp.co.th/face-extractor/predict/file",
-                                apikey=self.apikey, headers=headers,
-                                data=request_data_payload, files=request_files)
-        with open("media/img_bg_removal_file.jpg", "wb") as file:
-            file.write(response.content)
-        return response
+            response = request_sync("POST", "https://api.iapp.co.th/face-extractor/predict/file",
+                                    apikey=self.apikey, headers=headers,
+                                    data=request_data_payload, files=request_files)
+            with open("media/img_bg_removal_file.jpg", "wb") as file:
+                file.write(response.content)
+            return response
 
     def driver_card_ocr(
         self,
