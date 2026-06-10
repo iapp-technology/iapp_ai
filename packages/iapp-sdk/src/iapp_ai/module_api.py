@@ -282,7 +282,7 @@ class api():
             request_files = [('file',(filename, fh))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/document-ocr/ocr",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/ocr",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -315,7 +315,7 @@ class api():
             request_files = [('file',(filename, fh))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/document-ocr/layout",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/layout",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -348,7 +348,7 @@ class api():
             request_files = [('file',(filename, fh))]
             request_files.extend(files)
 
-            response = request_sync("POST", "https://api.iapp.co.th/document-ocr/docx",
+            response = request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/docx",
                                     apikey=self.apikey, headers=headers,
                                     data={**data_payload}, files=request_files)
             return response
