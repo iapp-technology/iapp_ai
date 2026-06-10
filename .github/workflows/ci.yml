@@ -41,5 +41,8 @@ jobs:
       - name: Type check (mypy)
         run: uv run mypy packages/iapp-core/src packages/iapp-sdk/src
 
+      # Discover tests under packages/ so this works on any branch — the per-task
+      # branches don't all carry packages/iapp-core/tests, but it exists once the
+      # feature branches merge to main.
       - name: Test (pytest)
-        run: uv run pytest packages/iapp-core/tests packages/iapp-sdk/tests
+        run: uv run pytest packages
