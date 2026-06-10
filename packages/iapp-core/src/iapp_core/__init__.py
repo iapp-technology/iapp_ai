@@ -10,6 +10,8 @@ __version__ = "0.1.0"
 from .config import API_BASE, CONNECT_TIMEOUT, READ_TIMEOUT
 from .errors import IAppAPIError, status_error_message
 from .formatting import (
+    build_output_path,
+    default_output_dir,
     format_json_response,
     get_api_key,
     open_input_files,
@@ -29,6 +31,8 @@ __all__ = [
     "IAppAPIError",
     "status_error_message",
     "build_url",
+    "build_output_path",
+    "default_output_dir",
     "format_json_response",
     "get_api_key",
     "open_input_files",

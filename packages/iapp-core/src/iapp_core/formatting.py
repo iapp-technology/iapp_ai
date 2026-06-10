@@ -10,7 +10,7 @@ import os
 import re
 import wave
 from contextlib import contextmanager
-from typing import Any, Iterator, List
+from typing import Any, Iterator, List, Optional
 
 from .errors import IAppAPIError
 
@@ -69,6 +69,32 @@ def open_input_files(file_paths: List[str], mode: str = "rb") -> Iterator[List]:
     finally:
         for handle in handles:
             handle.close()
+
+
+def default_output_dir() -> str:
+    """Base directory for generated output files.
+
+    Honors the ``IAPP_OUTPUT_DIR`` environment variable; falls back to ``media``
+    to preserve the legacy on-disk layout when nothing is configured.
+    """
+    return os.environ.get("IAPP_OUTPUT_DIR", "").strip() or "media"
+
+
+def build_output_path(filename: str, output_path: Optional[str] = None) -> str:
+    """Resolve where to save a generated file, creating the directory.
+
+    Central output-path API for domain methods that currently hardcode
+    ``media/...`` (defect D-09):
+
+    * ``output_path`` given  -> use it verbatim (caller is in full control),
+    * ``output_path`` omitted -> ``default_output_dir()/filename``.
+
+    The default stays ``media/`` so behavior is unchanged out of the box, but
+    callers (and ops, via ``IAPP_OUTPUT_DIR``) can now redirect output instead
+    of being locked to a hardcoded folder.
+    """
+    target = output_path if output_path else os.path.join(default_output_dir(), filename)
+    return resolve_output_path(target)
 
 
 def truncate_blobs(value: Any) -> Any:
