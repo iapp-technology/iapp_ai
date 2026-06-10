@@ -9,3 +9,22 @@
 
 [tool.uv.workspace]
 members = ["packages/iapp-core", "packages/iapp-sdk", "packages/iapp-mcp"]
+
+# Dev tooling for the CI pipeline (A-5). Installed by `uv sync`.
+[dependency-groups]
+dev = [
+    "ruff>=0.6,<1.0",
+    "mypy>=1.10,<3.0",
+    "pytest>=8,<10",
+]
+
+# Ruff stays on its default rule set (E4/E7/E9/F) so the existing code passes;
+# the team can opt into E501/import-sorting once domain files are reformatted.
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+# Third-party libs (httpx, mcp, pydantic, requests) ship without stubs here.
+ignore_missing_imports = true

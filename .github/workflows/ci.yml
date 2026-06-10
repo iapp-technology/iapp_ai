@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-type-test:
+    name: lint + type + test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync workspace (all packages + extras + dev tools)
+        run: uv sync --all-packages --all-extras
+        env:
+          UV_PYTHON: ${{ matrix.python-version }}
+
+      # Ruff runs over the whole repo on its default rule set.
+      - name: Lint (ruff)
+        run: uv run ruff check packages
+
+      # Mypy gate is scoped to core + sdk, which are type-clean today. The MCP
+      # domain tools gain type hints under C-5 / D-7; add them here once green.
+      - name: Type check (mypy)
+        run: uv run mypy packages/iapp-core/src packages/iapp-sdk/src
+
+      - name: Test (pytest)
+        run: uv run pytest packages/iapp-core/tests packages/iapp-sdk/tests
