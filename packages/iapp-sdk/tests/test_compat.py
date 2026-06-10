@@ -101,11 +101,11 @@ def test_idcard_front_url_and_content_type(captured, tmp_path):
     assert filetuple[2] == "image/jpg"   # exact legacy content type, not image/jpeg
 
 
-def test_photocopied_preserves_leading_space_url(captured, tmp_path):
+def test_photocopied_url_is_trimmed(captured, tmp_path):
     f = tmp_path / "id.jpg"
     f.write_bytes(b"x")
     api("K").idcard_front_photocopied(str(f))
-    assert captured["url"] == " https://api.iapp.co.th/thai-national-id-card-with-signature/front"
+    assert captured["url"] == "https://api.iapp.co.th/thai-national-id-card-with-signature/front"
 
 
 def test_qgen_uses_plain_http_and_apikey_in_query(captured):
