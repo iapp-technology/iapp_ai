@@ -13,8 +13,13 @@ compatibility.
 
 import json
 import os
+from typing import Dict, Any, List, Optional
 
-from iapp_core import request_sync
+import requests
+from iapp_core import request_sync, open_input_files
+
+
+taskGuid = ""
 
 
 class api():
@@ -69,30 +74,102 @@ class api():
 
     ################## Image Recognition ##################
 
-    def idcard_front(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
-        return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+    def idcard_front(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract information from the front side of a Thai National ID Card.
 
-    def idcard_front_photocopied(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
-        return request_sync("POST", " https://api.iapp.co.th/thai-national-id-card-with-signature/front",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+        Args:
+            file_path: Path to the image file of the front side of the ID card.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
 
-    def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
-        return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3.5/back",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+    def idcard_front_photocopied(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract information from a photocopied/signed Thai National ID Card front.
+
+        Args:
+            file_path: Path to the image file of the photocopied ID card front.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card-with-signature/front",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
+
+    def idcard_back(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract information from the back side of a Thai National ID Card.
+
+        Args:
+            file_path: Path to the image file of the back side of the ID card.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3.5/back",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def license_plate_ocr(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
@@ -113,52 +190,171 @@ class api():
                             data=request_data_payload)
 
 
-    def book_bank_api(self, file_path, headers={}, data_payload={}, files=[]):
+    def book_bank_api(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract details from a Thai bank book page (Book Bank).
+
+        Args:
+            file_path: Path to the image file of the bank book page.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/book-bank-ocr/file",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
-
-    def passport_ocr(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
-
-        return request_sync("POST", "https://api.iapp.co.th/passport-ocr/ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
-
-    def document_ocr_plaintext(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
-
-        return request_sync("POST", "https://api.iapp.co.th/document-ocr/ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
-
-    def document_ocr_json_layout(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
-
-        return request_sync("POST", "https://api.iapp.co.th/document-ocr/layout",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
-
-    def document_ocr_docx(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
-
-        response = request_sync("POST", "https://api.iapp.co.th/document-ocr/docx",
+            return request_sync("POST", "https://api.iapp.co.th/book-bank-ocr/file",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
-        print(response.text)
-        return response
+
+    def passport_ocr(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract MRZ details from a passport page.
+
+        Args:
+            file_path: Path to the image file of the passport.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/passport-ocr/ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
+
+    def document_ocr_plaintext(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan a general document and extract its plaintext contents.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
+
+    def document_ocr_json_layout(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan a general document and extract details including layout positioning in JSON.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/layout",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
+
+    def document_ocr_docx(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan a general document and convert/reconstruct it into a downloadable DOCX file.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response containing the DOCX file link.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
+
+            response = request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/document/docx",
+                                    apikey=self.apikey, headers=headers,
+                                    data={**data_payload}, files=request_files)
+            return response
 
 
     def face_liveness(self, file_path, headers={}, data_payload={}, files=[]):
@@ -169,7 +365,10 @@ class api():
         response = request_sync("POST", "https://api.iapp.co.th/passive-face-liveness-detection",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
-        taskGuid = response
+        try:
+            taskGuid = response.json().get("taskGuid", "")
+        except Exception:
+            taskGuid = ""
 
         return response
 
@@ -384,14 +583,38 @@ class api():
             file.write(response.content)
         return response
 
-    def driver_card_ocr(self, file_path, headers={}, data_payload={}, files=[]):
-        filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+    def driver_card_ocr(
+        self,
+        file_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Scan and extract details from a Thai Driver's License Card.
 
-        return request_sync("POST", "https://api.iapp.co.th/thai-driver-license-ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+        Args:
+            file_path: Path to the image file of the driver's license.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/thai-driver-license-ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
 
     ################## Voice and Speech ##################
