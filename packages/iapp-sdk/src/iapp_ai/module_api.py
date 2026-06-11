@@ -16,7 +16,7 @@ import os
 from typing import Dict, Any, List, Optional
 
 import requests
-from iapp_core import request_sync, open_input_files
+from iapp_core import request_sync, open_input_files, build_output_path
 
 
 taskGuid = ""
@@ -580,7 +580,7 @@ class api():
                             headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
 
-    def img_bg_removal_file(self, file_path, headers={}, data_payload={}, files=[]):
+    def img_bg_removal_file(self, file_path, headers={}, data_payload={}, files=[], output_path=None):
         filename = os.path.basename(file_path)
         request_data_payload = {
              "rotateIfPortiat": True,
@@ -592,7 +592,8 @@ class api():
             response = request_sync("POST", "https://api.iapp.co.th/face-extractor/predict/file",
                                     apikey=self.apikey, headers=headers,
                                     data=request_data_payload, files=request_files)
-            with open("media/img_bg_removal_file.jpg", "wb") as file:
+            target_path = build_output_path("img_bg_removal_file.jpg", output_path)
+            with open(target_path, "wb") as file:
                 file.write(response.content)
             return response
 
