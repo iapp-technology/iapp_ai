@@ -14,7 +14,7 @@ compatibility.
 import json
 import os
 
-from iapp_core import request_sync
+from iapp_core import open_input_files, request_sync
 
 
 class api():
@@ -71,28 +71,31 @@ class api():
 
     def idcard_front(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
-        return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def idcard_front_photocopied(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
-        return request_sync("POST", " https://api.iapp.co.th/thai-national-id-card-with-signature/front",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
+            return request_sync("POST", " https://api.iapp.co.th/thai-national-id-card-with-signature/front",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3.5/back",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3.5/back",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def license_plate_ocr(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
@@ -115,50 +118,55 @@ class api():
 
     def book_bank_api(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/book-bank-ocr/file",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/book-bank-ocr/file",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def passport_ocr(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/passport-ocr/ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/passport-ocr/ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def document_ocr_plaintext(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/document-ocr/ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/document-ocr/ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def document_ocr_json_layout(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/document-ocr/layout",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/document-ocr/layout",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def document_ocr_docx(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb')))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh))]
+            request_files.extend(files)
 
-        response = request_sync("POST", "https://api.iapp.co.th/document-ocr/docx",
-                                apikey=self.apikey, headers=headers,
-                                data={**data_payload}, files=request_files)
-        print(response.text)
-        return response
+            response = request_sync("POST", "https://api.iapp.co.th/document-ocr/docx",
+                                    apikey=self.apikey, headers=headers,
+                                    data={**data_payload}, files=request_files)
+            print(response.text)
+            return response
 
 
     def face_liveness(self, file_path, headers={}, data_payload={}, files=[]):
@@ -386,12 +394,13 @@ class api():
 
     def driver_card_ocr(self, file_path, headers={}, data_payload={}, files=[]):
         filename = os.path.basename(file_path)
-        request_files = [('file',(filename, open(file_path,'rb'),'image/jpg'))]
-        request_files.extend(files)
+        with open_input_files([file_path]) as [fh]:
+            request_files = [('file',(filename, fh,'image/jpg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", "https://api.iapp.co.th/thai-driver-license-ocr",
-                            apikey=self.apikey, headers=headers,
-                            data={**data_payload}, files=request_files)
+            return request_sync("POST", "https://api.iapp.co.th/thai-driver-license-ocr",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
 
     ################## Voice and Speech ##################
