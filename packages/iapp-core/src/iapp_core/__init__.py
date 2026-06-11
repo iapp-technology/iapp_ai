@@ -14,6 +14,7 @@ from .formatting import (
     default_output_dir,
     format_json_response,
     get_api_key,
+    open_input_files,
     resolve_input_file,
     resolve_output_path,
     save_binary,
@@ -21,6 +22,7 @@ from .formatting import (
     truncate_blobs,
 )
 from .transport import request_async, request_sync
+from .urls import build_url
 
 __all__ = [
     "API_BASE",
@@ -30,8 +32,10 @@ __all__ = [
     "status_error_message",
     "build_output_path",
     "default_output_dir",
+    "build_url",
     "format_json_response",
     "get_api_key",
+    "open_input_files",
     "resolve_input_file",
     "resolve_output_path",
     "save_binary",
