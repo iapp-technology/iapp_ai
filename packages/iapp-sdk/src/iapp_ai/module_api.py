@@ -440,6 +440,13 @@ class api():
                             apikey=self.apikey, headers=headers,
                             data=data_payload)
 
+    def _face_config_score(self, data_payload, headers=None):
+        if headers is None:
+            headers = {}
+        return request_sync("POST", "https://api.iapp.co.th/face_config_score",
+                            apikey=self.apikey, headers=headers,
+                            data=data_payload)
+
     def face_ver_config_score(self, detect_value, compare_value, company_name, company_password, headers={}, data_payload={}):
         request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **data_payload}
         return self._face_config_score(request_data_payload, headers=headers)
