@@ -12,7 +12,7 @@ keep separate bodies because their file-handling contracts differ:
 
 import os
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .config import API_BASE, CONNECT_TIMEOUT, READ_TIMEOUT
 from .errors import IAppAPIError, status_error_message
@@ -35,7 +35,7 @@ def request_sync(
     json_body: Optional[Any] = None,
     files: Optional[Any] = None,
     raise_for_error: bool = False,
-    timeout: Optional[float] = None,
+    timeout: Optional[Union[float, Tuple[float, float]]] = None,
     retries: int = 0,
     backoff_factor: float = 0.5,
 ):
@@ -47,6 +47,10 @@ def request_sync(
     ``apikey`` header is injected first; any ``headers`` provided by the caller
     are merged on top (so a caller can add e.g. ``Content-Type``).
 
+    ``timeout`` defaults to ``(CONNECT_TIMEOUT, READ_TIMEOUT)`` from
+    :mod:`iapp_core.config` so a stalled connection can never hang forever;
+    callers may pass their own float or ``(connect, read)`` tuple to override.
+
     Retry/backoff is opt-in and off by default (``retries=0``), so existing
     callers are unaffected. When ``retries`` > 0, transient responses (429 and
     5xx) are retried up to ``retries`` extra times with exponential backoff
@@ -55,6 +59,8 @@ def request_sync(
     """
     import requests
 
+    if timeout is None:
+        timeout = (CONNECT_TIMEOUT, READ_TIMEOUT)
     request_headers = {"apikey": apikey}
     if headers:
         request_headers.update(headers)
