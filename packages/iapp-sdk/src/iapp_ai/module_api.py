@@ -83,7 +83,7 @@ class api():
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
-            return request_sync("POST", " https://api.iapp.co.th/thai-national-id-card-with-signature/front",
+            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card-with-signature/front",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
