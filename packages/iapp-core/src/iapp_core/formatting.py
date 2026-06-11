@@ -48,6 +48,29 @@ def resolve_output_path(output_path: str) -> str:
     return path
 
 
+@contextmanager
+def open_input_files(file_paths: List[str], mode: str = "rb") -> Iterator[List]:
+    """Open several input files and guarantee every handle is closed.
+
+    Many SDK methods open files for multipart upload but never close them, so
+    handles leak (defect D-01). Wrap the open/use in this context manager and
+    every handle is closed on exit — even if the request raises::
+
+        with open_input_files([img1, img2]) as (fh1, fh2):
+            request_sync(..., files=[("file1", (name1, fh1)), ...])
+
+    Each path is validated through :func:`resolve_input_file` first.
+    """
+    handles: List = []
+    try:
+        for file_path in file_paths:
+            handles.append(open(resolve_input_file(file_path), mode))
+        yield handles
+    finally:
+        for handle in handles:
+            handle.close()
+
+
 def default_output_dir() -> str:
     """Base directory for generated output files.
 
@@ -72,31 +95,6 @@ def build_output_path(filename: str, output_path: Optional[str] = None) -> str:
     """
     target = output_path if output_path else os.path.join(default_output_dir(), filename)
     return resolve_output_path(target)
-
-
-@contextmanager
-def open_input_files(file_paths: List[str], mode: str = "rb") -> Iterator[List]:
-    """Open several input files and guarantee every handle is closed.
-
-    Many SDK methods open files for multipart upload but never close them, so
-    handles leak (defect D-01). Wrap the open/use in this context manager and
-    every handle is closed on exit — even if the request raises::
-
-        with open_input_files([img1, img2]) as (fh1, fh2):
-            request_sync(..., files=[("file1", (name1, fh1)), ...])
-
-    Each path is validated through :func:`resolve_input_file` first.
-    """
-    handles: List = []
-    try:
-        for file_path in file_paths:
-            handles.append(open(resolve_input_file(file_path), mode))
-        yield handles
-    finally:
-        for handle in handles:
-            handle.close()
-
-
 def truncate_blobs(value: Any) -> Any:
     """Recursively truncate base64-looking blobs (embedded images) in API responses."""
     if isinstance(value, dict):
