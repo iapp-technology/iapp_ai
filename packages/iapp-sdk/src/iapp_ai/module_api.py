@@ -13,7 +13,7 @@ compatibility.
 
 import json
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 import requests
 from iapp_core import request_sync, open_input_files
@@ -74,9 +74,9 @@ class api():
     def idcard_front(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract information from the front side of a Thai National ID Card.
 
@@ -89,6 +89,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -100,9 +106,9 @@ class api():
     def idcard_front_photocopied(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract information from a photocopied/signed Thai National ID Card front.
 
@@ -115,6 +121,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -126,9 +138,9 @@ class api():
     def idcard_back(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract information from the back side of a Thai National ID Card.
 
@@ -141,6 +153,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -172,9 +190,9 @@ class api():
     def book_bank_api(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract details from a Thai bank book page (Book Bank).
 
@@ -187,6 +205,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -199,9 +223,9 @@ class api():
     def passport_ocr(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract MRZ details from a passport page.
 
@@ -214,6 +238,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -226,9 +256,9 @@ class api():
     def document_ocr_plaintext(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan a general document and extract its plaintext contents.
 
@@ -241,6 +271,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -253,9 +289,9 @@ class api():
     def document_ocr_json_layout(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan a general document and extract details including layout positioning in JSON.
 
@@ -268,6 +304,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -280,9 +322,9 @@ class api():
     def document_ocr_docx(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan a general document and convert/reconstruct it into a downloadable DOCX file.
 
@@ -295,6 +337,12 @@ class api():
         Returns:
             requests.Response: The HTTP response containing the DOCX file link.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -532,9 +580,9 @@ class api():
     def driver_card_ocr(
         self,
         file_path: str,
-        headers: Dict[str, str] = {},
-        data_payload: Dict[str, Any] = {},
-        files: List[Any] = [],
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
     ) -> requests.Response:
         """Scan and extract details from a Thai Driver's License Card.
 
@@ -547,6 +595,12 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
