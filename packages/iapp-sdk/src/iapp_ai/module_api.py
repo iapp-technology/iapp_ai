@@ -19,6 +19,9 @@ import requests
 from iapp_core import request_sync, open_input_files
 
 
+taskGuid = ""
+
+
 class api():
     apikey = ""
     def __init__(self, apikey):
