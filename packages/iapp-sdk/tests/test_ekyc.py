@@ -4,7 +4,6 @@ import json
 import os
 import pytest
 import requests
-import iapp_ai
 from iapp_ai import api
 import iapp_ai.module_api as module_api
 
