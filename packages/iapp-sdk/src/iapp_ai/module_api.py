@@ -13,8 +13,10 @@ compatibility.
 
 import json
 import os
+from typing import Dict, Any, List
 
-from iapp_core import open_input_files, request_sync
+import requests
+from iapp_core import request_sync, open_input_files
 
 
 class api():
@@ -69,7 +71,24 @@ class api():
 
     ################## Image Recognition ##################
 
-    def idcard_front(self, file_path, headers={}, data_payload={}, files=[]):
+    def idcard_front(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract information from the front side of a Thai National ID Card.
+
+        Args:
+            file_path: Path to the image file of the front side of the ID card.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -78,7 +97,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def idcard_front_photocopied(self, file_path, headers={}, data_payload={}, files=[]):
+    def idcard_front_photocopied(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract information from a photocopied/signed Thai National ID Card front.
+
+        Args:
+            file_path: Path to the image file of the photocopied ID card front.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -87,7 +123,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def idcard_back(self, file_path, headers={}, data_payload={}, files=[]):
+    def idcard_back(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract information from the back side of a Thai National ID Card.
+
+        Args:
+            file_path: Path to the image file of the back side of the ID card.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -116,7 +169,24 @@ class api():
                             data=request_data_payload)
 
 
-    def book_bank_api(self, file_path, headers={}, data_payload={}, files=[]):
+    def book_bank_api(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract details from a Thai bank book page (Book Bank).
+
+        Args:
+            file_path: Path to the image file of the bank book page.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
@@ -126,7 +196,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def passport_ocr(self, file_path, headers={}, data_payload={}, files=[]):
+    def passport_ocr(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract MRZ details from a passport page.
+
+        Args:
+            file_path: Path to the image file of the passport.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -136,7 +223,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def document_ocr_plaintext(self, file_path, headers={}, data_payload={}, files=[]):
+    def document_ocr_plaintext(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan a general document and extract its plaintext contents.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -146,7 +250,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def document_ocr_json_layout(self, file_path, headers={}, data_payload={}, files=[]):
+    def document_ocr_json_layout(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan a general document and extract details including layout positioning in JSON.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -156,7 +277,24 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
-    def document_ocr_docx(self, file_path, headers={}, data_payload={}, files=[]):
+    def document_ocr_docx(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan a general document and convert/reconstruct it into a downloadable DOCX file.
+
+        Args:
+            file_path: Path to the document file (image/PDF).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response containing the DOCX file link.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh))]
@@ -391,7 +529,24 @@ class api():
             file.write(response.content)
         return response
 
-    def driver_card_ocr(self, file_path, headers={}, data_payload={}, files=[]):
+    def driver_card_ocr(
+        self,
+        file_path: str,
+        headers: Dict[str, str] = {},
+        data_payload: Dict[str, Any] = {},
+        files: List[Any] = [],
+    ) -> requests.Response:
+        """Scan and extract details from a Thai Driver's License Card.
+
+        Args:
+            file_path: Path to the image file of the driver's license.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
         filename = os.path.basename(file_path)
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
