@@ -95,8 +95,6 @@ def build_output_path(filename: str, output_path: Optional[str] = None) -> str:
     """
     target = output_path if output_path else os.path.join(default_output_dir(), filename)
     return resolve_output_path(target)
-
-
 def truncate_blobs(value: Any) -> Any:
     """Recursively truncate base64-looking blobs (embedded images) in API responses."""
     if isinstance(value, dict):
