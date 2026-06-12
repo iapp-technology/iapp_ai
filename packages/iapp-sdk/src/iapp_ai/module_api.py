@@ -16,7 +16,7 @@ import os
 from typing import Dict, Any, List, Optional
 
 import requests
-from iapp_core import request_sync, open_input_files, build_output_path
+from iapp_core import API_BASE, request_sync, open_input_files, build_output_path
 
 
 taskGuid = ""
@@ -440,7 +440,7 @@ class api():
         request_data_payload = json.dumps({
             'image': data})
 
-        return request_sync("POST", "https://titipakorn.xyz/ocr/api/predict/ocr_detect/",
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/file",
                             apikey=self.apikey, headers=headers,
                             data=request_data_payload)
 
