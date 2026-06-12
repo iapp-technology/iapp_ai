@@ -10,6 +10,7 @@ and no API key. They lock down the behaviors existing users depend on:
 * multipart file tuples keep their exact field names and content types.
 """
 
+import base64
 import json
 
 import pytest
@@ -77,15 +78,17 @@ def test_returns_raw_response_and_does_not_raise(captured):
     assert isinstance(resp, requests.Response)
     assert resp.status_code == 403  # 4xx is RETURNED, never raised
     assert captured["apikey"] == "MY_KEY"
-    assert captured["method"] == "GET"
-    assert captured["url"] == "https://api.iapp.co.th/translate/auto?text=hello"
+    # D-14: translate is repointed to the MCP path and uses POST.
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v1/text/translate?text=hello"
     assert captured["raise_for_error"] is False
 
 
 def test_json_endpoint_sets_content_type(captured):
     client = api("K")
     client.thai_qa_api(question="q", document="d")
-    assert captured["url"] == "https://api.iapp.co.th/thai-qa/inference"
+    # D-14: thai_qa repointed to the MCP path /thai-qa.
+    assert captured["url"] == "https://api.iapp.co.th/thai-qa"
     assert captured["headers"].get("Content-Type") == "application/json"
     assert json.loads(captured["data"]) == {"question": "q", "document": "d"}
 
@@ -108,10 +111,16 @@ def test_photocopied_url_is_trimmed(captured, tmp_path):
     assert captured["url"] == "https://api.iapp.co.th/thai-national-id-card-with-signature/front"
 
 
-def test_qgen_uses_plain_http_and_apikey_in_query(captured):
-    api("SECRET").thai_qgen_api("text")
-    assert captured["url"].startswith("http://api.iapp.co.th/qa-generator-th?text=")
-    assert "&apikey=SECRET" in captured["url"]
+def test_qgen_uses_https_encoded_no_apikey(captured):
+    # D-04/D-05/D-06 + D-14: https, Thai percent-encoded, apikey NOT in the URL
+    # (sent via header by request_sync), repointed to the MCP generation path.
+    api("SECRET").thai_qgen_api("คำถาม & test")
+    url = captured["url"]
+    assert url.startswith("https://api.iapp.co.th/v3/store/nlp/question/generation?text=")
+    assert "http://" not in url
+    assert "apikey" not in url and "SECRET" not in url
+    assert "คำถาม" not in url                 # Thai is percent-encoded, not raw
+    assert captured["apikey"] == "SECRET"      # still delivered to request_sync -> header
 
 
 def test_face_verification_two_files_octet_stream(captured, tmp_path):
@@ -138,11 +147,16 @@ def test_asr_uses_raw_path_filename_and_mpga(captured, tmp_path):
     assert filetuple[2] == "audio/mpga"
 
 
-def test_power_meter_hits_legacy_host(captured, tmp_path):
-    f = tmp_path / "m.txt"
-    f.write_text("base64data")
+def test_power_meter_uses_official_endpoint(captured, tmp_path):
+    # D-02: official iApp host (no private titipakorn.xyz). D-03: image is read in
+    # binary and base64-encoded into the JSON body (round-trips).
+    raw = b"\xff\xd8\xff\x00meter"
+    f = tmp_path / "m.jpg"
+    f.write_bytes(raw)
     api("K").power_meter(image=str(f))
-    assert captured["url"] == "https://titipakorn.xyz/ocr/api/predict/ocr_detect/"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/file"
+    assert "titipakorn" not in captured["url"]
+    assert base64.b64decode(json.loads(captured["data"])["image"]) == raw
 
 
 def test_passport_ocr_uses_two_tuple_file(captured, tmp_path):
