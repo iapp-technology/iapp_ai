@@ -41,7 +41,7 @@ class api():
                             data=request_data_payload)
 
     def thai_qgen_api(self, text={}, headers={}, data_payload={}):
-        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
+        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text)
 
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
