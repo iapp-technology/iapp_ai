@@ -16,7 +16,7 @@ import os
 from typing import Dict, Any, List, Optional
 
 import requests
-from iapp_core import request_sync, open_input_files, build_output_path
+from iapp_core import API_BASE, request_sync, open_input_files, build_output_path
 
 
 taskGuid = ""
@@ -41,7 +41,7 @@ class api():
                             data=request_data_payload)
 
     def thai_qgen_api(self, text={}, headers={}, data_payload={}):
-        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
+        url = API_BASE + "/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
 
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
