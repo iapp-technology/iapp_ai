@@ -16,7 +16,7 @@ import os
 from typing import Dict, Any, List, Optional
 
 import requests
-from iapp_core import request_sync, open_input_files, build_output_path
+from iapp_core import API_BASE, build_url, request_sync, open_input_files, build_output_path
 
 
 taskGuid = ""
@@ -41,19 +41,21 @@ class api():
                             data=request_data_payload)
 
     def thai_qgen_api(self, text={}, headers={}, data_payload={}):
-        url = "http://api.iapp.co.th/qa-generator-th?text=" + str(text) + "&apikey=" + str(self.apikey)
+        url = build_url("http://api.iapp.co.th", "qa-generator-th",
+                        {"text": str(text), "apikey": str(self.apikey)})
 
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
 
     def thai_text_summarization(self, text={}, output_length={}, headers={}, data_payload={}):
-        url = "https://api.iapp.co.th/text-summarization?text=" + str(text) + "&output_length=" + str(output_length)
+        url = build_url(API_BASE, "text-summarization",
+                        {"text": str(text), "output_length": str(output_length)})
 
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
 
     def eng_thai_translate(self, text={}, headers={}, data_payload={}):
-        url = "https://api.iapp.co.th/translate/auto?text="+text
+        url = build_url(API_BASE, "translate/auto", {"text": text})
 
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
@@ -1094,7 +1096,7 @@ class api():
                             data={**data_payload}, files=request_files)
 
     def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={} ):
-        request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
+        request_url = build_url(API_BASE, "thai-tts-kaitom/tts", {"text": text})
 
         response = request_sync("GET", request_url, apikey=self.apikey, headers=headers,
                                 data={**data_payload})
@@ -1103,7 +1105,7 @@ class api():
         return response
 
     def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
-        request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
+        request_url = build_url(API_BASE, "thai-tts-cee/tts", {"text": text})
 
         response = request_sync("GET", request_url, apikey=self.apikey, headers=headers,
                                 data={**data_payload})
