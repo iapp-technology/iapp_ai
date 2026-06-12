@@ -11,6 +11,7 @@ The endpoints, request shapes and return values are unchanged for backward
 compatibility.
 """
 
+import base64
 import json
 import os
 from typing import Dict, Any, List, Optional
@@ -433,10 +434,8 @@ class api():
     #     return response
 
     def power_meter(self, headers={}, image= {}):
-        request_files = open(image,'r')
-        data = request_files.read()
-        #close file
-        request_files.close()
+        with open_input_files([image]) as (image_file,):
+            data = base64.b64encode(image_file.read()).decode("ascii")
         request_data_payload = json.dumps({
             'image': data})
 
