@@ -1093,20 +1093,22 @@ class api():
                             apikey=self.apikey, headers=headers,
                             data={**data_payload}, files=request_files)
 
-    def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={} ):
+    def thai_thaitts_kaitom(self, text={}, headers={}, data_payload={}, output_path=None ):
         request_url = "https://api.iapp.co.th/thai-tts-kaitom/tts?text=" + text
 
         response = request_sync("GET", request_url, apikey=self.apikey, headers=headers,
                                 data={**data_payload})
-        with open("media/kaitom.wav", "wb") as file:
+        path = build_output_path("kaitom.wav", output_path)
+        with open(path, "wb") as file:
             file.write(response.content)
         return response
 
-    def thai_thaitts_cee(self, text={}, headers={}, data_payload={} ):
+    def thai_thaitts_cee(self, text={}, headers={}, data_payload={}, output_path=None ):
         request_url = "https://api.iapp.co.th/thai-tts-cee/tts?text=" + text
 
         response = request_sync("GET", request_url, apikey=self.apikey, headers=headers,
                                 data={**data_payload})
-        with open("media/cee.wav", "wb") as file:
+        path = build_output_path("cee.wav", output_path)
+        with open(path, "wb") as file:
             file.write(response.content)
         return response
