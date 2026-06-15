@@ -104,6 +104,21 @@ def test_face_verification(mock_sdk_request, tmp_path):
     call2 = mock_sdk_request["calls"][-1]
     assert call2["url"] == "https://api.iapp.co.th/v3/store/ekyc/face-verification"
 
+def test_face_and_id_card_verification(mock_sdk_request, tmp_path):
+    f1 = tmp_path / "id.jpg"
+    f1.write_bytes(b"1")
+    f2 = tmp_path / "selfie.jpg"
+    f2.write_bytes(b"2")
+    
+    client = api("K")
+    resp = client.face_and_id_card_verification(str(f1), str(f2))
+    assert resp.status_code == 200
+    call = mock_sdk_request["calls"][-1]
+    assert call["url"] == "https://api.iapp.co.th/v3/store/ekyc/face-and-id-card-verification"
+    assert call["method"] == "POST"
+    assert call["files"][0][0] == "file0"
+    assert call["files"][1][0] == "file1"
+
 def test_face_detection(mock_sdk_request, tmp_path):
     f = tmp_path / "face.jpg"
     f.write_bytes(b"x")
