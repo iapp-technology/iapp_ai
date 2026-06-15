@@ -120,9 +120,9 @@ def test_face_verification_two_files_octet_stream(captured, tmp_path):
     f2 = tmp_path / "b.jpg"
     f2.write_bytes(b"b")
     api("K").face_verification(str(f1), str(f2), "acme", 0.5)
-    assert captured["url"] == "https://api.iapp.co.th/face_compare"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/ekyc/face-verification"
     assert captured["data"]["company"] == "acme"
-    assert captured["data"]["min_score"] == 0.5
+    assert captured["data"]["threshold"] == 0.5
     fields = [item[0] for item in captured["files"]]
     assert fields == ["file1", "file2"]
     assert all(item[1][2] == "application/octet-stream" for item in captured["files"])
