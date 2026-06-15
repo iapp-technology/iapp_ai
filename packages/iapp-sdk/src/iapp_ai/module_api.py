@@ -1000,10 +1000,13 @@ class api():
         import io
         if headers is None:
             headers = {}
-        try:
-            img_bytes = base64.b64decode(data_payload)
-        except Exception:
+        if data_payload is None:
             img_bytes = b""
+        else:
+            try:
+                img_bytes = base64.b64decode(data_payload)
+            except Exception:
+                img_bytes = b""
         request_files = [('file', ('image.jpg', io.BytesIO(img_bytes), 'image/jpeg'))]
         request_data_payload = {
              "rotateIfPortiat": True
