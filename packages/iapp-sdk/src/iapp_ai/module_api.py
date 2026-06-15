@@ -50,6 +50,11 @@ class api():
                             data=request_data_payload)
 
     def thai_qgen_api(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Generate question-answer pairs from a Thai text passage.
+
+        Endpoint: ``GET /v3/store/nlp/question/generation`` with the source text
+        sent as the ``text`` query parameter.
+        """
         headers = headers or {}
         data_payload = data_payload or {}
         url = build_url(API_BASE, "v3/store/nlp/question/generation", {"text": str(text)})
@@ -57,22 +62,63 @@ class api():
         return request_sync("GET", url, apikey=self.apikey, headers=headers,
                             data={**data_payload})
 
-    def thai_text_summarization(self, text: str = "", output_length: Any = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
+    def thai_text_summarization(self, text: str = "", style: Optional[str] = None, language: Optional[str] = None, max_output_tokens: Optional[int] = None, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Summarize a Thai or English text passage.
+
+        Endpoint: ``POST /v3/store/nlp/thai-text-summary`` with a JSON body.
+
+        Args:
+            text: The text to summarize (required).
+            style: Summary style — ``standard``, ``clarify`` or ``friendly``.
+            language: Output language — ``th`` or ``en``.
+            max_output_tokens: Optional cap on the length of the summary.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Extra JSON fields merged into the request body.
+        """
         headers = headers or {}
         data_payload = data_payload or {}
-        url = build_url(API_BASE, "v3/store/nlp/thai-text-summary",
-                        {"text": str(text), "output_length": str(output_length)})
+        body: Dict[str, Any] = {"text": str(text)}
+        if style is not None:
+            body["style"] = style
+        if language is not None:
+            body["language"] = language
+        if max_output_tokens is not None:
+            body["max_output_tokens"] = max_output_tokens
+        body.update(data_payload)
 
-        return request_sync("POST", url, apikey=self.apikey, headers=headers,
-                            data={**data_payload})
+        return request_sync("POST", f"{API_BASE}/v3/store/nlp/thai-text-summary",
+                            apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            json_body=body)
 
-    def eng_thai_translate(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
+    def eng_thai_translate(self, text: str = "", source_lang: str = "en", target_lang: str = "th", max_length: Optional[int] = None, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Translate text between supported languages (Thai-optimized).
+
+        Endpoint: ``POST /v3/store/nlp/multilingual-translation`` with a JSON body.
+
+        Args:
+            text: The text to translate (required).
+            source_lang: Source language code (defaults to ``en``).
+            target_lang: Target language code (defaults to ``th``).
+            max_length: Optional cap on the number of output tokens.
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Extra JSON fields merged into the request body.
+        """
         headers = headers or {}
         data_payload = data_payload or {}
-        url = build_url(API_BASE, "v1/text/translate", {"text": text})
+        body: Dict[str, Any] = {
+            "text": text,
+            "source_lang": source_lang,
+            "target_lang": target_lang,
+        }
+        if max_length is not None:
+            body["max_length"] = max_length
+        body.update(data_payload)
 
-        return request_sync("POST", url, apikey=self.apikey, headers=headers,
-                            data={**data_payload})
+        return request_sync("POST", f"{API_BASE}/v3/store/nlp/multilingual-translation",
+                            apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            json_body=body)
 
 
 
@@ -1100,6 +1146,13 @@ class api():
     ################## Voice and Speech ##################
 
     def thai_asr_api(self, file_path: str, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, files: Optional[List[Any]] = None) -> requests.Response:
+        """Transcribe a Thai audio file to text.
+
+        Endpoint: ``POST /v3/store/speech/speech-to-text/base``, sent as
+        multipart form-data with the audio under the ``file`` field. Optional
+        form fields (e.g. ``chunk_size``, ``use_asr_pro``) may be supplied via
+        ``data_payload``.
+        """
         headers = headers or {}
         data_payload = data_payload or {}
         files = files or []
@@ -1107,29 +1160,45 @@ class api():
             request_files = [('file',(file_path, file_obj, 'audio/mpga'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/asr",
+            return request_sync("POST", f"{API_BASE}/v3/store/speech/speech-to-text/base",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
     def thai_thaitts_kaitom(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, output_path: Optional[str] = None) -> requests.Response:
+        """Synthesize Thai speech and save the audio to a local file.
+
+        Endpoint: ``POST /v3/store/audio/tts`` with a JSON body ``{"text": ...}``.
+        The response audio is written to ``output_path`` (defaults to
+        ``kaitom.wav`` in the output directory).
+        """
         headers = headers or {}
         data_payload = data_payload or {}
-        request_url = build_url(API_BASE, "v3/store/speech/text-to-speech/kaitom", {"text": text})
+        body = {"text": text, **data_payload}
 
-        response = request_sync("POST", request_url, apikey=self.apikey, headers=headers,
-                                data={**data_payload})
+        response = request_sync("POST", f"{API_BASE}/v3/store/audio/tts",
+                                apikey=self.apikey,
+                                headers={'Content-Type': 'application/json', **headers},
+                                json_body=body)
         path = build_output_path("kaitom.wav", output_path)
         with open(path, "wb") as file:
             file.write(response.content)
         return response
 
     def thai_thaitts_cee(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, output_path: Optional[str] = None) -> requests.Response:
+        """Synthesize Thai speech and save the audio to a local file.
+
+        Endpoint: ``POST /v3/store/audio/tts`` with a JSON body ``{"text": ...}``.
+        The response audio is written to ``output_path`` (defaults to
+        ``cee.wav`` in the output directory).
+        """
         headers = headers or {}
         data_payload = data_payload or {}
-        request_url = build_url(API_BASE, "v3/store/speech/text-to-speech/cee", {"text": text})
+        body = {"text": text, **data_payload}
 
-        response = request_sync("GET", request_url, apikey=self.apikey, headers=headers,
-                                data={**data_payload})
+        response = request_sync("POST", f"{API_BASE}/v3/store/audio/tts",
+                                apikey=self.apikey,
+                                headers={'Content-Type': 'application/json', **headers},
+                                json_body=body)
         path = build_output_path("cee.wav", output_path)
         with open(path, "wb") as file:
             file.write(response.content)
