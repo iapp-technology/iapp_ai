@@ -285,3 +285,49 @@ def test_asr_forwards_extra_form_fields(captured, tmp_path):
     f.write_bytes(b"\x00")
     api("K").thai_asr_api(str(f), data_payload={"chunk_size": "7", "use_asr_pro": "0"})
     assert captured["data"] == {"chunk_size": "7", "use_asr_pro": "0"}
+
+
+# =========================================================================== #
+# Smart-city OCR endpoint contract tests (water meter / license plate).
+# Each method has a file (multipart) and a base64 (JSON) variant.
+# =========================================================================== #
+
+
+def test_water_meter_binary_uploads_file_multipart(captured, tmp_path):
+    f = tmp_path / "meter.jpg"
+    f.write_bytes(b"\xff\xd8\xff")
+    api("K").water_meter_binary(str(f))
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/meter-number-ocr/file"
+    field, filetuple = captured["files"][0]
+    assert field == "file"
+    assert filetuple[0] == "meter.jpg"   # basename used as filename
+    assert filetuple[2] == "image/jpg"
+
+
+def test_water_meter_base64_sends_json_image(captured):
+    api("K").water_meter_base64(data_payload="BASE64DATA")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/meter-number-ocr/base64"
+    assert captured["headers"].get("Content-Type") == "application/json"
+    assert json.loads(captured["data"]) == {"image": "BASE64DATA"}
+
+
+def test_license_plate_ocr_uploads_file_multipart(captured, tmp_path):
+    f = tmp_path / "car.jpg"
+    f.write_bytes(b"\xff\xd8\xff")
+    api("K").license_plate_ocr(str(f))
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/license-plate-recognition/file"
+    field, filetuple = captured["files"][0]
+    assert field == "file"
+    assert filetuple[0] == "car.jpg"     # basename used as filename
+    assert filetuple[2] == "image/jpg"
+
+
+def test_license_plate_base64_sends_json_image(captured):
+    api("K").license_plate_base64(data_payload="BASE64DATA")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/iapp_license_plate_recognition_v1_base64"
+    assert captured["headers"].get("Content-Type") == "application/json"
+    assert json.loads(captured["data"]) == {"image": "BASE64DATA"}
