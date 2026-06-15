@@ -489,14 +489,20 @@ class api():
     #     return response
 
     def power_meter(self, headers: Optional[Dict[str, Any]] = None, image: str = "") -> requests.Response:
+        """Read the number from a power/water meter image (base64 variant).
+
+        Endpoint: ``POST /v3/store/smart-city/power-meter-and-water-meter/base64``
+        with the image base64-encoded in a JSON body ``{"image": ...}``.
+        """
         headers = headers or {}
         with open_input_files([image]) as (image_file,):
             data = base64.b64encode(image_file.read()).decode("ascii")
         request_data_payload = json.dumps({
             'image': data})
 
-        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/file",
-                            apikey=self.apikey, headers=headers,
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/base64",
+                            apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
 
 

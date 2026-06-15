@@ -136,14 +136,17 @@ def test_asr_uses_v3_base_path_filename_and_mpga(captured, tmp_path):
 
 
 def test_power_meter_uses_official_endpoint(captured, tmp_path):
-    # D-02: official iApp host (no private titipakorn.xyz). D-03: image is read in
-    # binary and base64-encoded into the JSON body (round-trips).
+    # Official iApp host (no private titipakorn.xyz); the image is read in binary
+    # and base64-encoded into the JSON body (round-trips). Because it sends a
+    # base64 JSON body, it must hit the /base64 variant (the /file variant is
+    # multipart per the docs).
     raw = b"\xff\xd8\xff\x00meter"
     f = tmp_path / "m.jpg"
     f.write_bytes(raw)
     api("K").power_meter(image=str(f))
-    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/file"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/base64"
     assert "titipakorn" not in captured["url"]
+    assert captured["headers"].get("Content-Type") == "application/json"
     assert base64.b64decode(json.loads(captured["data"])["image"]) == raw
 
 
