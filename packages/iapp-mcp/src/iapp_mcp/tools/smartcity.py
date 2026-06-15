@@ -1,6 +1,6 @@
 """Smart city and data tools: license plate, meter OCR, route optimization, Thai holidays."""
 
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Any
 
 from pydantic import BaseModel, Field
 
@@ -155,7 +155,7 @@ async def iapp_thai_holidays(
         JSON string with holiday dates, Thai names, weekdays and types. Cost: 0.1 IC.
     """
     try:
-        params = {"holiday_type": holiday_type}
+        params: dict[str, Any] = {"holiday_type": holiday_type}
         if year is not None:
             response = await request(
                 "GET", f"/v3/store/data/thai-holiday/year/{year}", params=params

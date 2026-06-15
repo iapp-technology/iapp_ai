@@ -1,6 +1,6 @@
 """Thai NLP tools: translation, summarization, sentiment, toxicity, QA, question generation."""
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 
 from ..app import mcp
 from ..client import IAppAPIError, format_json_response, request
@@ -43,7 +43,7 @@ async def iapp_translate(
         JSON string with the translation and processing time. Cost: 1 IC per 400 chars.
     """
     try:
-        data = {"text": text, "source_lang": source_lang, "target_lang": target_lang}
+        data: dict[str, Any] = {"text": text, "source_lang": source_lang, "target_lang": target_lang}
         if max_length is not None:
             data["max_length"] = max_length
         response = await request("POST", "/v1/text/translate", data=data)
@@ -75,7 +75,7 @@ async def iapp_summarize(
         JSON string with the summary. Cost: 1 IC per 400 chars.
     """
     try:
-        body = {"text": text, "style": style, "language": language}
+        body: dict[str, Any] = {"text": text, "style": style, "language": language}
         if max_output_tokens is not None:
             body["max_output_tokens"] = max_output_tokens
         response = await request("POST", "/v3/store/nlp/thai-text-summary", json_body=body)
