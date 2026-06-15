@@ -1118,3 +1118,249 @@ class api():
         with open("media/cee.wav", "wb") as file:
             file.write(response.content)
         return response
+
+    ############## APIs added to match api docs (iapp.co.th/docs) ##############
+    # Endpoints mirror the verified iapp-mcp tools. Every method returns the raw
+    # requests.Response, consistent with the rest of this SDK.
+
+    def llm_chat(
+        self,
+        prompt: str = "",
+        model: str = "chinda-qwen3-4b",
+        system_prompt: Optional[str] = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.7,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Chat with iApp-hosted LLMs (OpenAI-compatible).
+
+        model: chinda-qwen3-4b | deepseek-reasoner | deepseek-chat |
+        deepseek-v4-flash | deepseek-v4-pro.
+        """
+        headers = headers or {}
+        endpoints = {
+            "chinda-qwen3-4b": "https://api.iapp.co.th/v3/llm/chinda-thaillm-4b/chat/completions",
+            "deepseek-reasoner": "https://api.iapp.co.th/v3/llm/deepseek-3p2/chat/completions",
+            "deepseek-chat": "https://api.iapp.co.th/v3/llm/deepseek-3p2/chat/completions",
+            "deepseek-v4-flash": "https://api.iapp.co.th/v3/llm/deepseek-v4/chat/completions",
+            "deepseek-v4-pro": "https://api.iapp.co.th/v3/llm/deepseek-v4/chat/completions",
+        }
+        messages: List[Dict[str, str]] = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        payload = json.dumps({
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "stream": False,
+        })
+        return request_sync("POST", endpoints[model], apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            data=payload)
+
+    def thanoy_legal_qa(self, query: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thanoy Thai Legal AI chatbot (ทนายAI)."""
+        headers = headers or {}
+        payload = json.dumps({"query": query})
+        return request_sync("POST", "https://api.iapp.co.th/thanoy", apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            data=payload)
+
+    def image_generation(self, prompt: str = "", model: str = "nanobanana", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Generate an image (Google Nano Banana). model: nanobanana | nanobanana-pro."""
+        headers = headers or {}
+        slug = "nanobanana" if model == "nanobanana" else "nanobananapro"
+        url = f"https://api.iapp.co.th/v3/image/generation/google/{slug}/generate"
+        payload = json.dumps({
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
+        })
+        return request_sync("POST", url, apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            data=payload)
+
+    def seedance_video_submit(
+        self,
+        prompt: str = "",
+        model: str = "seedance-fast",
+        duration: int = 5,
+        ratio: str = "16:9",
+        resolution: str = "720p",
+        generate_audio: bool = True,
+        watermark: bool = False,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Submit an async Seedance 2.0 video job. Poll with seedance_video_status()."""
+        headers = headers or {}
+        model_ids = {
+            "seedance": "dreamina-seedance-2-0-260128",
+            "seedance-fast": "dreamina-seedance-2-0-fast-260128",
+        }
+        payload = json.dumps({
+            "model": model_ids[model],
+            "content": [{"type": "text", "text": prompt}],
+            "duration": duration,
+            "ratio": ratio,
+            "resolution": resolution,
+            "generate_audio": generate_audio,
+            "watermark": watermark,
+        })
+        return request_sync("POST", "https://api.iapp.co.th/v3/store/video/seedance/tasks",
+                            apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            data=payload)
+
+    def seedance_video_status(self, task_id: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Check a Seedance video job status; returns the download URL when done."""
+        headers = headers or {}
+        url = "https://api.iapp.co.th/v3/store/video/seedance/tasks/" + str(task_id)
+        return request_sync("GET", url, apikey=self.apikey, headers=headers)
+
+    def receipt_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai receipt / tax-invoice OCR."""
+        headers = headers or {}
+        data = {"return_ocr": "true"} if return_ocr else {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/receipt",
+                                apikey=self.apikey, headers=headers,
+                                data=data, files=[('file', (filename, fh))])
+
+    def credit_card_statement_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai credit card statement OCR."""
+        headers = headers or {}
+        data = {"return_ocr": "true"} if return_ocr else {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/creditcard-statement",
+                                apikey=self.apikey, headers=headers,
+                                data=data, files=[('file', (filename, fh))])
+
+    def tax_deduction_certificate_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai withholding tax deduction certificate (50 ทวิ) OCR."""
+        headers = headers or {}
+        data = {"return_ocr": "true"} if return_ocr else {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/tax-deduction-certificate",
+                                apikey=self.apikey, headers=headers,
+                                data=data, files=[('file', (filename, fh))])
+
+    def civil_registration_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai civil registration certificate OCR."""
+        headers = headers or {}
+        data = {"return_ocr": "true"} if return_ocr else {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/civil-registeration-certificate",
+                                apikey=self.apikey, headers=headers,
+                                data=data, files=[('file', (filename, fh))])
+
+    def resume_ocr(self, file_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """AI resume / CV extraction and evaluation."""
+        headers = headers or {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/curriculum-vitae",
+                                apikey=self.apikey, headers=headers,
+                                files=[('file', (filename, fh))])
+
+    def job_description_ocr(self, file_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """AI job description extraction."""
+        headers = headers or {}
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ocr/job-description",
+                                apikey=self.apikey, headers=headers,
+                                files=[('file', (filename, fh))])
+
+    def speech_to_text(
+        self,
+        file_path: str,
+        language: str = "th",
+        quality: str = "base",
+        chunk_size: Optional[int] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Speech-to-text with diarization. language: th|en|zh, quality: base|pro."""
+        headers = headers or {}
+        paths = {
+            ("th", "base"): "/v3/store/speech/speech-to-text/base",
+            ("th", "pro"): "/v3/store/speech/speech-to-text/pro",
+            ("en", "base"): "/v3/store/speech/speech-to-text/base/en",
+            ("en", "pro"): "/v3/store/speech/speech-to-text/pro/en",
+            ("zh", "base"): "/v3/store/speech/speech-to-text/base/zh",
+            ("zh", "pro"): "/v3/store/speech/speech-to-text/pro/zh",
+        }
+        url = "https://api.iapp.co.th" + paths[(language, quality)]
+        data: Dict[str, Any] = {}
+        if chunk_size is not None:
+            data["chunk_size"] = str(chunk_size)
+        filename = os.path.basename(file_path)
+        with open_input_files([file_path]) as [fh]:
+            return request_sync("POST", url, apikey=self.apikey, headers=headers,
+                                data=data, files=[('file', (filename, fh))])
+
+    def voice_clone_tts(
+        self,
+        text: str,
+        ref_audio_path: str,
+        ref_text: str,
+        speed: float = 1.0,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Voice cloning TTS from a short reference audio sample."""
+        headers = headers or {}
+        data = {"text": text, "ref_text": ref_text, "speed": str(speed)}
+        filename = os.path.basename(ref_audio_path)
+        with open_input_files([ref_audio_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/audio/tts/clone",
+                                apikey=self.apikey, headers=headers,
+                                data=data, files=[('ref_audio', (filename, fh))])
+
+    def ai_audio_detection(self, audio_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Detect whether audio was AI-generated (iApp TTS watermark detection)."""
+        headers = headers or {}
+        filename = os.path.basename(audio_path)
+        with open_input_files([audio_path]) as [fh]:
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/audio/tts/detect",
+                                apikey=self.apikey, headers=headers,
+                                files=[('audio', (filename, fh))])
+
+    def sentiment_analysis(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai sentiment analysis (positive / neutral / negative)."""
+        headers = headers or {}
+        return request_sync("POST", "https://api.iapp.co.th/v3/store/nlp/sentiment-analysis",
+                            apikey=self.apikey, headers=headers, params={"text": text})
+
+    def toxicity_classification(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Thai text toxicity classification."""
+        headers = headers or {}
+        return request_sync("POST", "https://api.iapp.co.th/v3/store/nlp/toxicity-classification",
+                            apikey=self.apikey, headers=headers, params={"text": text})
+
+    def thai_holidays(
+        self,
+        year: Optional[int] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        holiday_type: str = "public",
+        days_after: Optional[int] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Thai public holiday data (by year, by date range, or around today)."""
+        headers = headers or {}
+        params: Dict[str, Any] = {"holiday_type": holiday_type}
+        if year is not None:
+            url = "https://api.iapp.co.th/v3/store/data/thai-holiday/year/" + str(year)
+        elif start_date and end_date:
+            url = "https://api.iapp.co.th/v3/store/data/thai-holiday/range"
+            params["start_date"] = start_date
+            params["end_date"] = end_date
+        else:
+            url = "https://api.iapp.co.th/v3/store/data/thai-holiday"
+            if days_after is not None:
+                params["days_after"] = str(days_after)
+        return request_sync("GET", url, apikey=self.apikey, headers=headers, params=params)
