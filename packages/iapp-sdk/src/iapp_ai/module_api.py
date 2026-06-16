@@ -443,7 +443,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
 
-            response = request_sync("POST", "https://api.iapp.co.th/passive-face-liveness-detection",
+            response = request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-passive-liveness",
                                     apikey=self.apikey, headers=headers,
                                     data={**data_payload}, files=request_files)
             try:
@@ -473,7 +473,7 @@ class api():
             headers = {}
         if url is None:
             url = []
-        request_url = "https://api.iapp.co.th/passive-face-liveness-detection/" + taskGuid
+        request_url = "https://api.iapp.co.th/v3/store/ekyc/face-passive-liveness/" + taskGuid
         # print(request_url)
 
         return request_sync("GET", request_url, apikey=self.apikey, headers=headers)
@@ -561,12 +561,12 @@ class api():
             files = []
         filename1 = os.path.basename(file_path1)
         filename2 = os.path.basename(file_path2)
-        request_data_payload = {'company': company_name,'min_score': min_score, **data_payload}
+        request_data_payload = {'company': company_name, 'threshold': min_score, **data_payload}
         with open_input_files([file_path1, file_path2]) as [fh1, fh2]:
             request_files = [('file1',(filename1, fh1,'application/octet-stream')),('file2',(filename2, fh2,'application/octet-stream')) ]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_compare",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-verification",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -639,7 +639,7 @@ class api():
             request_files = [('file1',(filename1, fh1,'image/jpg')),('file2',(filename2, fh2,'image/jpg')) ]
             request_files.extend(files)
 
-            return request_sync("POST", 'https://api.iapp.co.th/face-verification/v2/face_compare',
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-verification",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -672,7 +672,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_detect_single",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-detection/single",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -708,7 +708,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_detect_multi",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-detection/multi",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -772,7 +772,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_recog_single",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/single",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -808,7 +808,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_recog_multi",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/multi",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -844,7 +844,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_recog_facecrop",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/facecrop",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -884,7 +884,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpeg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_recog_add",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/add",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -922,7 +922,7 @@ class api():
             request_files = [('file',(filename, fh,'text/csv'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/face_recog_import",
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/import",
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
@@ -950,7 +950,7 @@ class api():
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, **data_payload}
 
-        url = "https://api.iapp.co.th/face_recog_check"
+        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/check"
         return request_sync("POST", url, apikey=self.apikey, headers=headers,
                             data=request_data_payload)
 
@@ -980,7 +980,7 @@ class api():
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, 'type_file': type_file, **data_payload}
 
-        url = "https://api.iapp.co.th/face_recog_export"
+        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/export"
 
         return request_sync("POST", url, apikey=self.apikey, headers=headers,
                             data=request_data_payload)
@@ -1015,7 +1015,7 @@ class api():
             data_payload = {}
         request_data_payload = {'company': company_name, 'name': name, 'password': company_password,'date': date, 'face_id': face_id, **data_payload}
 
-        url = "https://api.iapp.co.th/face_recog_remove"
+        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/remove"
         return request_sync("POST", url, apikey=self.apikey, headers=headers,
                             data=request_data_payload)
 
@@ -1062,16 +1062,24 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
+        import base64
+        import io
         if headers is None:
             headers = {}
-        request_data_payload = json.dumps({
-            'content': data_payload,
-            "rotateIfPortiat": True
-            })
-        return request_sync("POST", "https://api.iapp.co.th/face-extractor/predict",
-                            apikey=self.apikey,
-                            headers={'Content-Type': 'application/json', **headers},
-                            data=request_data_payload)
+        if data_payload is None:
+            img_bytes = b""
+        else:
+            try:
+                img_bytes = base64.b64decode(data_payload)
+            except Exception:
+                img_bytes = b""
+        request_files = [('file', ('image.jpg', io.BytesIO(img_bytes), 'image/jpeg'))]
+        request_data_payload = {
+             "rotateIfPortiat": True
+        }
+        return request_sync("POST", "https://api.iapp.co.th/v3/store/smart-city/remove-background",
+                            apikey=self.apikey, headers=headers,
+                            data=request_data_payload, files=request_files)
 
     def img_bg_removal_file(
         self,
@@ -1107,7 +1115,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
 
-            response = request_sync("POST", "https://api.iapp.co.th/face-extractor/predict/file",
+            response = request_sync("POST", "https://api.iapp.co.th/v3/store/smart-city/remove-background",
                                     apikey=self.apikey, headers=headers,
                                     data=request_data_payload, files=request_files)
             target_path = build_output_path("img_bg_removal_file.jpg", output_path)
