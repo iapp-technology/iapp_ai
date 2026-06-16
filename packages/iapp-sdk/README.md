@@ -14,6 +14,22 @@ keep full control over status codes and parsing.
 pip install iapp-ai
 ```
 
+### Pre-release builds (TestPyPI)
+
+Test builds are published to [TestPyPI](https://test.pypi.org/) as `test-iapp-ai`.
+You **must** add `--extra-index-url` so dependencies (`requests`, etc.) resolve
+from real PyPI — TestPyPI only hosts our package, not its dependencies:
+
+```bash
+pip install -i https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            test-iapp-ai
+```
+
+> Using `-i` alone (`pip install -i https://test.pypi.org/simple/ test-iapp-ai`)
+> fails — it makes TestPyPI the *only* index, so pip can't find dependencies like
+> `charset_normalizer`. `--extra-index-url` adds PyPI back for those.
+
 ## Usage
 
 ```python
