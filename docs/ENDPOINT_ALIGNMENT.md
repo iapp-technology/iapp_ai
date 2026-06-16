@@ -19,13 +19,18 @@ Legend: ✅ live-verified (200) · ⚠️ not yet live-verified · ❌ SDK/MCP m
 
 | Method | Path | HTTP | Body | SDK (develop) | MCP (develop) | State |
 |---|---|---|---|---|---|---|
-| translate | `/v3/store/nlp/multilingual-translation` | POST | JSON `{text, source_lang, target_lang, max_length?}` | ✅ v3 (live) | `/v1/text/translate` (form) | ❌ **MCP must move to v3** |
-| summarize | `/v3/store/nlp/thai-text-summary` | POST | JSON `{text, style?, language?, max_output_tokens?}` | ✅ | ✅ | ✅ aligned |
-| question generation | `/v3/store/nlp/question/generation` | **GET** | query `?text=` | ✅ (live: GET, docs wrong) | ✅ GET | ✅ aligned |
-| question answering | `/thai-qa` | POST | JSON `{question, document}` | ✅ (live) | ✅ `/thai-qa` | ✅ aligned — **do NOT change** |
+| translate | `/v3/store/nlp/multilingual-translation` | POST | JSON `{text, source_lang, target_lang, max_length?}` | ✅ 200 | `/v1/text/translate` (form) ✅ 200 | ✅ both work (aliases) — pick one for consistency |
+| summarize | `/v3/store/nlp/thai-text-summary` | POST | JSON `{text, style?, language?, max_output_tokens?}` | ✅ 200 | ✅ 200 | ✅ aligned |
+| question generation | `/v3/store/nlp/question/generation` | **GET** | query `?text=` | ✅ 200 (live: GET, docs wrong) | ✅ GET | ✅ aligned |
+| question answering | `/thai-qa` _or_ `/v3/store/nlp/question/answer/v3` | POST | JSON `{question, document}` | ✅ 200 | ✅ 200 | ✅ both return identical `{"answer"}` — #37 safe, pick canonical |
+| sentiment | `/v3/store/nlp/sentiment-analysis` | POST | query `?text=` | ✅ 200 (#42) | ✅ 200 | ✅ |
+| toxicity | `/v3/store/nlp/toxicity-classification` | POST | query `?text=` | ✅ 200 (#42) | ✅ 200 | ✅ |
+| thanoy legal QA | `/thanoy` _or_ `/v3/store/llm/thanoy-legal-ai` | POST | JSON `{query}` | ✅ 200 (#42) | ✅ 200 | ✅ both work (aliases) |
+| thai-holiday | `/v3/store/data/thai-holiday` | GET | query | ✅ 200 (#42) | ✅ 200 | ✅ |
 
-> ⚠️ PR #37 proposes changing MCP `qa` → `/v3/store/nlp/question/answer/v3`. This **breaks an
-> existing, live-verified match**. Reject that hunk; keep `/thai-qa`.
+> **Live-verified 2026-06-16** (real `200`). The contested `qa`/`translate`/`thanoy` paths are
+> **aliases** — both members of each pair return an identical response, so PR #37 is **not broken**.
+> Remaining decision is cosmetic: standardize SDK+MCP on ONE name per method.
 
 ## Speech
 
@@ -59,10 +64,9 @@ paths may still be the ones that return 200.
 
 ## Open items (for the PRs in flight)
 
-- **#37 (MCP):** mostly good — aligns MCP to #42/#43. **One conflict:** `thai_qa` is changed to
-  `/v3/store/nlp/question/answer/v3`, but #43 live-verified `/thai-qa` returns 200. Resolve with a
-  live `200` check: if `/thai-qa` works, drop this hunk and keep `/thai-qa`. Also consider moving MCP
-  `translate` (`/v1/text/translate`) → `/v3/store/nlp/multilingual-translation` to match SDK.
+- **#37 (MCP):** ✅ **cleared by live test** — its `thai_qa` path AND the SDK's `/thai-qa` both return
+  200 with identical schema (aliases). #37 is safe to merge. Optional: standardize SDK+MCP on one name
+  for `qa`/`translate`/`thanoy` (cosmetic).
 - **#39 (eKYC):** live-verify every new `/v3/store/ekyc/...` path returns 200 before merge. Note SDK
   id-card front is `/thai-national-id-card/v3/front` (v3) while MCP #37 uses `v3.5` for both sides — reconcile.
 - **#42 (17 new methods):** live-verify the 17 endpoints; they are docs-derived only.
