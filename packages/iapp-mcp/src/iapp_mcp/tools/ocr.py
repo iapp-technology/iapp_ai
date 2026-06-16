@@ -35,7 +35,7 @@ async def iapp_document_ocr(
         JSON string with OCR results. Cost: 1 IC per page.
     """
     endpoint = {
-        "text": "/v3/store/ocr/document",
+        "text": "/v3/store/ocr/document/ocr",
         "layout": "/v3/store/ocr/document/layout",
         "docx": "/v3/store/ocr/document/docx",
     }[mode]
