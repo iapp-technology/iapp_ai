@@ -147,7 +147,7 @@ async def iapp_thai_qa(question: str, document: str) -> str:
     try:
         response = await request(
             "POST",
-            "/thai-qa",
+            "/v3/store/nlp/question/answer/v3",
             json_body={"question": question, "document": document},
         )
         return format_json_response(response)

@@ -71,7 +71,7 @@ async def iapp_receipt_ocr(file_path: str, return_ocr: bool = False) -> str:
         JSON string with invoice info, issuer/customer details, line items, totals,
         VAT and per-field confidence. Cost: 1 IC per page.
     """
-    return await _simple_file_ocr("/ocr/v3/receipt/file", file_path, return_ocr)
+    return await _simple_file_ocr("/v3/store/ocr/receipt", file_path, return_ocr)
 
 
 @mcp.tool(
@@ -89,7 +89,7 @@ async def iapp_credit_card_statement_ocr(file_path: str, return_ocr: bool = Fals
         JSON string with card/bank details, balances, due dates, transactions list,
         reward points and confidence scores. Cost: 1 IC per page.
     """
-    return await _simple_file_ocr("/ocr/v3/creditcard-statement/file", file_path, return_ocr)
+    return await _simple_file_ocr("/v3/store/ocr/creditcard-statement", file_path, return_ocr)
 
 
 @mcp.tool(
@@ -109,7 +109,7 @@ async def iapp_tax_deduction_certificate_ocr(file_path: str, return_ocr: bool = 
         JSON string with deductor/taxpayer info, payment types, total amounts and taxes.
         Cost: 1 IC per page.
     """
-    return await _simple_file_ocr("/ocr/v3/tax-deduction-certificate/file", file_path, return_ocr)
+    return await _simple_file_ocr("/v3/store/ocr/tax-deduction-certificate", file_path, return_ocr)
 
 
 @mcp.tool(
@@ -128,7 +128,7 @@ async def iapp_civil_registration_ocr(file_path: str, return_ocr: bool = False) 
         confidence scores. Cost: 1 IC per page.
     """
     return await _simple_file_ocr(
-        "/ocr/v3/civil-registeration-certificate/file", file_path, return_ocr
+        "/v3/store/ocr/civil-registeration-certificate", file_path, return_ocr
     )
 
 

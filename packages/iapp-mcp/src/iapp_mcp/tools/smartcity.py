@@ -56,7 +56,7 @@ async def iapp_meter_ocr(file_path: str) -> str:
     try:
         response = await request(
             "POST",
-            "/v3/store/smart-city/power-meter-and-water-meter/file",
+            "/meter-number-ocr/file",
             file_fields=[("file", file_path)],
         )
         return format_json_response(response)
