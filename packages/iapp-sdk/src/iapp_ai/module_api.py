@@ -570,6 +570,47 @@ class api():
                                 apikey=self.apikey, headers=headers,
                                 data=request_data_payload, files=request_files)
 
+    def face_id_card_verification(
+        self,
+        id_card_path: str,
+        selfie_path: str,
+        headers: Optional[Dict[str, str]] = None,
+        data_payload: Optional[Dict[str, Any]] = None,
+        files: Optional[List[Any]] = None,
+    ) -> requests.Response:
+        """Verify that a selfie matches the face photo on a Thai national ID card.
+
+        The core eKYC identity check: compares a selfie against the face on an ID
+        card and returns per-image and total confidence plus ``isSamePerson``
+        verdicts. Unlike :meth:`face_verification` (face-to-face 1:1), this pairs a
+        selfie with the photo extracted from the ID card.
+
+        Args:
+            id_card_path: Path to the ID card image (JPG/PNG, min 600x400, max 10MB).
+            selfie_path: Path to the selfie image (same constraints).
+            headers: Additional HTTP headers to send with the request.
+            data_payload: Additional form-data parameters to send.
+            files: Additional files to upload.
+
+        Returns:
+            requests.Response: The HTTP response from the API server.
+        """
+        if headers is None:
+            headers = {}
+        if data_payload is None:
+            data_payload = {}
+        if files is None:
+            files = []
+        filename0 = os.path.basename(id_card_path)
+        filename1 = os.path.basename(selfie_path)
+        with open_input_files([id_card_path, selfie_path]) as [fh0, fh1]:
+            request_files = [('file0',(filename0, fh0,'application/octet-stream')),('file1',(filename1, fh1,'application/octet-stream'))]
+            request_files.extend(files)
+
+            return request_sync("POST", "https://api.iapp.co.th/v3/store/ekyc/face-and-id-card-verification",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
+
     def _face_config_score(self, data_payload, headers=None):
         if headers is None:
             headers = {}
