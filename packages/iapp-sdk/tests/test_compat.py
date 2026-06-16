@@ -125,6 +125,18 @@ def test_face_verification_two_files_octet_stream(captured, tmp_path):
     assert all(item[1][2] == "application/octet-stream" for item in captured["files"])
 
 
+def test_face_id_card_verification_uses_file0_file1(captured, tmp_path):
+    idc = tmp_path / "idcard.jpg"
+    idc.write_bytes(b"idcard")
+    selfie = tmp_path / "selfie.jpg"
+    selfie.write_bytes(b"selfie")
+    api("K").face_id_card_verification(str(idc), str(selfie))
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/ekyc/face-and-id-card-verification"
+    fields = [item[0] for item in captured["files"]]
+    assert fields == ["file0", "file1"]  # file0=id card, file1=selfie
+    assert all(item[1][2] == "application/octet-stream" for item in captured["files"])
+
+
 def test_asr_uses_v3_base_path_filename_and_mpga(captured, tmp_path):
     f = tmp_path / "speech.mp3"
     f.write_bytes(b"x")
