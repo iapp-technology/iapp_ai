@@ -41,7 +41,7 @@ async def iapp_thai_id_card_ocr(
         data = {"options": options} if options else None
         response = await request(
             "POST",
-            f"/v3/store/ekyc/thai-national-id-card/{side}",
+            f"/thai-national-id-card/v3.5/{side}",
             data=data,
             file_fields=[("file", file_path)],
         )
