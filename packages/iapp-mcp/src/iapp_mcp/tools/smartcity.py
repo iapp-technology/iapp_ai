@@ -5,7 +5,7 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 from ..app import mcp
-from ..client import IAppAPIError, format_json_response, request
+from ..client import IAppAPIError, format_json_response, request, resolve_input_file
 
 _READONLY = {
     "readOnlyHint": True,
@@ -53,11 +53,17 @@ async def iapp_meter_ocr(file_path: str) -> str:
     Returns:
         JSON string with the meter reading (label field). Cost: 1 IC.
     """
+    import base64
+
     try:
+        resolved_path = resolve_input_file(file_path)
+        with open(resolved_path, "rb") as f:
+            base64_data = base64.b64encode(f.read()).decode("ascii")
+
         response = await request(
             "POST",
-            "/meter-number-ocr/file",
-            file_fields=[("file", file_path)],
+            "/v3/store/smart-city/power-meter-and-water-meter/base64",
+            json_body={"image": base64_data},
         )
         return format_json_response(response)
     except IAppAPIError as e:

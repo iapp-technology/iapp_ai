@@ -128,7 +128,7 @@ def test_mock_b2_url_trim(mock_client, tmp_path):
     dummy_file.write_bytes(b"dummy")
     client = api("TEST_API_KEY")
     client.idcard_front_photocopied(str(dummy_file))
-    assert mock_client["url"] == "https://api.iapp.co.th/thai-national-id-card-with-signature/front"
+    assert mock_client["url"] == "https://api.iapp.co.th/v3/store/ekyc/thai-national-id-card-with-signature"
     assert not mock_client["url"].startswith(" ")
 
 # B-3: Print statement removal check
