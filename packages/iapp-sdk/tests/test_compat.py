@@ -166,7 +166,7 @@ def test_passport_ocr_uses_two_tuple_file(captured, tmp_path):
     f = tmp_path / "p.jpg"
     f.write_bytes(b"x")
     api("K").passport_ocr(str(f))
-    assert captured["url"] == "https://api.iapp.co.th/v3/store/ekyc/passport/v2"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/ekyc/passport"
     # passport uses a 2-tuple (no content type) — must not gain one
     assert len(captured["files"][0][1]) == 2
 

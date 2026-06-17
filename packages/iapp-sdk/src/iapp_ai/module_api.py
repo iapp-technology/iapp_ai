@@ -308,7 +308,7 @@ class api():
             request_files = [('file',(filename, fh))]
             request_files.extend(files)
 
-            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/passport/v2",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/passport",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
