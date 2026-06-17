@@ -44,7 +44,7 @@ class api():
             'question': question,
             'document': document})
 
-        return request_sync("POST", f"{API_BASE}/thai-qa",
+        return request_sync("POST", f"{API_BASE}/v3/store/nlp/question/answer/v3",
                             apikey=self.apikey,
                             headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
@@ -153,7 +153,7 @@ class api():
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
-            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3/front",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/thai-national-id-card/front",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -185,7 +185,7 @@ class api():
         with open_input_files([file_path]) as [fh]:
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
-            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card-with-signature/front",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/thai-national-id-card-with-signature",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -218,7 +218,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/thai-national-id-card/v3.5/back",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/thai-national-id-card/back",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -231,7 +231,7 @@ class api():
             request_files = [('file',(filename, file_obj, 'image/jpg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/license-plate-recognition/file",
+            return request_sync("POST", f"{API_BASE}/v3/store/smart-city/license-plate-ocr",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -275,7 +275,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/book-bank-ocr/file",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/book-bank",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -308,7 +308,7 @@ class api():
             request_files = [('file',(filename, fh))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/passport-ocr/ocr",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/passport/v2",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 
@@ -508,23 +508,21 @@ class api():
 
     def water_meter_binary(self, file_path: str, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, files: Optional[List[Any]] = None) -> requests.Response:
         headers = headers or {}
-        data_payload = data_payload or {}
-        files = files or []
-        filename = os.path.basename(file_path)
         with open_input_files([file_path]) as (file_obj,):
-            request_files = [('file',(filename, file_obj, 'image/jpg'))]
-            request_files.extend(files)
+            data = base64.b64encode(file_obj.read()).decode("ascii")
+        request_data_payload = json.dumps({'image': data})
 
-            return request_sync("POST", "https://api.iapp.co.th/meter-number-ocr/file",
-                                apikey=self.apikey, headers=headers,
-                                data={**data_payload}, files=request_files)
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/base64",
+                            apikey=self.apikey,
+                            headers={'Content-Type': 'application/json', **headers},
+                            data=request_data_payload)
 
     def water_meter_base64(self, headers: Optional[Dict[str, Any]] = None, data_payload: Any = None) -> requests.Response:
         headers = headers or {}
         request_data_payload = json.dumps({
             'image': data_payload})
 
-        return request_sync("POST", "https://api.iapp.co.th/meter-number-ocr/base64",
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/base64",
                             apikey=self.apikey,
                             headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
@@ -1193,7 +1191,7 @@ class api():
             request_files = [('file',(filename, fh,'image/jpg'))]
             request_files.extend(files)
 
-            return request_sync("POST", "https://api.iapp.co.th/thai-driver-license-ocr",
+            return request_sync("POST", f"{API_BASE}/v3/store/ekyc/thai-driver-license",
                                 apikey=self.apikey, headers=headers,
                                 data={**data_payload}, files=request_files)
 

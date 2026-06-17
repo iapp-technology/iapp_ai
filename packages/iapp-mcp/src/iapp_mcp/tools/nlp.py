@@ -46,7 +46,7 @@ async def iapp_translate(
         data = {"text": text, "source_lang": source_lang, "target_lang": target_lang}
         if max_length is not None:
             data["max_length"] = max_length
-        response = await request("POST", "/v1/text/translate", data=data)
+        response = await request("POST", "/v3/store/nlp/multilingual-translation", json_body=data)
         return format_json_response(response)
     except IAppAPIError as e:
         return str(e)
