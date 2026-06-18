@@ -131,7 +131,7 @@ async def iapp_thanoy_legal_qa(query: str) -> str:
     """
     try:
         response = await request(
-            "POST", "/thanoy", json_body={"query": query}
+            "POST", "/v3/store/llm/thanoy-legal-ai", json_body={"query": query}
         )
         return format_json_response(response)
     except IAppAPIError as e:
