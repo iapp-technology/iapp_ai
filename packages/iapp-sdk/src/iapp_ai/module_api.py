@@ -240,7 +240,7 @@ class api():
         request_data_payload = json.dumps({
             'image': data_payload})
 
-        return request_sync("POST", "https://api.iapp.co.th/iapp_license_plate_recognition_v1_base64",
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/license-plate-ocr/base64",
                             apikey=self.apikey,
                             headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
@@ -491,7 +491,7 @@ class api():
     def power_meter(self, headers: Optional[Dict[str, Any]] = None, image: str = "") -> requests.Response:
         """Read the number from a power/water meter image (base64 variant).
 
-        Endpoint: ``POST /v3/store/smart-city/power-meter-and-water-meter/base64``
+        Endpoint: ``POST /v3/store/smart-city/power-meter-and-water-meter``
         with the image base64-encoded in a JSON body ``{"image": ...}``.
         """
         headers = headers or {}
@@ -500,7 +500,7 @@ class api():
         request_data_payload = json.dumps({
             'image': data})
 
-        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/base64",
+        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter",
                             apikey=self.apikey,
                             headers={'Content-Type': 'application/json', **headers},
                             data=request_data_payload)
@@ -508,14 +508,16 @@ class api():
 
     def water_meter_binary(self, file_path: str, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, files: Optional[List[Any]] = None) -> requests.Response:
         headers = headers or {}
+        data_payload = data_payload or {}
+        files = files or []
+        filename = os.path.basename(file_path)
         with open_input_files([file_path]) as (file_obj,):
-            data = base64.b64encode(file_obj.read()).decode("ascii")
-        request_data_payload = json.dumps({'image': data})
+            request_files = [('file', (filename, file_obj, 'image/jpg'))]
+            request_files.extend(files)
 
-        return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/base64",
-                            apikey=self.apikey,
-                            headers={'Content-Type': 'application/json', **headers},
-                            data=request_data_payload)
+            return request_sync("POST", f"{API_BASE}/v3/store/smart-city/power-meter-and-water-meter/file",
+                                apikey=self.apikey, headers=headers,
+                                data={**data_payload}, files=request_files)
 
     def water_meter_base64(self, headers: Optional[Dict[str, Any]] = None, data_payload: Any = None) -> requests.Response:
         headers = headers or {}
@@ -1240,18 +1242,18 @@ class api():
     def thai_thaitts_cee(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, output_path: Optional[str] = None) -> requests.Response:
         """Synthesize Thai speech and save the audio to a local file.
 
-        Endpoint: ``POST /v3/store/audio/tts`` with a JSON body ``{"text": ...}``.
+        Endpoint: ``GET /v3/store/speech/text-to-speech/cee`` with query params ``text``.
         The response audio is written to ``output_path`` (defaults to
         ``cee.wav`` in the output directory).
         """
         headers = headers or {}
         data_payload = data_payload or {}
-        body = {"text": text, **data_payload}
+        params = {"text": text, **data_payload}
 
-        response = request_sync("POST", f"{API_BASE}/v3/store/audio/tts",
+        response = request_sync("GET", f"{API_BASE}/v3/store/speech/text-to-speech/cee",
                                 apikey=self.apikey,
-                                headers={'Content-Type': 'application/json', **headers},
-                                json_body=body)
+                                headers=headers,
+                                params=params)
         path = build_output_path("cee.wav", output_path)
         with open(path, "wb") as file:
             file.write(response.content)
@@ -1302,7 +1304,7 @@ class api():
         """Thanoy Thai Legal AI chatbot (ทนายAI)."""
         headers = headers or {}
         payload = json.dumps({"query": query})
-        return request_sync("POST", "https://api.iapp.co.th/thanoy", apikey=self.apikey,
+        return request_sync("POST", f"{API_BASE}/v3/store/llm/thanoy-legal-ai", apikey=self.apikey,
                             headers={'Content-Type': 'application/json', **headers},
                             data=payload)
 

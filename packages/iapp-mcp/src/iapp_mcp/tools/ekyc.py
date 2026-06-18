@@ -391,7 +391,7 @@ async def iapp_face_recognition(
             "POST",
             endpoint_map[action],
             data=data,
-            file_fields=[("file", file_path)] if needs_file else None,
+            file_fields=[("file", file_path)] if (needs_file and file_path is not None) else None,
         )
         return format_json_response(response)
     except IAppAPIError as e:
