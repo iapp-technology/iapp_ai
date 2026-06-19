@@ -1,7 +1,7 @@
 """Image and video generation tools: Nano Banana, background removal, Seedance video."""
 
 import base64
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from ..app import mcp
 from ..client import (
@@ -152,7 +152,7 @@ async def iapp_video_generation_submit(
         Pricing: ~0.14-0.33 IC per 1K output tokens; failed jobs cost 0 IC.
     """
     try:
-        content = [{"type": "text", "text": prompt}]
+        content: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
         if first_frame_image_url:
             content.append(
                 {
