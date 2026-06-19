@@ -156,7 +156,7 @@ def test_power_meter_uses_official_endpoint(captured, tmp_path):
     f = tmp_path / "m.jpg"
     f.write_bytes(raw)
     api("K").power_meter(image=str(f))
-    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/base64"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter"
     assert "titipakorn" not in captured["url"]
     assert captured["headers"].get("Content-Type") == "application/json"
     assert base64.b64decode(json.loads(captured["data"])["image"]) == raw
@@ -274,9 +274,9 @@ def test_tts_kaitom_posts_json_to_v3_tts(captured, tmp_path):
 def test_tts_cee_shares_the_v3_tts_endpoint(captured, tmp_path):
     out = tmp_path / "cee.wav"
     api("K").thai_thaitts_cee("ทดสอบ", output_path=str(out))
-    assert captured["method"] == "POST"
-    assert captured["url"] == "https://api.iapp.co.th/v3/store/audio/tts"
-    assert captured["json_body"] == {"text": "ทดสอบ"}
+    assert captured["method"] == "GET"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/speech/text-to-speech/cee"
+    assert captured["params"] == {"text": "ทดสอบ"}
     assert out.read_bytes() == b'{"ok": false}'
 
 
@@ -310,9 +310,11 @@ def test_water_meter_binary_uploads_file_multipart(captured, tmp_path):
     f.write_bytes(b"\xff\xd8\xff")
     api("K").water_meter_binary(str(f))
     assert captured["method"] == "POST"
-    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/base64"
-    assert captured["headers"].get("Content-Type") == "application/json"
-    assert json.loads(captured["data"]) == {"image": "/9j/"}
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/power-meter-and-water-meter/file"
+    field, filetuple = captured["files"][0]
+    assert field == "file"
+    assert filetuple[0] == "meter.jpg"
+    assert filetuple[2] == "image/jpg"
 
 
 def test_water_meter_base64_sends_json_image(captured):
@@ -338,6 +340,6 @@ def test_license_plate_ocr_uploads_file_multipart(captured, tmp_path):
 def test_license_plate_base64_sends_json_image(captured):
     api("K").license_plate_base64(data_payload="BASE64DATA")
     assert captured["method"] == "POST"
-    assert captured["url"] == "https://api.iapp.co.th/iapp_license_plate_recognition_v1_base64"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/license-plate-ocr/base64"
     assert captured["headers"].get("Content-Type") == "application/json"
     assert json.loads(captured["data"]) == {"image": "BASE64DATA"}
