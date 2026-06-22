@@ -1,0 +1,31 @@
+{
+  "name": "iapp-ai",
+  "version": "0.1.0",
+  "description": "JavaScript/TypeScript SDK for the iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, speech and more",
+  "keywords": ["iapp", "thai", "ai", "ocr", "ekyc", "nlp", "speech", "sdk"],
+  "license": "MIT",
+  "author": "iApp Technology Co., Ltd. <dev@iapp.co.th>",
+  "homepage": "https://iapp.co.th",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iapp-technology/iapp_ai.git",
+    "directory": "packages/iapp-sdk-js"
+  },
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
