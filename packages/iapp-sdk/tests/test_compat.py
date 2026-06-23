@@ -68,8 +68,8 @@ def captured(monkeypatch):
 
 
 def test_version_is_fixed():
-    # The legacy __init__ had a malformed __version__ string; it is now valid.
-    assert iapp_ai.__version__ == "1.3.0"
+    # __version__ must stay in sync with pyproject for the 2.0.0 release.
+    assert iapp_ai.__version__ == "2.0.0"
 
 
 def test_returns_raw_response_and_does_not_raise(captured):
@@ -343,3 +343,168 @@ def test_license_plate_base64_sends_json_image(captured):
     assert captured["url"] == "https://api.iapp.co.th/v3/store/smart-city/license-plate-ocr/base64"
     assert captured["headers"].get("Content-Type") == "application/json"
     assert json.loads(captured["data"]) == {"image": "BASE64DATA"}
+
+
+# =========================================================================== #
+# Contract tests for methods that previously had no coverage: OCR document
+# family, NLP extras, holiday data, LLM chat, image/video generation, voice.
+# Each locks the endpoint + HTTP method + body/field shape against the API.
+# =========================================================================== #
+
+
+# --- OCR doc family (return_ocr flag): POST multipart, field "file" --------- #
+@pytest.mark.parametrize(
+    "method_name, expected_url",
+    [
+        ("receipt_ocr", "https://api.iapp.co.th/v3/store/ocr/receipt"),
+        ("credit_card_statement_ocr", "https://api.iapp.co.th/v3/store/ocr/creditcard-statement"),
+        ("tax_deduction_certificate_ocr", "https://api.iapp.co.th/v3/store/ocr/tax-deduction-certificate"),
+        ("civil_registration_ocr", "https://api.iapp.co.th/v3/store/ocr/civil-registeration-certificate"),
+    ],
+)
+def test_return_ocr_doc_family_endpoint_and_file_field(captured, tmp_path, method_name, expected_url):
+    f = tmp_path / "doc.pdf"
+    f.write_bytes(b"%PDF-1.4")
+    getattr(api("K"), method_name)(str(f))
+    assert captured["method"] == "POST"
+    assert captured["url"] == expected_url
+    field, filetuple = captured["files"][0]
+    assert field == "file"
+    assert filetuple[0] == "doc.pdf"   # basename used as the multipart filename
+    assert captured["data"] == {}       # return_ocr defaults off -> no flag sent
+
+
+def test_return_ocr_flag_sent_only_when_true(captured, tmp_path):
+    f = tmp_path / "r.jpg"
+    f.write_bytes(b"x")
+    api("K").receipt_ocr(str(f), return_ocr=True)
+    assert captured["data"] == {"return_ocr": "true"}
+
+
+# --- resume / job description: POST multipart "file", no extra form data ----- #
+@pytest.mark.parametrize(
+    "method_name, expected_url",
+    [
+        ("resume_ocr", "https://api.iapp.co.th/v3/store/ocr/curriculum-vitae"),
+        ("job_description_ocr", "https://api.iapp.co.th/v3/store/ocr/job-description"),
+    ],
+)
+def test_resume_and_jd_ocr_endpoint_and_file_field(captured, tmp_path, method_name, expected_url):
+    f = tmp_path / "cv.pdf"
+    f.write_bytes(b"%PDF")
+    getattr(api("K"), method_name)(str(f))
+    assert captured["method"] == "POST"
+    assert captured["url"] == expected_url
+    assert captured["files"][0][0] == "file"
+    assert captured["files"][0][1][0] == "cv.pdf"
+
+
+# --- sentiment / toxicity: POST with `text` carried as a query param -------- #
+@pytest.mark.parametrize(
+    "method_name, expected_url",
+    [
+        ("sentiment_analysis", "https://api.iapp.co.th/v3/store/nlp/sentiment-analysis"),
+        ("toxicity_classification", "https://api.iapp.co.th/v3/store/nlp/toxicity-classification"),
+    ],
+)
+def test_nlp_classification_sends_text_as_param(captured, method_name, expected_url):
+    getattr(api("K"), method_name)("ข้อความทดสอบ")
+    assert captured["method"] == "POST"
+    assert captured["url"] == expected_url
+    assert captured["params"] == {"text": "ข้อความทดสอบ"}
+    assert captured["files"] is None
+
+
+# --- thai_holidays: GET; year goes in the path, type defaults to "public" --- #
+def test_thai_holidays_by_year_uses_path_and_default_type(captured):
+    api("K").thai_holidays(year=2026)
+    assert captured["method"] == "GET"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/data/thai-holiday/year/2026"
+    assert captured["params"] == {"holiday_type": "public"}
+
+
+def test_thai_holidays_by_range_switches_endpoint(captured):
+    api("K").thai_holidays(start_date="2026-01-01", end_date="2026-12-31")
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/data/thai-holiday/range"
+    assert captured["params"]["start_date"] == "2026-01-01"
+    assert captured["params"]["end_date"] == "2026-12-31"
+
+
+# --- llm_chat: POST JSON to the per-model chat-completions endpoint ---------- #
+def test_llm_chat_default_model_endpoint_and_messages(captured):
+    api("K").llm_chat("สวัสดี")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/llm/chinda-thaillm-4b/chat/completions"
+    assert captured["headers"]["Content-Type"] == "application/json"
+    body = json.loads(captured["data"])
+    assert body["model"] == "chinda-qwen3-4b"
+    assert body["messages"] == [{"role": "user", "content": "สวัสดี"}]
+    assert body["stream"] is False
+
+
+def test_llm_chat_prepends_system_prompt(captured):
+    api("K").llm_chat("hi", system_prompt="be brief")
+    body = json.loads(captured["data"])
+    assert body["messages"][0] == {"role": "system", "content": "be brief"}
+    assert body["messages"][1] == {"role": "user", "content": "hi"}
+
+
+# --- thanoy_legal_qa: its own endpoint, NOT an alias of llm_chat ------------ #
+def test_thanoy_legal_qa_posts_query_to_store_endpoint(captured):
+    api("K").thanoy_legal_qa("ถามกฎหมาย")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/llm/thanoy-legal-ai"
+    assert json.loads(captured["data"]) == {"query": "ถามกฎหมาย"}
+
+
+# --- image_generation: POST JSON to the Google nano-banana endpoint --------- #
+def test_image_generation_default_model_endpoint(captured):
+    api("K").image_generation("a cat")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/image/generation/google/nanobanana/generate"
+    body = json.loads(captured["data"])
+    assert body["contents"][0]["parts"][0]["text"] == "a cat"
+
+
+def test_image_generation_pro_model_uses_nanobananapro_slug(captured):
+    api("K").image_generation("x", model="nanobanana-pro")
+    assert captured["url"] == "https://api.iapp.co.th/v3/image/generation/google/nanobananapro/generate"
+
+
+# --- seedance video: async submit (POST JSON) + status (GET by id) ---------- #
+def test_seedance_submit_posts_json_with_mapped_model(captured):
+    api("K").seedance_video_submit("a dog running")
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/video/seedance/tasks"
+    body = json.loads(captured["data"])
+    assert body["model"] == "dreamina-seedance-2-0-fast-260128"  # default "seedance-fast"
+    assert body["content"] == [{"type": "text", "text": "a dog running"}]
+
+
+def test_seedance_status_is_get_with_task_id_in_path(captured):
+    api("K").seedance_video_status("task-123")
+    assert captured["method"] == "GET"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/video/seedance/tasks/task-123"
+
+
+# --- voice_clone_tts: POST multipart "ref_audio" + text/ref_text/speed ------ #
+def test_voice_clone_tts_uploads_ref_audio_and_fields(captured, tmp_path):
+    ref = tmp_path / "ref.wav"
+    ref.write_bytes(b"\x00\x01")
+    api("K").voice_clone_tts("พูดตามนี้", str(ref), "reference text", speed=1.5)
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/audio/tts/clone"
+    assert captured["files"][0][0] == "ref_audio"
+    assert captured["files"][0][1][0] == "ref.wav"
+    assert captured["data"] == {"text": "พูดตามนี้", "ref_text": "reference text", "speed": "1.5"}
+
+
+# --- ai_audio_detection: POST multipart under the "audio" field ------------- #
+def test_ai_audio_detection_uploads_under_audio_field(captured, tmp_path):
+    a = tmp_path / "clip.wav"
+    a.write_bytes(b"\x00")
+    api("K").ai_audio_detection(str(a))
+    assert captured["method"] == "POST"
+    assert captured["url"] == "https://api.iapp.co.th/v3/store/audio/tts/detect"
+    assert captured["files"][0][0] == "audio"
+    assert captured["files"][0][1][0] == "clip.wav"
