@@ -68,8 +68,8 @@ def captured(monkeypatch):
 
 
 def test_version_is_fixed():
-    # The legacy __init__ had a malformed __version__ string; it is now valid.
-    assert iapp_ai.__version__ == "1.3.0"
+    # __version__ must stay in sync with pyproject for the 2.0.0 release.
+    assert iapp_ai.__version__ == "2.0.0"
 
 
 def test_returns_raw_response_and_does_not_raise(captured):
