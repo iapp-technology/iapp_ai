@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iapp-ai"
-version = "1.3.0"
+version = "2.0.0"
 description = "Python SDK for the iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, speech and more"
 readme = "README.md"
 license = { text = "MIT" }
