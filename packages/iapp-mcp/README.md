@@ -57,6 +57,34 @@ IAPP_API_KEY=YOUR_API_KEY iapp-mcp
 
 ## Configuration
 
+### Claude Code
+
+Use the `claude mcp add` CLI — pick the command matching how you installed (see
+above), pass your API key with `-e`, and add `--` before the launch command:
+
+```bash
+# uv / uvx (recommended, nothing to install)
+claude mcp add iapp-mcp -s user -e IAPP_API_KEY=YOUR_API_KEY -- uvx iapp-mcp
+
+# npm / npx
+claude mcp add iapp-mcp -s user -e IAPP_API_KEY=YOUR_API_KEY -- npx -y iapp-mcp
+
+# already installed permanently (pip / uv tool / npm / yarn / pnpm)
+claude mcp add iapp-mcp -s user -e IAPP_API_KEY=YOUR_API_KEY -- iapp-mcp
+```
+
+- `-s user` registers it for every project (use `-s project` to check it into this
+  repo's `.mcp.json` and share with teammates, or `-s local` for just the current
+  project on this machine).
+- Verify it's connected: `claude mcp list` (or `/mcp` inside a Claude Code session).
+- Remove it later with `claude mcp remove iapp-mcp`.
+
+Once added, no special syntax is needed to use it — just describe what you want in
+chat (see [Usage Examples](#usage-examples) below) and Claude Code automatically
+calls the right `iapp-mcp` tool.
+
+### Other MCP clients (Claude Desktop, Cursor, etc.)
+
 Add the server to your MCP client's configuration file. Pick the block matching how
 you installed:
 
@@ -190,7 +218,8 @@ paths**; generated files are saved to the `output_path` you specify.
 
 ## Usage Examples
 
-Once connected, ask your AI assistant things like:
+Once connected — in Claude Code, Claude Desktop, or any other MCP client — just ask
+in plain language; no special command syntax is needed:
 
 ### 1. Electronic Know Your Customer (eKYC)
 
