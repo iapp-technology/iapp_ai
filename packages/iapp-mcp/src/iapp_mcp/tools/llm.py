@@ -1,4 +1,4 @@
-"""LLM tools: Chinda Thai LLM, DeepSeek, Thanoy Legal AI."""
+"""LLM tools: DeepSeek, Thanoy Legal AI."""
 
 import json
 from typing import List, Literal, Optional
@@ -10,7 +10,6 @@ from ..client import IAppAPIError, format_json_response, request
 
 # Maps model id -> OpenAI-compatible chat completions endpoint.
 _MODEL_ENDPOINTS = {
-    "chinda-qwen3-4b": "/v3/llm/chinda-thaillm-4b/chat/completions",
     "deepseek-reasoner": "/v3/llm/deepseek-3p2/chat/completions",
     "deepseek-chat": "/v3/llm/deepseek-3p2/chat/completions",
     "deepseek-v4-flash": "/v3/llm/deepseek-v4/chat/completions",
@@ -28,7 +27,7 @@ class ChatMessage(BaseModel):
 @mcp.tool(
     name="iapp_llm_chat",
     annotations={
-        "title": "iApp LLM Chat (Chinda Thai LLM / DeepSeek)",
+        "title": "iApp LLM Chat (DeepSeek)",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": False,
@@ -38,12 +37,11 @@ class ChatMessage(BaseModel):
 async def iapp_llm_chat(
     prompt: str,
     model: Literal[
-        "chinda-qwen3-4b",
         "deepseek-reasoner",
         "deepseek-chat",
         "deepseek-v4-flash",
         "deepseek-v4-pro",
-    ] = "chinda-qwen3-4b",
+    ] = "deepseek-chat",
     system_prompt: Optional[str] = None,
     messages: Optional[List[ChatMessage]] = None,
     max_tokens: int = 4096,
@@ -52,7 +50,6 @@ async def iapp_llm_chat(
     """Chat with LLMs hosted on the iApp AI Marketplace (OpenAI-compatible).
 
     Available models:
-        - chinda-qwen3-4b: Chinda Thai LLM 4B, Thai/English, 40K context (free tier)
         - deepseek-reasoner: DeepSeek-V3.2 thinking model, 128K context
         - deepseek-chat: DeepSeek-V3.2 non-thinking, faster
         - deepseek-v4-flash: DeepSeek V4 Flash — chat, RAG, classification
@@ -68,7 +65,7 @@ async def iapp_llm_chat(
 
     Returns:
         The assistant's reply text, followed by reasoning content (if any) and token usage.
-        Pricing: chinda free; deepseek from 0.01 IC/1K input tokens.
+        Pricing: deepseek from 0.01 IC/1K input tokens.
     """
     try:
         if messages:

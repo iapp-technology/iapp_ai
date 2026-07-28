@@ -11,7 +11,7 @@
 | **eKYC** | Thai ID card OCR (front/back/photocopy), passport OCR, driver license OCR, bank book OCR, face verification, face detection, face liveness, face+ID KYC, face recognition (1:N) |
 | **Document OCR** | General Thai document OCR (text/layout/DOCX), receipt, credit card statement, tax deduction certificate (50 ทวิ), civil registration certificate, resume/CV extraction + AI evaluation, job description extraction |
 | **Thai NLP** | Multilingual translation (28 languages), summarization, sentiment analysis, toxicity classification, Thai QA, question generation |
-| **LLM** | Chinda Thai LLM 4B (free), DeepSeek-V3.2, DeepSeek V4 (Flash/Pro), Thanoy Thai Legal AI |
+| **LLM** | DeepSeek-V3.2, DeepSeek V4 (Flash/Pro), Thanoy Thai Legal AI |
 | **Speech** | Speech-to-text (Thai/English/Chinese, base/pro with diarization), Thai text-to-speech (4 voices), voice cloning, AI audio watermark detection |
 | **Image/Video** | Image generation (Google Nano Banana / Pro), background removal, Seedance 2.0 video generation (async submit + status) |
 | **Smart City & Data** | Thai license plate recognition, power/water meter OCR, route optimization, Thai holiday data |
@@ -175,7 +175,7 @@ paths**; generated files are saved to the `output_path` you specify.
 
 | Tool | What it does | Key inputs |
 |---|---|---|
-| `iapp_llm_chat` | Chat with LLMs hosted on iApp (OpenAI-compatible) | `prompt` (or full `messages`), `model`: `chinda-qwen3-4b` (Thai, free) / `deepseek-chat` / `deepseek-reasoner` / `deepseek-v4-flash` / `deepseek-v4-pro`, `system_prompt`, `max_tokens`, `temperature` |
+| `iapp_llm_chat` | Chat with LLMs hosted on iApp (OpenAI-compatible) | `prompt` (or full `messages`), `model`: `deepseek-chat` (default) / `deepseek-reasoner` / `deepseek-v4-flash` / `deepseek-v4-pro`, `system_prompt`, `max_tokens`, `temperature` |
 | `iapp_thanoy_legal_qa` | Ask Thai legal questions (Thanoy Legal AI) | `query` |
 
 ### 🌐 Thai NLP
@@ -236,7 +236,7 @@ in plain language; no special command syntax is needed:
 
 ### 2. Large Language Model
 
-- *"ถาม Chinda Thai LLM ว่า ส้มตำมีกี่แคลอรี่"* — Chinda Thai LLM 4B, free (`iapp_llm_chat`, model=chinda-qwen3-4b)
+- *"ถาม DeepSeek ว่า ส้มตำมีกี่แคลอรี่"* — DeepSeek-V3.2 non-thinking, ค่าเริ่มต้น (`iapp_llm_chat`, model=deepseek-chat)
 - *"ใช้ DeepSeek V4 Flash ช่วยจัดหมวดหมู่ข้อความลูกค้าพวกนี้"* — DeepSeek V4 Flash/Pro (`iapp_llm_chat`, model=deepseek-v4-flash / deepseek-v4-pro)
 - *"ใช้ DeepSeek reasoner วิเคราะห์โจทย์คณิตข้อนี้แบบละเอียด"* — DeepSeek-V3.2 thinking/non-thinking (`iapp_llm_chat`, model=deepseek-reasoner / deepseek-chat)
 - *"ถามทนอย: สัญญาเช่าบ้านไม่มีลายเซ็นพยานมีผลไหม"* — Thanoy Thai Legal AI Chatbot (`iapp_thanoy_legal_qa`)
