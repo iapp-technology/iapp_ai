@@ -11,7 +11,7 @@
 | **eKYC** | Thai ID card OCR (front/back/photocopy), passport OCR, driver license OCR, bank book OCR, face verification, face detection, face liveness, face+ID KYC, face recognition (1:N) |
 | **Document OCR** | General Thai document OCR (text/layout/DOCX), receipt, credit card statement, tax deduction certificate (50 ทวิ), civil registration certificate, resume/CV extraction + AI evaluation, job description extraction |
 | **Thai NLP** | Multilingual translation (28 languages), summarization, sentiment analysis, toxicity classification, Thai QA, question generation |
-| **LLM** | DeepSeek-V3.2, DeepSeek V4 (Flash/Pro), Thanoy Thai Legal AI |
+| **LLM** | DeepSeek-V3.2, DeepSeek V4 (Flash/Pro), OpenThai 2.0 Legal (RAG-grounded Thai law), Thanoy Thai Legal AI |
 | **Speech** | Speech-to-text (Thai/English/Chinese, base/pro with diarization), Thai text-to-speech (4 voices), voice cloning, AI audio watermark detection |
 | **Image/Video** | Image generation (Google Nano Banana / Pro), background removal, Seedance 2.0 video generation (async submit + status) |
 | **Smart City & Data** | Thai license plate recognition, power/water meter OCR, route optimization, Thai holiday data |
@@ -141,7 +141,7 @@ environment variable set.
 
 ## Tools Reference
 
-All 37 tools, what they do, and their key inputs. File inputs are **local file
+All 38 tools, what they do, and their key inputs. File inputs are **local file
 paths**; generated files are saved to the `output_path` you specify.
 
 ### 🪪 eKYC
@@ -176,6 +176,7 @@ paths**; generated files are saved to the `output_path` you specify.
 | Tool | What it does | Key inputs |
 |---|---|---|
 | `iapp_llm_chat` | Chat with LLMs hosted on iApp (OpenAI-compatible) | `prompt` (or full `messages`), `model`: `deepseek-chat` (default) / `deepseek-reasoner` / `deepseek-v4-flash` / `deepseek-v4-pro`, `system_prompt`, `max_tokens`, `temperature` |
+| `iapp_openthai_legal_chat` | Ask Thai legal questions with verifiable มาตรา citations — RAG-grounded over 39 Thai laws, returns the statute sections used (FREE until 24 Aug 2026) | `prompt` (or full `messages`), `rag` (default true), `rag_top_k` (max 20), `rag_inject` (`user`/`system`), `max_tokens`, `temperature` |
 | `iapp_thanoy_legal_qa` | Ask Thai legal questions (Thanoy Legal AI) | `query` |
 
 ### 🌐 Thai NLP
@@ -239,6 +240,7 @@ in plain language; no special command syntax is needed:
 - *"ถาม DeepSeek ว่า ส้มตำมีกี่แคลอรี่"* — DeepSeek-V3.2 non-thinking, ค่าเริ่มต้น (`iapp_llm_chat`, model=deepseek-chat)
 - *"ใช้ DeepSeek V4 Flash ช่วยจัดหมวดหมู่ข้อความลูกค้าพวกนี้"* — DeepSeek V4 Flash/Pro (`iapp_llm_chat`, model=deepseek-v4-flash / deepseek-v4-pro)
 - *"ใช้ DeepSeek reasoner วิเคราะห์โจทย์คณิตข้อนี้แบบละเอียด"* — DeepSeek-V3.2 thinking/non-thinking (`iapp_llm_chat`, model=deepseek-reasoner / deepseek-chat)
+- *"ลักทรัพย์ในเวลากลางคืน ผิดมาตราใด อ้างอิงตัวบทด้วย"* — OpenThai 2.0 Legal, ตอบพร้อมมาตราที่ค้นคืนมา (`iapp_openthai_legal_chat`)
 - *"ถามทนอย: สัญญาเช่าบ้านไม่มีลายเซ็นพยานมีผลไหม"* — Thanoy Thai Legal AI Chatbot (`iapp_thanoy_legal_qa`)
 
 ### 3. Image Generation
