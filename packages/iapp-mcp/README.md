@@ -141,7 +141,7 @@ environment variable set.
 
 ## Tools Reference
 
-All 38 tools, what they do, and their key inputs. File inputs are **local file
+All 44 tools, what they do, and their key inputs. File inputs are **local file
 paths**; generated files are saved to the `output_path` you specify.
 
 ### 🪪 eKYC
@@ -179,7 +179,19 @@ paths**; generated files are saved to the `output_path` you specify.
 | `iapp_openthai_legal_chat` | Ask Thai legal questions with verifiable มาตรา citations — RAG-grounded over 39 Thai laws, returns the statute sections used (FREE until 24 Aug 2026) | `prompt` (or full `messages`), `rag` (default true), `rag_top_k` (max 20), `rag_inject` (`user`/`system`), `max_tokens`, `temperature` |
 | `iapp_thanoy_legal_qa` | Ask Thai legal questions (Thanoy Legal AI) | `query` |
 
+### ⚖️ Thai Legal Data (statutes + ฎีกา)
+
+| Tool | What it does | Key inputs |
+|---|---|---|
+| `iapp_thai_law_list` | Catalogue of the 39 indexed Thai laws (**free**) — call first to get valid law names | `q` (optional name filter) |
+| `iapp_thai_law_section` | Verbatim มาตรา text; optionally the Supreme Court decisions citing it | `law` (exact name, e.g. `ประมวลกฎหมายอาญา`), `section` (e.g. `335`), `with_deka` |
+| `iapp_thai_law_search` | Semantic statute search from a Thai fact pattern | `query`, `top_k` (1–20, default 8) |
+| `iapp_thai_deka_search` | Precedent search across 70,634 ฎีกา; filter to decisions citing a section | `query`, `cites_law` (e.g. `ป.อ.`), `cites_section`, `year_from` (default 2540), `top_k` (default 5) |
+| `iapp_thai_deka_get` | One ruling by ฎีกา number (`1234/2565` or `1234-2565`) | `case_id`, `include_body` (up to 4,000 chars) |
+| `iapp_thai_legal_ask` | Grounded legal answer with machine-verified citations; refuses instead of guessing | `question`, `include_deka` (default true) |
+
 ### 🌐 Thai NLP
+
 
 | Tool | What it does | Key inputs |
 |---|---|---|
@@ -242,6 +254,9 @@ in plain language; no special command syntax is needed:
 - *"ใช้ DeepSeek reasoner วิเคราะห์โจทย์คณิตข้อนี้แบบละเอียด"* — DeepSeek-V3.2 thinking/non-thinking (`iapp_llm_chat`, model=deepseek-reasoner / deepseek-chat)
 - *"ลักทรัพย์ในเวลากลางคืน ผิดมาตราใด อ้างอิงตัวบทด้วย"* — OpenThai 2.0 Legal, ตอบพร้อมมาตราที่ค้นคืนมา (`iapp_openthai_legal_chat`)
 - *"ถามทนอย: สัญญาเช่าบ้านไม่มีลายเซ็นพยานมีผลไหม"* — Thanoy Thai Legal AI Chatbot (`iapp_thanoy_legal_qa`)
+- *"ขอตัวบท ป.อ. มาตรา 335 พร้อมฎีกาที่เกี่ยวข้อง"* — Thai Legal Data, มาตราตรงตัว + ฎีกาที่อ้างถึง (`iapp_thai_law_section`)
+- *"หาฎีกาที่ตีความ ป.อ. มาตรา 335 หลังปี 2560"* — ค้นฎีกาแบบกรองตามมาตรา (`iapp_thai_deka_search`)
+- *"ลักทรัพย์ในเวลากลางคืนมีโทษอย่างไร ตอบแบบอ้างอิงได้"* — ถาม-ตอบอิงข้อมูลจริงพร้อมการอ้างอิงที่ตรวจสอบแล้ว (`iapp_thai_legal_ask`)
 
 ### 3. Image Generation
 

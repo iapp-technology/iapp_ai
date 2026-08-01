@@ -3,7 +3,7 @@
 from .app import mcp
 
 # Importing tool modules registers their tools on the shared FastMCP instance.
-from .tools import ekyc, generation, llm, nlp, ocr, smartcity, speech  # noqa: F401, E402
+from .tools import ekyc, generation, legal, llm, nlp, ocr, smartcity, speech  # noqa: F401, E402
 
 
 def main() -> None:
