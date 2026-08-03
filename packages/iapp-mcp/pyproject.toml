@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iapp-mcp"
-version = "2.1.0"
+version = "2.1.1"
 description = "MCP server for iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, LLM, Speech, Image/Video Generation"
 readme = "README.md"
 license = { text = "MIT" }

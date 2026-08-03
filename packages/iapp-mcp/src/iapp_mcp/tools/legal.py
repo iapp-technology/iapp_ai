@@ -14,6 +14,13 @@ _READONLY = {
 
 _BASE = "/v3/store/data/thai-legal"
 
+# Appended to responses that carry ฎีกา so answers cite verifiably.
+_CITE_NOTE = (
+    "\n\nCITATION FORMAT: when you present rulings from this result to the user, cite each as "
+    "'ฎีกาที่ <case_id> — ตรวจสอบต้นฉบับ: <official_url>' (include the official_url link every time), "
+    "and end with a note that the data is for research, not legal advice."
+)
+
 
 @mcp.tool(
     name="iapp_thai_law_list",
@@ -63,7 +70,7 @@ async def iapp_thai_law_section(law: str, section: str, with_deka: bool = False)
         if with_deka:
             params["with_deka"] = "true"
         response = await request("GET", f"{_BASE}/section", params=params)
-        return format_json_response(response)
+        return format_json_response(response) + _CITE_NOTE
     except IAppAPIError as e:
         return str(e)
 
@@ -137,7 +144,7 @@ async def iapp_thai_deka_search(
             if v is not None:
                 body[k] = v
         response = await request("POST", f"{_BASE}/deka/search", json_body=body)
-        return format_json_response(response)
+        return format_json_response(response) + _CITE_NOTE
     except IAppAPIError as e:
         return str(e)
 
@@ -161,7 +168,7 @@ async def iapp_thai_deka_get(case_id: str, include_body: bool = False) -> str:
         cid = case_id.replace("/", "-")
         params = {"include": "body"} if include_body else None
         response = await request("GET", f"{_BASE}/deka/{cid}", params=params)
-        return format_json_response(response)
+        return format_json_response(response) + _CITE_NOTE
     except IAppAPIError as e:
         return str(e)
 
@@ -206,6 +213,6 @@ async def iapp_thai_legal_ask(
                        "deka_top_k": min(max(deka_top_k, 1), 20),
                        "max_tokens": min(max_tokens, 4096)},
         )
-        return format_json_response(response)
+        return format_json_response(response) + _CITE_NOTE
     except IAppAPIError as e:
         return str(e)
