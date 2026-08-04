@@ -109,8 +109,9 @@ async def request_async(
         return response
     except httpx.TimeoutException:
         raise IAppAPIError(
-            "Error: Request to the iApp API timed out. The service may be processing a large "
-            "file — try again or use a smaller input."
+            f"Error: Request to the iApp API timed out after {READ_TIMEOUT:.0f}s. The service may "
+            "still be processing a large file — raise the ceiling with IAPP_READ_TIMEOUT (seconds) "
+            "or split the input into shorter parts."
         )
     except httpx.HTTPError as e:
         raise IAppAPIError(f"Error: Network error calling the iApp API: {type(e).__name__}: {e}")

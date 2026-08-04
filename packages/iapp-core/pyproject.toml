@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iapp-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shared transport, auth, error handling and formatting for iApp AI Marketplace clients (https://iapp.co.th)"
 readme = "README.md"
 license = { text = "MIT" }
