@@ -203,7 +203,7 @@ async def iapp_thai_legal_ask(
     include_deka: bool = True,
     statute_top_k: int = 6,
     deka_top_k: int = 3,
-    max_tokens: int = 1024,
+    max_tokens: int = 2048,
 ) -> str:
     """Answer a Thai legal question grounded in real statute text AND real ฎีกา.
 
@@ -220,7 +220,7 @@ async def iapp_thai_legal_ask(
         include_deka: Also retrieve and cite Supreme Court decisions.
         statute_top_k: Statute sections to ground on (1-20).
         deka_top_k: Decisions to ground on (1-20).
-        max_tokens: Maximum answer length.
+        max_tokens: Maximum answer length (up to 16384; engine ceiling 32K total).
 
     Returns:
         JSON string with the answer, a `grounded` flag, statute and ฎีกา citations
@@ -232,7 +232,7 @@ async def iapp_thai_legal_ask(
             json_body={"question": question, "include_deka": include_deka,
                        "statute_top_k": min(max(statute_top_k, 1), 20),
                        "deka_top_k": min(max(deka_top_k, 1), 20),
-                       "max_tokens": min(max_tokens, 4096)},
+                       "max_tokens": min(max_tokens, 16384)},
         )
         return format_json_response(_with_direct_urls(response)) + _CITE_NOTE
     except IAppAPIError as e:

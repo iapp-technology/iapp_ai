@@ -152,7 +152,7 @@ async def iapp_openthai_legal_chat(
     rag: bool = True,
     rag_top_k: int = 8,
     rag_inject: Literal["user", "system"] = "user",
-    max_tokens: int = 1024,
+    max_tokens: int = 2048,
     temperature: float = 0.7,
 ) -> str:
     """Ask Thai legal questions with OpenThai 2.0 Legal — answers grounded in real statute text.
@@ -172,7 +172,7 @@ async def iapp_openthai_legal_chat(
         rag_top_k: Sections injected into the prompt (max 20; 6 when rag_inject='system').
         rag_inject: 'user' = trained citation scaffold, best for JSON citation answers.
             'system' = advisory reference, best for essay/long-form analysis.
-        max_tokens: Maximum output tokens (default 1024).
+        max_tokens: Maximum output tokens (default 2048).
         temperature: Sampling temperature 0-2 (default 0.7).
 
     Returns:
