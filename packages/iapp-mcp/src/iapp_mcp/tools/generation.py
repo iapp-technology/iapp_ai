@@ -82,6 +82,65 @@ async def iapp_image_generation(
 
 
 @mcp.tool(
+    name="iapp_slide_generation",
+    annotations={
+        "title": "Slide Generation (presentation slide as an image)",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    },
+)
+async def iapp_slide_generation(
+    title: str,
+    content: str,
+    output_path: str,
+    style: Optional[str] = None,
+    aspect_ratio: Literal["16:9", "4:3"] = "16:9",
+) -> str:
+    """Generate a finished presentation slide as an image and save it locally.
+
+    Renders the headline, body points and any chart or diagram together on one
+    slide. Built on Nano Banana Pro so text and figures stay legible. Call once
+    per slide to build a deck, keeping `style` identical across calls so the
+    deck reads as one set. For a plain picture with no slide framing, use
+    iapp_image_generation instead.
+
+    Args:
+        title: Slide headline, kept short — rendered large at the top.
+        content: What the slide should say or show — bullet points one per line,
+            a chart description ('bar chart of revenue by quarter: Q1 12M, ...'),
+            or a diagram description.
+        output_path: Local path to save the slide (.png).
+        style: Visual style, reused across the deck. Defaults to clean corporate.
+        aspect_ratio: '16:9' for normal decks, '4:3' for legacy projectors.
+
+    Returns:
+        Confirmation message with the saved slide path. Cost: 8 IC per slide
+        (Nano Banana Pro), paid accounts only.
+    """
+    slide_style = style or (
+        "clean corporate presentation, white background, a single accent colour, "
+        "generous whitespace, flat vector illustration"
+    )
+    dimensions = "2K (2048x1152)" if aspect_ratio == "16:9" else "2048x1536"
+    prompt = (
+        f"A single {aspect_ratio} presentation slide, {dimensions}, high resolution.\n"
+        f"Headline at the top, rendered exactly as written and spelled correctly: "
+        f'"{title}"\n\n'
+        f"Slide body:\n{content}\n\n"
+        f"Style: {slide_style}.\n"
+        "Requirements: all text must be sharp, correctly spelled and large enough to "
+        "read from the back of a room. Lay the content out as a slide — do not draw a "
+        "laptop, projector, room, hands or any frame around it. No lorem ipsum, no "
+        "placeholder text, no watermark."
+    )
+    return await iapp_image_generation(
+        prompt=prompt, output_path=output_path, model="nanobanana-pro"
+    )
+
+
+@mcp.tool(
     name="iapp_remove_background",
     annotations={
         "title": "Image Background Removal",
