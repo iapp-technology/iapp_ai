@@ -123,17 +123,31 @@ async def iapp_slide_generation(
         "clean corporate presentation, white background, a single accent colour, "
         "generous whitespace, flat vector illustration"
     )
-    dimensions = "2K (2048x1152)" if aspect_ratio == "16:9" else "2048x1536"
+    dimensions = "2048x1152" if aspect_ratio == "16:9" else "2048x1536"
+    # The layout rules are spelled out because the expensive failure is not a slow
+    # render — it is a slide that comes back with text on top of other text, which
+    # the caller throws away and rebuilds by hand, paying for the render twice.
     prompt = (
         f"A single {aspect_ratio} presentation slide, {dimensions}, high resolution.\n"
-        f"Headline at the top, rendered exactly as written and spelled correctly: "
+        f"Headline across the top, rendered exactly as written and spelled correctly: "
         f'"{title}"\n\n'
         f"Slide body:\n{content}\n\n"
-        f"Style: {slide_style}.\n"
-        "Requirements: all text must be sharp, correctly spelled and large enough to "
-        "read from the back of a room. Lay the content out as a slide — do not draw a "
-        "laptop, projector, room, hands or any frame around it. No lorem ipsum, no "
-        "placeholder text, no watermark."
+        f"Style: {slide_style}.\n\n"
+        "Layout rules (follow strictly):\n"
+        "- Keep a clear margin of at least 6% of the slide on every edge; nothing "
+        "touches the edge.\n"
+        "- Text must NEVER overlap other text, icons, charts or shapes. If the content "
+        "will not fit, use fewer words — shortening is always preferred to crowding.\n"
+        "- At most 6 bullet points, at most ~12 words each, in one column (or two "
+        "clearly separated columns).\n"
+        "- One idea per line. Do not wrap a bullet into more than two lines.\n"
+        "- Render ONLY the slide content: no speaker notes, no notes panel, no slide "
+        "numbers, no footer, no thumbnail strip, no presenter UI.\n"
+        "- Do not draw a laptop, monitor, projector, room, desk, hands or any frame "
+        "around the slide.\n"
+        "- All text sharp, correctly spelled, and large enough to read from the back "
+        "of a room.\n"
+        "- No lorem ipsum, no placeholder text, no watermark, no signature."
     )
     return await iapp_image_generation(
         prompt=prompt, output_path=output_path, model="nanobanana-pro"
