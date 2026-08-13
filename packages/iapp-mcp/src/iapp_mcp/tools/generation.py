@@ -12,8 +12,17 @@ from ..client import (
 )
 
 _VIDEO_MODELS = {
+    "seedance-2.5": "dreamina-seedance-2-5-260628",
     "seedance": "dreamina-seedance-2-0-260128",
     "seedance-fast": "dreamina-seedance-2-0-fast-260128",
+}
+
+# Limits the gateway enforces anyway — checked here so the caller gets a message
+# it can act on instead of a bare 400.
+_VIDEO_LIMITS = {
+    "seedance-2.5": {"max_seconds": 30, "supports_1080p": False},
+    "seedance": {"max_seconds": 15, "supports_1080p": True},
+    "seedance-fast": {"max_seconds": 15, "supports_1080p": False},
 }
 
 
@@ -198,7 +207,7 @@ async def iapp_remove_background(file_path: str, output_path: str) -> str:
 )
 async def iapp_video_generation_submit(
     prompt: str,
-    model: Literal["seedance", "seedance-fast"] = "seedance-fast",
+    model: Literal["seedance-2.5", "seedance", "seedance-fast"] = "seedance-2.5",
     duration: int = 5,
     ratio: Literal["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"] = "16:9",
     resolution: Literal["480p", "720p", "1080p"] = "720p",
@@ -207,14 +216,16 @@ async def iapp_video_generation_submit(
     first_frame_image_url: Optional[str] = None,
     reference_image_url: Optional[str] = None,
 ) -> str:
-    """Submit an async video generation job (Seedance 2.0). Poll with iapp_video_generation_status.
+    """Submit an async video generation job (Seedance). Poll with iapp_video_generation_status.
 
     Args:
         prompt: Text description of the video to generate.
-        model: 'seedance' (higher quality) or 'seedance-fast' (cheaper/faster).
-        duration: Video length in seconds (4-15, default 5).
+        model: 'seedance-2.5' (newest — best motion, clips to 30s, takes reference
+            image/video/audio, 720p max), 'seedance' (Seedance 2.0, the only one
+            that does 1080p), or 'seedance-fast' (cheapest, 720p max).
+        duration: Video length in seconds. 4-30 on Seedance 2.5, 4-15 on 2.0.
         ratio: Aspect ratio.
-        resolution: Output resolution ('1080p' not available on seedance-fast).
+        resolution: Output resolution ('1080p' only on 'seedance').
         generate_audio: Whether to generate audio.
         watermark: Whether to add a watermark.
         first_frame_image_url: Optional public image URL to use as the first frame.
@@ -222,8 +233,15 @@ async def iapp_video_generation_submit(
 
     Returns:
         JSON string with the task id — pass it to iapp_video_generation_status.
-        Pricing: ~0.14-0.33 IC per 1K output tokens; failed jobs cost 0 IC.
+        Billed per second of video: Seedance 2.5 ~10.1 IC/sec at 720p, ~4.5 at 480p;
+        Seedance 2.0 ~16.9 at 1080p, ~6.8 at 720p; 2.0 Fast ~5.4 at 720p. A reference
+        video is billed too, on its own duration plus the output. Failed jobs cost 0 IC.
     """
+    limits = _VIDEO_LIMITS[model]
+    if resolution == "1080p" and not limits["supports_1080p"]:
+        return f"{model} does not support 1080p — use 480p or 720p, or switch to model 'seedance' (Seedance 2.0)."
+    if duration > limits["max_seconds"]:
+        return f"{model} allows up to {limits['max_seconds']}s; you asked for {duration}s."
     try:
         content = [{"type": "text", "text": prompt}]
         if first_frame_image_url:
