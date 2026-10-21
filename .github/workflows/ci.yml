@@ -39,7 +39,7 @@ jobs:
       # Mypy gate is scoped to core + sdk, which are type-clean today. The MCP
       # domain tools gain type hints under C-5 / D-7; add them here once green.
       - name: Type check (mypy)
-        run: uv run mypy packages/iapp-core/src packages/iapp-sdk/src
+        run: uv run mypy packages/iapp-core/src packages/iapp-sdk/src packages/iapp-nlp/src
 
       # Discover tests under packages/ so this works on any branch — the per-task
       # branches don't all carry packages/iapp-core/tests, but it exists once the

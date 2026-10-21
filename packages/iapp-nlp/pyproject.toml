@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iapp-nlp"
+version = "0.1.0"
+description = "Free, dependency-free Thai/English tokenizer from iApp Technology (https://iapp.co.th)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [
+    { name = "iApp Technology Co., Ltd.", email = "dev@iapp.co.th" },
+]
+keywords = ["iapp", "thai", "tokenizer", "nlp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://iapp.co.th"
+Repository = "https://github.com/iapp-technology/iapp_ai"
+
+[project.scripts]
+iapp-tokenize = "iapp_nlp.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/iapp_nlp"]

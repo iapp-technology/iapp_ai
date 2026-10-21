@@ -8,7 +8,7 @@
 # Each package has its own pyproject.toml and is published independently.
 
 [tool.uv.workspace]
-members = ["packages/iapp-core", "packages/iapp-sdk", "packages/iapp-mcp"]
+members = ["packages/iapp-core", "packages/iapp-sdk", "packages/iapp-mcp", "packages/iapp-nlp"]
 
 # Dev tooling for the CI pipeline (A-5). Installed by `uv sync`.
 [dependency-groups]
