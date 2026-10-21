@@ -3,7 +3,7 @@
 Ensures that:
 1. pyproject version bumping correctly replaces only the project version.
 2. __version__ dunder bumping works correctly.
-3. Package build order is core -> sdk -> mcp.
+3. Package build order is core -> sdk -> mcp -> nlp.
 """
 
 import sys
@@ -26,7 +26,8 @@ def test_verify_set_dunder_version():
 
 def test_verify_build_order():
     # Dependency order check
-    assert release.BUILD_ORDER == ["core", "sdk", "mcp"]
+    assert release.BUILD_ORDER == ["core", "sdk", "mcp", "nlp"]
     assert "core" in release.PACKAGES
     assert "sdk" in release.PACKAGES
     assert "mcp" in release.PACKAGES
+    assert "nlp" in release.PACKAGES

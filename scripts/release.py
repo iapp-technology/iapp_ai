@@ -4,11 +4,11 @@
 Subcommands::
 
     python scripts/release.py build
-        Build all three packages in dependency order (core -> sdk -> mcp) into
-        ./dist with a single command. core is built first because the sdk and
-        mcp depend on it.
+        Build every package in dependency order (core -> sdk -> mcp -> nlp)
+        into ./dist with a single command. core is built first because the sdk
+        and mcp depend on it; nlp depends on nothing.
 
-    python scripts/release.py bump <core|sdk|mcp> <version>
+    python scripts/release.py bump <core|sdk|mcp|nlp> <version>
         Set one package's version in its pyproject.toml and keep its
         __init__ __version__ in sync.
 
@@ -32,9 +32,10 @@ PACKAGES = {
     "core": ("packages/iapp-core", "packages/iapp-core/src/iapp_core/__init__.py"),
     "sdk": ("packages/iapp-sdk", "packages/iapp-sdk/src/iapp_ai/__init__.py"),
     "mcp": ("packages/iapp-mcp", "packages/iapp-mcp/src/iapp_mcp/__init__.py"),
+    "nlp": ("packages/iapp-nlp", "packages/iapp-nlp/src/iapp_nlp/__init__.py"),
 }
-# core first: sdk and mcp depend on it.
-BUILD_ORDER = ["core", "sdk", "mcp"]
+# core first: sdk and mcp depend on it. nlp has no dependencies.
+BUILD_ORDER = ["core", "sdk", "mcp", "nlp"]
 
 _VERSION_RE = re.compile(r'^version\s*=\s*"[^"]*"', re.MULTILINE)
 _DUNDER_RE = re.compile(r'^__version__\s*=\s*"[^"]*"', re.MULTILINE)
@@ -81,7 +82,7 @@ def build() -> None:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="iApp AI monorepo release helper")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("build", help="build core -> sdk -> mcp into ./dist")
+    sub.add_parser("build", help="build core -> sdk -> mcp -> nlp into ./dist")
     bump_p = sub.add_parser("bump", help="set a package version")
     bump_p.add_argument("package", choices=list(PACKAGES))
     bump_p.add_argument("version")

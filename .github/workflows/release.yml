@@ -18,7 +18,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Build core -> sdk -> mcp (one command)
+      - name: Build core -> sdk -> mcp -> nlp (one command)
         run: uv run --with build python scripts/release.py build
       - uses: actions/upload-artifact@v4
         with:
