@@ -27,8 +27,14 @@ jobs:
         with:
           enable-cache: true
 
+      # Fail fast if uv.lock no longer matches the pyproject.toml files
+      # (someone changed dependencies but forgot to run `uv lock` and commit it).
+      - name: Check lockfile is up to date
+        run: uv lock --check
+
+      # --locked installs exactly what uv.lock pins and never rewrites it.
       - name: Sync workspace (all packages + extras + dev tools)
-        run: uv sync --all-packages --all-extras
+        run: uv sync --all-packages --all-extras --locked
         env:
           UV_PYTHON: ${{ matrix.python-version }}
 
