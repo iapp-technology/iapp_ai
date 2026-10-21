@@ -51,4 +51,4 @@ jobs:
       # branches don't all carry packages/iapp-core/tests, but it exists once the
       # feature branches merge to main.
       - name: Test (pytest)
-        run: uv run pytest packages
+        run: uv run pytest packages scripts
