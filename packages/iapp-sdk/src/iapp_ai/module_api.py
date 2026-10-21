@@ -299,7 +299,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/document/ocr",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/document/ocr",
                              uploads=[('file', file_path, None)],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
@@ -321,7 +321,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/document/layout",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/document/layout",
                              uploads=[('file', file_path, None)],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
@@ -343,7 +343,7 @@ class api():
         Returns:
             requests.Response: The HTTP response containing the DOCX file link.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/document/docx",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/document/docx",
                              uploads=[('file', file_path, None)],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
@@ -367,7 +367,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         global taskGuid
-        response = self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-passive-liveness",
+        response = self._request("POST", f"{API_BASE}/v3/store/ekyc/face-passive-liveness",
                                  uploads=[('file', file_path, 'image/jpg')],
                                  headers=headers, data={**(data_payload or {})}, files=files)
         try:
@@ -397,7 +397,7 @@ class api():
             headers = {}
         if url is None:
             url = []
-        request_url = "https://api.iapp.co.th/v3/store/ekyc/face-passive-liveness/" + taskGuid
+        request_url = f"{API_BASE}/v3/store/ekyc/face-passive-liveness/" + taskGuid
         # print(request_url)
 
         return self._request("GET", request_url, headers=headers)
@@ -468,7 +468,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, 'threshold': min_score, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-verification",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-verification",
                              uploads=[('file1', file_path1, 'application/octet-stream'), ('file2', file_path2, 'application/octet-stream')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -497,14 +497,14 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-and-id-card-verification",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-and-id-card-verification",
                              uploads=[('file0', id_card_path, 'application/octet-stream'), ('file1', selfie_path, 'application/octet-stream')],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
     def _face_config_score(self, data_payload, headers=None):
         if headers is None:
             headers = {}
-        return self._request("POST", "https://api.iapp.co.th/face_config_score",
+        return self._request("POST", f"{API_BASE}/face_config_score",
                              headers=headers,
                              data=data_payload)
 
@@ -558,7 +558,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-verification",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-verification",
                              uploads=[('file1', file_path1, 'image/jpg'), ('file2', file_path2, 'image/jpg')],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
@@ -580,7 +580,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-detection/single",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-detection/single",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data={**(data_payload or {})}, files=files)
 
@@ -605,7 +605,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-detection/multi",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-detection/multi",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -658,7 +658,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/single",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/single",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -683,7 +683,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/multi",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/multi",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -708,7 +708,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/facecrop",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/facecrop",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -737,7 +737,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, 'name': name, 'password': password, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/add",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/add",
                              uploads=[('file', file_path, 'image/jpeg')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -764,7 +764,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {'company': company_name, 'password': password, **(data_payload or {})}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ekyc/face-recognition/import",
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/import",
                              uploads=[('file', file_path, 'text/csv')],
                              headers=headers, data=request_data_payload, files=files)
 
@@ -791,10 +791,8 @@ class api():
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, **data_payload}
-
-        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/check"
-        return self._request("POST", url, headers=headers,
-                             data=request_data_payload)
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/check",
+                             headers=headers, data=request_data_payload)
 
     def face_recog_export(
         self,
@@ -821,11 +819,8 @@ class api():
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, 'type_file': type_file, **data_payload}
-
-        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/export"
-
-        return self._request("POST", url, headers=headers,
-                             data=request_data_payload)
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/export",
+                             headers=headers, data=request_data_payload)
 
     def face_recog_remove(
         self,
@@ -856,10 +851,8 @@ class api():
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'name': name, 'password': company_password,'date': date, 'face_id': face_id, **data_payload}
-
-        url = "https://api.iapp.co.th/v3/store/ekyc/face-recognition/remove"
-        return self._request("POST", url, headers=headers,
-                             data=request_data_payload)
+        return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/remove",
+                             headers=headers, data=request_data_payload)
 
     def face_recog_config_score(
         self,
@@ -919,7 +912,7 @@ class api():
         request_data_payload = {
              "rotateIfPortiat": True
         }
-        return self._request("POST", "https://api.iapp.co.th/v3/store/smart-city/remove-background",
+        return self._request("POST", f"{API_BASE}/v3/store/smart-city/remove-background",
                              headers=headers,
                              data=request_data_payload, files=request_files)
 
@@ -944,7 +937,7 @@ class api():
             requests.Response: The HTTP response from the API server.
         """
         request_data_payload = {"rotateIfPortiat": True, **(data_payload or {})}
-        response = self._request("POST", "https://api.iapp.co.th/v3/store/smart-city/remove-background",
+        response = self._request("POST", f"{API_BASE}/v3/store/smart-city/remove-background",
                                  uploads=[('file', file_path, 'image/jpg')],
                                  headers=headers, data=request_data_payload, files=files)
         target_path = build_output_path("img_bg_removal_file.jpg", output_path)
@@ -1054,11 +1047,11 @@ class api():
         """
         headers = headers or {}
         endpoints = {
-            "chinda-qwen3-4b": "https://api.iapp.co.th/v3/llm/chinda-thaillm-4b/chat/completions",
-            "deepseek-reasoner": "https://api.iapp.co.th/v3/llm/deepseek-3p2/chat/completions",
-            "deepseek-chat": "https://api.iapp.co.th/v3/llm/deepseek-3p2/chat/completions",
-            "deepseek-v4-flash": "https://api.iapp.co.th/v3/llm/deepseek-v4/chat/completions",
-            "deepseek-v4-pro": "https://api.iapp.co.th/v3/llm/deepseek-v4/chat/completions",
+            "chinda-qwen3-4b": f"{API_BASE}/v3/llm/chinda-thaillm-4b/chat/completions",
+            "deepseek-reasoner": f"{API_BASE}/v3/llm/deepseek-3p2/chat/completions",
+            "deepseek-chat": f"{API_BASE}/v3/llm/deepseek-3p2/chat/completions",
+            "deepseek-v4-flash": f"{API_BASE}/v3/llm/deepseek-v4/chat/completions",
+            "deepseek-v4-pro": f"{API_BASE}/v3/llm/deepseek-v4/chat/completions",
         }
         messages: List[Dict[str, str]] = []
         if system_prompt:
@@ -1087,7 +1080,7 @@ class api():
         """Generate an image (Google Nano Banana). model: nanobanana | nanobanana-pro."""
         headers = headers or {}
         slug = "nanobanana" if model == "nanobanana" else "nanobananapro"
-        url = f"https://api.iapp.co.th/v3/image/generation/google/{slug}/generate"
+        url = f"{API_BASE}/v3/image/generation/google/{slug}/generate"
         payload = json.dumps({
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
@@ -1122,53 +1115,53 @@ class api():
             "generate_audio": generate_audio,
             "watermark": watermark,
         })
-        return self._request("POST", "https://api.iapp.co.th/v3/store/video/seedance/tasks",
+        return self._request("POST", f"{API_BASE}/v3/store/video/seedance/tasks",
                              headers={'Content-Type': 'application/json', **headers},
                              data=payload)
 
     def seedance_video_status(self, task_id: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Check a Seedance video job status; returns the download URL when done."""
         headers = headers or {}
-        url = "https://api.iapp.co.th/v3/store/video/seedance/tasks/" + str(task_id)
+        url = f"{API_BASE}/v3/store/video/seedance/tasks/" + str(task_id)
         return self._request("GET", url, headers=headers)
 
     def receipt_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai receipt / tax-invoice OCR."""
         data = {"return_ocr": "true"} if return_ocr else {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/receipt",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/receipt",
                              uploads=[('file', file_path, None)],
                              headers=headers, data=data)
 
     def credit_card_statement_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai credit card statement OCR."""
         data = {"return_ocr": "true"} if return_ocr else {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/creditcard-statement",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/creditcard-statement",
                              uploads=[('file', file_path, None)],
                              headers=headers, data=data)
 
     def tax_deduction_certificate_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai withholding tax deduction certificate (50 ทวิ) OCR."""
         data = {"return_ocr": "true"} if return_ocr else {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/tax-deduction-certificate",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/tax-deduction-certificate",
                              uploads=[('file', file_path, None)],
                              headers=headers, data=data)
 
     def civil_registration_ocr(self, file_path: str, return_ocr: bool = False, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai civil registration certificate OCR."""
         data = {"return_ocr": "true"} if return_ocr else {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/civil-registeration-certificate",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/civil-registeration-certificate",
                              uploads=[('file', file_path, None)],
                              headers=headers, data=data)
 
     def resume_ocr(self, file_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """AI resume / CV extraction and evaluation."""
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/curriculum-vitae",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/curriculum-vitae",
                              uploads=[('file', file_path, None)],
                              headers=headers)
 
     def job_description_ocr(self, file_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """AI job description extraction."""
-        return self._request("POST", "https://api.iapp.co.th/v3/store/ocr/job-description",
+        return self._request("POST", f"{API_BASE}/v3/store/ocr/job-description",
                              uploads=[('file', file_path, None)],
                              headers=headers)
 
@@ -1190,7 +1183,7 @@ class api():
             ("zh", "base"): "/v3/store/speech/speech-to-text/base/zh",
             ("zh", "pro"): "/v3/store/speech/speech-to-text/pro/zh",
         }
-        url = "https://api.iapp.co.th" + paths[(language, quality)]
+        url = API_BASE + paths[(language, quality)]
         data: Dict[str, Any] = {}
         if chunk_size is not None:
             data["chunk_size"] = str(chunk_size)
@@ -1208,26 +1201,26 @@ class api():
     ) -> requests.Response:
         """Voice cloning TTS from a short reference audio sample."""
         data = {"text": text, "ref_text": ref_text, "speed": str(speed)}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/audio/tts/clone",
+        return self._request("POST", f"{API_BASE}/v3/store/audio/tts/clone",
                              uploads=[('ref_audio', ref_audio_path, None)],
                              headers=headers, data=data)
 
     def ai_audio_detection(self, audio_path: str, headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Detect whether audio was AI-generated (iApp TTS watermark detection)."""
-        return self._request("POST", "https://api.iapp.co.th/v3/store/audio/tts/detect",
+        return self._request("POST", f"{API_BASE}/v3/store/audio/tts/detect",
                              uploads=[('audio', audio_path, None)],
                              headers=headers)
 
     def sentiment_analysis(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai sentiment analysis (positive / neutral / negative)."""
         headers = headers or {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/nlp/sentiment-analysis",
+        return self._request("POST", f"{API_BASE}/v3/store/nlp/sentiment-analysis",
                              headers=headers, params={"text": text})
 
     def toxicity_classification(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai text toxicity classification."""
         headers = headers or {}
-        return self._request("POST", "https://api.iapp.co.th/v3/store/nlp/toxicity-classification",
+        return self._request("POST", f"{API_BASE}/v3/store/nlp/toxicity-classification",
                              headers=headers, params={"text": text})
 
     def thai_holidays(
@@ -1243,13 +1236,13 @@ class api():
         headers = headers or {}
         params: Dict[str, Any] = {"holiday_type": holiday_type}
         if year is not None:
-            url = "https://api.iapp.co.th/v3/store/data/thai-holiday/year/" + str(year)
+            url = f"{API_BASE}/v3/store/data/thai-holiday/year/" + str(year)
         elif start_date and end_date:
-            url = "https://api.iapp.co.th/v3/store/data/thai-holiday/range"
+            url = f"{API_BASE}/v3/store/data/thai-holiday/range"
             params["start_date"] = start_date
             params["end_date"] = end_date
         else:
-            url = "https://api.iapp.co.th/v3/store/data/thai-holiday"
+            url = f"{API_BASE}/v3/store/data/thai-holiday"
             if days_after is not None:
                 params["days_after"] = str(days_after)
         return self._request("GET", url, headers=headers, params=params)
