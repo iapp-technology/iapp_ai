@@ -20,6 +20,8 @@ jobs:
           enable-cache: true
       - name: Build core -> sdk -> mcp -> nlp (one command)
         run: uv run --with build python scripts/release.py build
+      - name: Check wheels install and import
+        run: uv run --managed-python --python 3.12 python scripts/release.py check
       - uses: actions/upload-artifact@v4
         with:
           name: dist

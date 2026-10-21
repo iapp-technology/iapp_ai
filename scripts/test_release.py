@@ -39,3 +39,17 @@ def test_set_dunder_version_noop_when_absent():
 def test_build_order_is_core_first():
     assert release.BUILD_ORDER[0] == "core"
     assert set(release.BUILD_ORDER) == set(release.PACKAGES)
+
+
+def test_project_name_uses_wheel_spelling():
+    assert release.project_name('[project]\nname = "iapp-ai"\nversion = "2.0.0"\n') == "iapp_ai"
+
+
+def test_project_name_errors_when_absent():
+    with pytest.raises(ValueError):
+        release.project_name('version = "1.0.0"\n')
+
+
+def test_wheel_versions_from_filenames():
+    names = ["iapp_core-0.1.0-py3-none-any.whl", "iapp_ai-2.0.0-py3-none-any.whl"]
+    assert release.wheel_versions(names) == {"iapp_core": "0.1.0", "iapp_ai": "2.0.0"}
