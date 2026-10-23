@@ -37,6 +37,24 @@ word_tokenize("นัดเวลา 19:32น.", join_broken_num=False)
 # ['นัด', 'เวลา', ' ', '19', ':', '32', 'น.']
 ```
 
+## Subwords (Thai Character Clusters)
+
+`subword_tokenize` splits text into Thai Character Clusters (TCC), the smallest
+pieces that can be cut without breaking a vowel or tone mark off its consonant.
+
+```python
+from iapp_nlp import subword_tokenize
+
+subword_tokenize("ขนมชั้น")
+# ['ข', 'น', 'ม', 'ชั้น']
+subword_tokenize("ประเทศไทย")
+# ['ป', 'ระ', 'เท', 'ศ', 'ไท', 'ย']
+```
+
+Non-Thai characters come out one at a time, and `keep_whitespace=False` works
+as in `word_tokenize`. The rules are the improved TCC rules from PyThaiNLP
+(`tcc_p`), used under the Apache License 2.0 (see `LICENSE-APACHE`).
+
 ## Command line
 
 ```bash
