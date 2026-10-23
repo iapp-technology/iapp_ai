@@ -3,7 +3,7 @@
 import re
 from typing import List
 
-from . import nlpo3
+from . import nlpo3, tcc_p
 from .tokenizer import Token
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
@@ -33,6 +33,20 @@ def tokenize(text: str, keep_whitespace: bool = True, join_broken_num: bool = Tr
 def word_tokenize(text: str, keep_whitespace: bool = True, join_broken_num: bool = True) -> List[str]:
     """Split ``text`` into a list of word strings."""
     return [token.text for token in tokenize(text, keep_whitespace, join_broken_num)]
+
+
+def subword_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
+    """Split ``text`` into Thai Character Clusters, e.g. ``ขนมชั้น`` -> ``ข`` ``น`` ``ม`` ``ชั้น``.
+
+    Non-Thai characters come out one at a time, as in PyThaiNLP.
+    ``keep_whitespace=False`` drops pieces made only of spaces (tabs and new lines stay).
+    """
+    if not text:
+        return []
+    pieces = tcc_p.segment(text)
+    if not keep_whitespace:
+        pieces = [piece.strip(" ") for piece in pieces if piece.strip(" ")]
+    return pieces
 
 
 def _join_formatted_numbers(text: str, tokens: List[Token]) -> List[Token]:
