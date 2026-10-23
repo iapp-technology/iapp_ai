@@ -6,7 +6,7 @@ Subcommands::
     python scripts/release.py build
         Build every package in dependency order (core -> sdk -> mcp -> nlp)
         into ./dist with a single command. core is built first because the sdk
-        and mcp depend on it; nlp depends on nothing.
+        and mcp depend on it; nlp needs no other package from this repo.
 
     python scripts/release.py bump <core|sdk|mcp|nlp> <version>
         Set one package's version in its pyproject.toml and keep its
@@ -40,7 +40,7 @@ PACKAGES = {
     "mcp": ("packages/iapp-mcp", "packages/iapp-mcp/src/iapp_mcp/__init__.py"),
     "nlp": ("packages/iapp-nlp", "packages/iapp-nlp/src/iapp_nlp/__init__.py"),
 }
-# core first: sdk and mcp depend on it. nlp has no dependencies.
+# core first: sdk and mcp depend on it. nlp needs no other package from this repo.
 BUILD_ORDER = ["core", "sdk", "mcp", "nlp"]
 
 _VERSION_RE = re.compile(r'^version\s*=\s*"[^"]*"', re.MULTILINE)

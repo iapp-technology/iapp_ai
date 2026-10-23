@@ -1,7 +1,8 @@
-"""iapp_nlp — free Thai/English NLP tools (tokenizer)."""
+"""iapp_nlp — free Thai NLP tools (word tokenizer)."""
 
 __version__ = "0.1.0"
 
-from .tokenizer import Token, tokenize, word_tokenize
+from .core import tokenize, word_tokenize
+from .tokenizer import Token
 
 __all__ = ["Token", "tokenize", "word_tokenize"]
