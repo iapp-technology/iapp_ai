@@ -1,7 +1,7 @@
 # iapp-nlp
 
-Free Thai word tokenizer from [iApp Technology](https://iapp.co.th).
-No API key, runs offline, and the Thai dictionary is included.
+Free Thai word, subword and sentence tokenizer from [iApp Technology](https://iapp.co.th).
+No API key, runs offline, and the Thai dictionary and sentence model are included.
 
 ```bash
 pip install iapp-nlp
@@ -54,6 +54,28 @@ subword_tokenize("ประเทศไทย")
 Non-Thai characters come out one at a time, and `keep_whitespace=False` works
 as in `word_tokenize`. The rules are the improved TCC rules from PyThaiNLP
 (`tcc_p`), used under the Apache License 2.0 (see `LICENSE-APACHE`).
+
+## Sentences
+
+`sent_tokenize` splits text into sentences. Thai has no full stop, so a CRF
+model decides which spaces end a sentence.
+
+```python
+from iapp_nlp import sent_tokenize
+
+sent_tokenize("หิวข้าวมากๆ แต่ไม่รู้จะกินอะไรดี")
+# ['หิวข้าวมากๆ ', 'แต่ไม่รู้จะกินอะไรดี']
+sent_tokenize("สวัสดีครับ! วันนี้ว่างไหม? ไปเที่ยวกัน", keep_whitespace=False)
+# ['สวัสดีครับ!', 'วันนี้ว่างไหม?', 'ไปเที่ยวกัน']
+```
+
+- A new line always ends a sentence; blank lines stay on the sentence before them.
+- `!`, `.` and `?` end a sentence, so abbreviations such as `ดร.` and `กทม.` do too.
+- Joining the sentences gives back the input text.
+
+The model is PyThaiNLP's `crfcut` (trained on TED subtitles), used under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the feature code comes
+from PyThaiNLP under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Command line
 
