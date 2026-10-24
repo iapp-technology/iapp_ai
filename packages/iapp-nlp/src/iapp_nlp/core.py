@@ -3,7 +3,7 @@
 import re
 from typing import List
 
-from . import nlpo3, tcc_p
+from . import crfcut, nlpo3, tcc_p
 from .tokenizer import Token
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
@@ -47,6 +47,34 @@ def subword_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
     if not keep_whitespace:
         pieces = [piece.strip(" ") for piece in pieces if piece.strip(" ")]
     return pieces
+
+
+def sent_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
+    """Split ``text`` into sentences with PyThaiNLP's CRF model (crfcut).
+
+    Each line is split on its own, so a new line always ends a sentence.
+    ``keep_whitespace=False`` trims spaces off each sentence and drops sentences that were only spaces.
+    """
+    if not text:
+        return []
+    sentences: List[str] = []
+    leading = ""  # blank lines before the first sentence
+    for line in text.splitlines(keepends=True):  # crfcut alone does not cut at "\n"
+        if not line.strip():  # a blank line stays on the sentence before it
+            if sentences:
+                sentences[-1] += line
+            else:
+                leading += line
+            continue
+        pieces = crfcut.segment(line)
+        pieces[0] = leading + pieces[0]
+        leading = ""
+        sentences.extend(pieces)
+    if leading:  # the text was only blank lines or spaces
+        sentences.append(leading)
+    if not keep_whitespace:
+        sentences = [sentence.strip(" ") for sentence in sentences if sentence.strip(" ")]
+    return sentences
 
 
 def _join_formatted_numbers(text: str, tokens: List[Token]) -> List[Token]:

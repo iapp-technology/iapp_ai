@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 
-from .core import subword_tokenize, tokenize, word_tokenize
+from .core import sent_tokenize, subword_tokenize, tokenize, word_tokenize
 from .tokenizer import Token
 
-__all__ = ["Token", "subword_tokenize", "tokenize", "word_tokenize"]
+__all__ = ["Token", "sent_tokenize", "subword_tokenize", "tokenize", "word_tokenize"]

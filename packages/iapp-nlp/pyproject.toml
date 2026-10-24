@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "iapp-nlp"
 version = "0.1.0"
-description = "Free, offline Thai word tokenizer from iApp Technology (https://iapp.co.th)"
+description = "Free, offline Thai word, subword and sentence tokenizer from iApp Technology (https://iapp.co.th)"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Text Processing :: Linguistic",
 ]
-dependencies = ["nlpo3>=1.4.0"]
+dependencies = ["nlpo3>=1.4.0", "python-crfsuite>=0.9.11"]
 
 [project.urls]
 Homepage = "https://iapp.co.th"
