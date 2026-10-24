@@ -1,7 +1,7 @@
 # iapp-nlp
 
-Free Thai word, subword and sentence tokenizer from [iApp Technology](https://iapp.co.th).
-No API key, runs offline, and the Thai dictionary and sentence model are included.
+Free Thai word, subword, syllable and sentence tokenizer from [iApp Technology](https://iapp.co.th).
+No API key, runs offline, and the Thai dictionary and models are included.
 
 ```bash
 pip install iapp-nlp
@@ -54,6 +54,26 @@ subword_tokenize("ประเทศไทย")
 Non-Thai characters come out one at a time, and `keep_whitespace=False` works
 as in `word_tokenize`. The rules are the improved TCC rules from PyThaiNLP
 (`tcc_p`), used under the Apache License 2.0 (see `LICENSE-APACHE`).
+
+## Syllables
+
+`syllable_tokenize` splits text into syllables with the Han-solo CRF model,
+which also handles social media spelling such as repeated letters.
+
+```python
+from iapp_nlp import syllable_tokenize
+
+syllable_tokenize("นายกรัฐมนตรี")
+# ['นา', 'ยก', 'รัฐ', 'มน', 'ตรี']
+syllable_tokenize("ม่ายยยย อร่อยมากกกก", keep_whitespace=False)
+# ['ม่ายยยย', 'อร่อย', 'มากกกก']
+```
+
+- Tabs and new lines come out as pieces of their own.
+- Digits written right next to Thai can split wrongly: `iPhone15ราคา` gives `iPhone1` `5รา` `คา`.
+
+The model and feature code come from [Han-solo](https://github.com/PyThaiNLP/Han-solo)
+and PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Sentences
 
