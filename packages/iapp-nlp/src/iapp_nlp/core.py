@@ -3,11 +3,13 @@
 import re
 from typing import List
 
-from . import crfcut, nlpo3, tcc_p
+from . import crfcut, han_solo, nlpo3, tcc_p
 from .tokenizer import Token
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
 _FORMATTED_NUMBER_RE = re.compile(r"\d+(?:[.,:]\d+)+")
+# Whitespace other than plain spaces: tabs, new lines, carriage returns
+_LINE_BREAK_RE = re.compile(r"[\t\n\r\f\v]+")
 
 
 def tokenize(text: str, keep_whitespace: bool = True, join_broken_num: bool = True) -> List[Token]:
@@ -47,6 +49,29 @@ def subword_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
     if not keep_whitespace:
         pieces = [piece.strip(" ") for piece in pieces if piece.strip(" ")]
     return pieces
+
+
+def syllable_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
+    """Split ``text`` into Thai syllables with the Han-solo CRF model, e.g. ``นายก`` -> ``นา`` ``ยก``.
+
+    Tabs and new lines come out as pieces of their own.
+    ``keep_whitespace=False`` drops pieces made only of spaces (tabs and new lines stay).
+    """
+    if not text:
+        return []
+    syllables: List[str] = []
+    pos = 0
+    # the model never saw tabs or new lines in training and glues them to a neighbour, so cut them out first
+    for match in _LINE_BREAK_RE.finditer(text):
+        if match.start() > pos:
+            syllables.extend(han_solo.segment(text[pos:match.start()]))
+        syllables.append(match.group())
+        pos = match.end()
+    if pos < len(text):
+        syllables.extend(han_solo.segment(text[pos:]))
+    if not keep_whitespace:
+        syllables = [syllable.strip(" ") for syllable in syllables if syllable.strip(" ")]
+    return syllables
 
 
 def sent_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
