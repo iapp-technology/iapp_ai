@@ -88,7 +88,6 @@ class api():
         Endpoint: ``GET /v3/store/nlp/question/generation`` with the source text
         sent as the ``text`` query parameter.
         """
-        headers = headers or {}
         data_payload = data_payload or {}
         url = build_url(API_BASE, "v3/store/nlp/question/generation", {"text": str(text)})
 
@@ -978,7 +977,6 @@ class api():
         form fields (e.g. ``chunk_size``, ``use_asr_pro``) may be supplied via
         ``data_payload``.
         """
-        headers = headers or {}
         data_payload = data_payload or {}
         files = files or []
         with open_input_files([file_path]) as (file_obj,):
@@ -1015,7 +1013,6 @@ class api():
         The response audio is written to ``output_path`` (defaults to
         ``cee.wav`` in the output directory).
         """
-        headers = headers or {}
         data_payload = data_payload or {}
         params = {"text": text, **data_payload}
 
@@ -1121,7 +1118,6 @@ class api():
 
     def seedance_video_status(self, task_id: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Check a Seedance video job status; returns the download URL when done."""
-        headers = headers or {}
         url = f"{API_BASE}/v3/store/video/seedance/tasks/" + str(task_id)
         return self._request("GET", url, headers=headers)
 
@@ -1174,7 +1170,6 @@ class api():
         headers: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
         """Speech-to-text with diarization. language: th|en|zh, quality: base|pro."""
-        headers = headers or {}
         paths = {
             ("th", "base"): "/v3/store/speech/speech-to-text/base",
             ("th", "pro"): "/v3/store/speech/speech-to-text/pro",
@@ -1213,13 +1208,11 @@ class api():
 
     def sentiment_analysis(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai sentiment analysis (positive / neutral / negative)."""
-        headers = headers or {}
         return self._request("POST", f"{API_BASE}/v3/store/nlp/sentiment-analysis",
                              headers=headers, params={"text": text})
 
     def toxicity_classification(self, text: str = "", headers: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Thai text toxicity classification."""
-        headers = headers or {}
         return self._request("POST", f"{API_BASE}/v3/store/nlp/toxicity-classification",
                              headers=headers, params={"text": text})
 
@@ -1233,7 +1226,6 @@ class api():
         headers: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
         """Thai public holiday data (by year, by date range, or around today)."""
-        headers = headers or {}
         params: Dict[str, Any] = {"holiday_type": holiday_type}
         if year is not None:
             url = f"{API_BASE}/v3/store/data/thai-holiday/year/" + str(year)
