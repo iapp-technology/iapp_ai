@@ -88,11 +88,10 @@ class api():
         Endpoint: ``GET /v3/store/nlp/question/generation`` with the source text
         sent as the ``text`` query parameter.
         """
-        data_payload = data_payload or {}
         url = build_url(API_BASE, "v3/store/nlp/question/generation", {"text": str(text)})
 
         return self._request("GET", url, headers=headers,
-                             data={**data_payload})
+                             data={**(data_payload or {})})
 
     def thai_text_summarization(self, text: str = "", style: Optional[str] = None, language: Optional[str] = None, max_output_tokens: Optional[int] = None, headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None) -> requests.Response:
         """Summarize a Thai or English text passage.
@@ -108,7 +107,6 @@ class api():
             data_payload: Extra JSON fields merged into the request body.
         """
         headers = headers or {}
-        data_payload = data_payload or {}
         body: Dict[str, Any] = {"text": str(text)}
         if style is not None:
             body["style"] = style
@@ -116,7 +114,7 @@ class api():
             body["language"] = language
         if max_output_tokens is not None:
             body["max_output_tokens"] = max_output_tokens
-        body.update(data_payload)
+        body.update(data_payload or {})
 
         return self._request("POST", f"{API_BASE}/v3/store/nlp/thai-text-summary",
                              headers={'Content-Type': 'application/json', **headers},
@@ -136,7 +134,6 @@ class api():
             data_payload: Extra JSON fields merged into the request body.
         """
         headers = headers or {}
-        data_payload = data_payload or {}
         body: Dict[str, Any] = {
             "text": text,
             "source_lang": source_lang,
@@ -144,7 +141,7 @@ class api():
         }
         if max_length is not None:
             body["max_length"] = max_length
-        body.update(data_payload)
+        body.update(data_payload or {})
 
         return self._request("POST", f"{API_BASE}/v3/store/nlp/multilingual-translation",
                              headers={'Content-Type': 'application/json', **headers},
@@ -525,9 +522,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **data_payload}
+        request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **(data_payload or {})}
         return self._face_config_score(request_data_payload, headers=headers)
 
 
@@ -622,9 +617,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'detect_value': detect_value, 'company': company_name, 'password': company_password, **data_payload}
+        request_data_payload = {'detect_value': detect_value, 'company': company_name, 'password': company_password, **(data_payload or {})}
         return self._face_config_score(request_data_payload, headers=headers)
 
 
@@ -777,9 +770,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'company': company_name, 'password': company_password, **data_payload}
+        request_data_payload = {'company': company_name, 'password': company_password, **(data_payload or {})}
         return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/check",
                              headers=headers, data=request_data_payload)
 
@@ -803,9 +794,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'company': company_name, 'password': company_password, 'type_file': type_file, **data_payload}
+        request_data_payload = {'company': company_name, 'password': company_password, 'type_file': type_file, **(data_payload or {})}
         return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/export",
                              headers=headers, data=request_data_payload)
 
@@ -833,9 +822,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'company': company_name, 'name': name, 'password': company_password,'date': date, 'face_id': face_id, **data_payload}
+        request_data_payload = {'company': company_name, 'name': name, 'password': company_password,'date': date, 'face_id': face_id, **(data_payload or {})}
         return self._request("POST", f"{API_BASE}/v3/store/ekyc/face-recognition/remove",
                              headers=headers, data=request_data_payload)
 
@@ -861,9 +848,7 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if data_payload is None:
-            data_payload = {}
-        request_data_payload = {'detect_value': detect_value,'recog_value':recog_value, 'company': company_name, 'password': company_password, **data_payload}
+        request_data_payload = {'detect_value': detect_value,'recog_value':recog_value, 'company': company_name, 'password': company_password, **(data_payload or {})}
         return self._face_config_score(request_data_payload, headers=headers)
 
     def img_bg_removal_base64(
@@ -959,7 +944,6 @@ class api():
         form fields (e.g. ``chunk_size``, ``use_asr_pro``) may be supplied via
         ``data_payload``.
         """
-        data_payload = data_payload or {}
         files = files or []
         with open_input_files([file_path]) as (file_obj,):
             request_files = [('file',(file_path, file_obj, 'audio/mpga'))]
@@ -967,7 +951,7 @@ class api():
 
             return self._request("POST", f"{API_BASE}/v3/store/speech/speech-to-text/base",
                                  headers=headers,
-                                 data={**data_payload}, files=request_files)
+                                 data={**(data_payload or {})}, files=request_files)
 
     def thai_thaitts_kaitom(self, text: str = "", headers: Optional[Dict[str, Any]] = None, data_payload: Optional[Dict[str, Any]] = None, output_path: Optional[str] = None) -> requests.Response:
         """Synthesize Thai speech and save the audio to a local file.
@@ -977,8 +961,7 @@ class api():
         ``kaitom.wav`` in the output directory).
         """
         headers = headers or {}
-        data_payload = data_payload or {}
-        body = {"text": text, **data_payload}
+        body = {"text": text, **(data_payload or {})}
 
         response = self._request("POST", f"{API_BASE}/v3/store/audio/tts",
                                  headers={'Content-Type': 'application/json', **headers},
@@ -995,8 +978,7 @@ class api():
         The response audio is written to ``output_path`` (defaults to
         ``cee.wav`` in the output directory).
         """
-        data_payload = data_payload or {}
-        params = {"text": text, **data_payload}
+        params = {"text": text, **(data_payload or {})}
 
         response = self._request("GET", f"{API_BASE}/v3/store/speech/text-to-speech/cee",
                                  headers=headers,
