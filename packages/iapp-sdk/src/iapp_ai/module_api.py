@@ -392,8 +392,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if url is None:
             url = []
         request_url = f"{API_BASE}/v3/store/ekyc/face-passive-liveness/" + taskGuid
@@ -501,8 +499,6 @@ class api():
                              headers=headers, data={**(data_payload or {})}, files=files)
 
     def _face_config_score(self, data_payload, headers=None):
-        if headers is None:
-            headers = {}
         return self._request("POST", f"{API_BASE}/face_config_score",
                              headers=headers,
                              data=data_payload)
@@ -529,8 +525,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'detect_value': detect_value, 'compare_value': compare_value, 'company': company_name, 'password': company_password, **data_payload}
@@ -628,8 +622,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'detect_value': detect_value, 'company': company_name, 'password': company_password, **data_payload}
@@ -785,8 +777,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, **data_payload}
@@ -813,8 +803,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'password': company_password, 'type_file': type_file, **data_payload}
@@ -845,8 +833,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'company': company_name, 'name': name, 'password': company_password,'date': date, 'face_id': face_id, **data_payload}
@@ -875,8 +861,6 @@ class api():
         Returns:
             requests.Response: The HTTP response from the API server.
         """
-        if headers is None:
-            headers = {}
         if data_payload is None:
             data_payload = {}
         request_data_payload = {'detect_value': detect_value,'recog_value':recog_value, 'company': company_name, 'password': company_password, **data_payload}
@@ -898,8 +882,6 @@ class api():
         """
         import base64
         import io
-        if headers is None:
-            headers = {}
         if data_payload is None:
             img_bytes = b""
         else:
