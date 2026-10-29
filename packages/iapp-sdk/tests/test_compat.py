@@ -19,6 +19,7 @@ import requests
 import iapp_ai
 import iapp_ai.module_api as module_api
 from iapp_ai import api
+from iapp_core import IAppAPIError
 
 
 @pytest.fixture
@@ -70,6 +71,22 @@ def captured(monkeypatch):
 def test_version_is_fixed():
     # __version__ must stay in sync with pyproject for the 2.0.0 release.
     assert iapp_ai.__version__ == "2.0.0"
+
+
+def test_api_reads_key_from_env(monkeypatch):
+    monkeypatch.setenv("IAPP_API_KEY", "ENV_KEY")
+    assert api().apikey == "ENV_KEY"
+
+
+def test_api_explicit_key_wins_over_env(monkeypatch):
+    monkeypatch.setenv("IAPP_API_KEY", "ENV_KEY")
+    assert api("MY_KEY").apikey == "MY_KEY"
+
+
+def test_api_without_key_or_env_raises(monkeypatch):
+    monkeypatch.delenv("IAPP_API_KEY", raising=False)
+    with pytest.raises(IAppAPIError):
+        api()
 
 
 def test_returns_raw_response_and_does_not_raise(captured):

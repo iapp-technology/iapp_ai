@@ -22,6 +22,7 @@ from iapp_core import (
     API_BASE,
     build_output_path,
     build_url,
+    get_api_key,
     open_input_files,
     request_sync,
 )
@@ -32,8 +33,9 @@ taskGuid = ""
 
 class api():
     apikey = ""
-    def __init__(self, apikey):
-        self.apikey = apikey
+    def __init__(self, apikey: Optional[str] = None):
+        """Create a client. ``apikey`` defaults to the ``IAPP_API_KEY`` environment variable."""
+        self.apikey = apikey if apikey is not None else get_api_key()
 
     def _request(
         self,
