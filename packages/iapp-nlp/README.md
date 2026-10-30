@@ -37,6 +37,31 @@ word_tokenize("นัดเวลา 19:32น.", join_broken_num=False)
 # ['นัด', 'เวลา', ' ', '19', ':', '32', 'น.']
 ```
 
+## Your own words
+
+Names and new words that are not in the dictionary come out in pieces. Add them
+with `extra_words`, or replace the whole dictionary with `custom_dict`.
+
+```python
+from iapp_nlp import Tokenizer, word_tokenize
+
+word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย")
+# ['ชา', 'ไข่', 'มุ', 'กบ', 'ราวน์', 'ชู', 'การ์', 'อร่อย']
+word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย", extra_words=["บราวน์ชูการ์"])
+# ['ชา', 'ไข่มุก', 'บราวน์ชูการ์', 'อร่อย']
+
+tokenizer = Tokenizer(extra_words=["บราวน์ชูการ์"])
+tokenizer.word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย")
+# ['ชา', 'ไข่มุก', 'บราวน์ชูการ์', 'อร่อย']
+```
+
+- `iapp_nlp.corpus.thai_words()` returns the bundled words, so
+  `custom_dict=thai_words() - {"..."}` removes words.
+- Each distinct set of words is loaded once and stays in memory until the
+  process ends, since nlpO3 cannot unload a dictionary. Create one `Tokenizer`
+  and reuse it rather than building new word sets per request.
+- `sent_tokenize` always uses the bundled dictionary, since its model was trained on it.
+
 ## Subwords (Thai Character Clusters)
 
 `subword_tokenize` splits text into Thai Character Clusters (TCC), the smallest

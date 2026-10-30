@@ -7,12 +7,22 @@ import warnings
 from importlib.resources import files
 from typing import Dict, FrozenSet, List, Union
 
+_WORDS_FILE = "words_th.txt"
 _STOPWORDS_FILE = "stopwords_th.txt"
 _PROVINCES_FILE = "thailand_provinces_th.csv"
 
+_words: FrozenSet[str] = frozenset()
 _stopwords: FrozenSet[str] = frozenset()
 _provinces: FrozenSet[str] = frozenset()
 _province_details: List[Dict[str, str]] = []
+
+
+def thai_words() -> FrozenSet[str]:
+    """Return the words of the bundled dictionary that ``word_tokenize`` uses."""
+    global _words
+    if not _words:
+        _words = frozenset(filter(None, _read_lines(_WORDS_FILE)))
+    return _words
 
 
 def thai_stopwords() -> FrozenSet[str]:
