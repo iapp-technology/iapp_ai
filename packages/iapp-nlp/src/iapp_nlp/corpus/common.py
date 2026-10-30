@@ -1,13 +1,7 @@
-"""Word lists bundled with iapp_nlp: Thai stopwords and Thailand provinces.
-
-The loaders follow PyThaiNLP's ``pythainlp/corpus/common.py`` (commit
-8fe2ab7d), and the data files ``data/stopwords_th.txt`` and
-``data/thailand_provinces_th.csv`` are PyThaiNLP's, released under CC0 1.0.
-
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package. Changed by iApp Technology: the files are
-read from ``iapp_nlp/data``.
-"""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Word lists bundled with iapp_nlp: Thai stopwords and Thailand provinces."""
 
 import warnings
 from importlib.resources import files

@@ -1,4 +1,7 @@
-"""tag_provinces; the first case is from PyThaiNLP's tests/core/test_tag.py (commit 8fe2ab7d)."""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Tests for tag_provinces."""
 
 from iapp_nlp import word_tokenize
 from iapp_nlp.tag import tag_provinces

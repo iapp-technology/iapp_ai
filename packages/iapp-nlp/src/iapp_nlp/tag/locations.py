@@ -1,9 +1,7 @@
-"""Tag Thailand provinces in a list of words.
-
-From PyThaiNLP's ``pythainlp/tag/locations.py`` (commit 8fe2ab7d).
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package.
-"""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Tag Thailand provinces in a list of words."""
 
 from typing import List, Tuple
 
