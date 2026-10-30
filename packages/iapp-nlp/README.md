@@ -1,6 +1,6 @@
 # iapp-nlp
 
-Free Thai word, subword, syllable and sentence tokenizer from [iApp Technology](https://iapp.co.th).
+Free Thai word, subword, syllable and sentence tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
 No API key, runs offline, and the Thai dictionary and models are included.
 
 ```bash
@@ -96,6 +96,27 @@ sent_tokenize("สวัสดีครับ! วันนี้ว่างไ
 The model is PyThaiNLP's `crfcut` (trained on TED subtitles), used under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the feature code comes
 from PyThaiNLP under the Apache License 2.0 (see `LICENSE-APACHE`).
+
+## Normalize
+
+`normalize` fixes common Thai typing errors before you tokenize: repeated or
+misordered vowels and tone marks, spaces before a mark, zero-width characters
+and duplicate spaces.
+
+```python
+from iapp_nlp import normalize
+
+normalize("เเปลก")       # two Sara E
+# 'แปลก'
+normalize("แล้้ว")       # repeated tone mark
+# 'แล้ว'
+normalize("พ ุ่มดอกไม้")  # space before a vowel
+# 'พุ่มดอกไม้'
+```
+
+It also trims spaces at both ends and collapses blank lines. Letters are never
+changed, so a misspelled word stays misspelled. The rules are from PyThaiNLP's
+`normalize`, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Command line
 
