@@ -1,12 +1,12 @@
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
 """Read numbers and amounts of money aloud in Thai.
 
-From PyThaiNLP's ``pythainlp/util/numtoword.py`` (commit 8fe2ab7d), adapted
-there from https://justmindthought.blogspot.com/2012/12/code-php.html and
-https://suksit.com/post/writing-bahttext-in-php/.
+Adapted from:
 
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package. Changed by iApp Technology: docstring
-examples import from ``iapp_nlp.util``.
+* https://justmindthought.blogspot.com/2012/12/code-php.html
+* https://suksit.com/post/writing-bahttext-in-php/
 """
 
 from __future__ import annotations

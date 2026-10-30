@@ -1,11 +1,7 @@
-"""Convert between Thai digits, Arabic digits and Thai digit words.
-
-From PyThaiNLP's ``pythainlp/util/digitconv.py`` (commit 8fe2ab7d).
-
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package. Changed by iApp Technology: docstring
-examples import from ``iapp_nlp.util``.
-"""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Convert between Thai digits, Arabic digits and Thai digit words."""
 
 from __future__ import annotations
 

@@ -1,8 +1,7 @@
-"""Numbers and digits: the bahttext / num_to_thaiword / digit checks from
-PyThaiNLP's tests/core/test_util.py::test_number (commit 8fe2ab7d), Apache
-License 2.0. Checks of thaiword_to_num, text_to_num and words_to_num are left
-out until those functions are added.
-"""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Tests for bahttext, num_to_thaiword and the Thai digit conversions."""
 
 import unittest
 

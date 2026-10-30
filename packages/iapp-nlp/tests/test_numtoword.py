@@ -1,6 +1,7 @@
-"""
-Characterization tests for iapp_nlp.util.numtoword, from PyThaiNLP's
-tests/core/test_util_numtoword.py (commit 8fe2ab7d), Apache License 2.0.
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Characterization tests for iapp_nlp.util.numtoword.
 
 Golden data was recorded from the pre-refactor implementation.
 """
