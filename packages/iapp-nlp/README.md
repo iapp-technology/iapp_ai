@@ -218,9 +218,10 @@ thaiword_to_date("พรุ่งนี้", datetime(2026, 10, 30))
 # datetime.datetime(2026, 10, 31, 0, 0)
 ```
 
-`reign_year_to_ad` and `now_reign_year` convert reign years. On Windows, the
-Thai time zone comes from the `tzdata` package, which pip installs there. The
-code follows PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
+`reign_year_to_ad` and `now_reign_year` convert reign years. The Thai time zone
+comes from the `tzdata` package, which pip installs, so it also works on systems
+without a time zone database such as Windows or slim containers. The code
+follows PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Command line
 
@@ -232,7 +233,7 @@ iapp-tokenize "Hello, world! สวัสดีครับ ยินดีต�
 ## How it works
 
 Words are found with [nlpO3](https://github.com/PyThaiNLP/nlpo3), a Rust
-version of PyThaiNLP's default `newmm` engine, using a dictionary of 62,107
+version of PyThaiNLP's default `newmm` engine, using a dictionary of 62,106
 Thai words. The tokenizer is built for Thai: English is split at digits, so
 `iPhone15` becomes `iPhone` `15`.
 
@@ -240,7 +241,7 @@ The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legac
 
 ## Notes
 
-- Needs Python 3.9 or later. On Windows, pip also installs `tzdata` for the Thai time zone.
+- Needs Python 3.9 or later. pip also installs `tzdata` for the Thai time zone.
 - nlpO3 has no prebuilt wheel for Linux on ARM (aarch64), so there pip builds it
   from source and needs a [Rust toolchain](https://rustup.rs).
 - The dictionary `iapp_nlp/data/words_th.txt` is `words_th.txt` from

@@ -514,14 +514,14 @@ source = { editable = "packages/iapp-nlp" }
 dependencies = [
     { name = "nlpo3" },
     { name = "python-crfsuite" },
-    { name = "tzdata", marker = "sys_platform == 'win32'" },
+    { name = "tzdata" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "nlpo3", specifier = ">=1.4.0" },
     { name = "python-crfsuite", specifier = ">=0.9.11" },
-    { name = "tzdata", marker = "sys_platform == 'win32'" },
+    { name = "tzdata" },
 ]
 
 [[package]]

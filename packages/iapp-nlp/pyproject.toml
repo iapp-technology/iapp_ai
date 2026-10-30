@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "nlpo3>=1.4.0",
     "python-crfsuite>=0.9.11",
-    "tzdata; sys_platform == 'win32'",
+    "tzdata",
 ]
 
 [project.urls]
