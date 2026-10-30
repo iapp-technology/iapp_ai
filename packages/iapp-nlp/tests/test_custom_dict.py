@@ -4,7 +4,7 @@ import pytest
 
 from iapp_nlp import Tokenizer, tokenize, word_tokenize
 from iapp_nlp.corpus import thai_words
-from iapp_nlp.tokenizer import nlpo3
+from iapp_nlp.tokenizer import core, nlpo3
 
 TEXT = "ชาไข่มุกบราวน์ชูการ์อร่อย"
 
@@ -44,14 +44,54 @@ def test_tokenizer_without_words_uses_the_bundled_dictionary():
     assert Tokenizer().word_tokenize(TEXT) == word_tokenize(TEXT)
 
 
-def test_same_words_load_once(monkeypatch):
+@pytest.fixture
+def load_calls(monkeypatch):
+    """Record each dictionary nlpo3 loads, starting from empty caches."""
     calls = []
     load_dict = nlpo3.nlpo3.load_dict
+    core._dict_name.cache_clear()
     monkeypatch.setattr(nlpo3, "_custom_dicts", {})
     monkeypatch.setattr(nlpo3.nlpo3, "load_dict", lambda path, name: calls.append(name) or load_dict(path, name))
+    yield calls
+    core._dict_name.cache_clear()
+
+
+def test_same_words_load_once(load_calls):
     Tokenizer(custom_dict=["ก", "ข"])
     Tokenizer(custom_dict=[" ข ", "ก", "ก"])  # same words after cleaning, in another order
-    assert len(calls) == 1
+    assert len(load_calls) == 1
+
+
+def test_same_words_load_once_without_the_cache(load_calls):
+    # other words than the test above: nlpo3 keeps every name it loaded, even across tests
+    Tokenizer(custom_dict=["ค", "ง"])
+    core._dict_name.cache_clear()  # nlpo3.load_words still knows the words by their hash
+    Tokenizer(custom_dict=["ง", "ค"])
+    assert len(load_calls) == 1
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"extra_words": []},
+        {"extra_words": ["เชียงใหม่", "นายกรัฐมนตรี"]},  # already in the bundled dictionary
+        {"custom_dict": thai_words()},
+    ],
+)
+def test_no_new_words_reuse_the_bundled_dictionary(load_calls, kwargs):
+    tokenizer = Tokenizer(**kwargs)
+    assert load_calls == []
+    assert tokenizer.word_tokenize(TEXT) == word_tokenize(TEXT)
+
+
+def test_repeated_calls_merge_the_words_once(monkeypatch):
+    core._dict_name.cache_clear()
+    merges = []
+    load_words = nlpo3.load_words
+    monkeypatch.setattr(nlpo3, "load_words", lambda words: merges.append(1) or load_words(words))
+    for _ in range(3):
+        word_tokenize(TEXT, extra_words=["บราวน์ชูการ์"])
+    assert len(merges) == 1
 
 
 def test_words_are_stripped_and_blanks_dropped():

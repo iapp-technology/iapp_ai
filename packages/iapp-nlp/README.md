@@ -57,9 +57,10 @@ tokenizer.word_tokenize("ชาไข่มุกบราวน์ชูกา�
 
 - `iapp_nlp.corpus.thai_words()` returns the bundled words, so
   `custom_dict=thai_words() - {"..."}` removes words.
-- Each distinct set of words is loaded once and stays in memory until the
-  process ends, since nlpO3 cannot unload a dictionary. Create one `Tokenizer`
-  and reuse it rather than building new word sets per request.
+- Each distinct set of words is loaded once and takes about 50 MB that stays in
+  memory until the process ends, since nlpO3 cannot unload a dictionary. Keep
+  to a few fixed word sets rather than building new ones per request. Words
+  already in the bundled dictionary add nothing.
 - `sent_tokenize` always uses the bundled dictionary, since its model was trained on it.
 
 ## Subwords (Thai Character Clusters)

@@ -1,7 +1,8 @@
 """Thai word tokenizer: nlpo3 segmentation plus whitespace and number clean-up."""
 
+import functools
 import re
-from typing import Iterable, List, Optional, Set
+from typing import FrozenSet, Iterable, List, Optional, Set
 
 from ..corpus import thai_words
 from . import crfcut, han_solo, nlpo3, tcc_p
@@ -17,20 +18,14 @@ class Tokenizer:
     """Word tokenizer with its own dictionary, loaded once so it can be reused cheaply.
 
     ``extra_words`` adds words to the bundled dictionary; ``custom_dict`` replaces it.
-    With both, ``extra_words`` is added to ``custom_dict``. Each distinct dictionary stays in
-    memory until the process ends, so create one ``Tokenizer`` and reuse it.
+    With both, ``extra_words`` is added to ``custom_dict``. Each distinct dictionary takes
+    about 50 MB that stays in memory until the process ends, so keep to a few fixed word sets.
     """
 
     def __init__(self, custom_dict: Optional[Iterable[str]] = None, extra_words: Optional[Iterable[str]] = None):
-        if custom_dict is None and extra_words is None:
-            self._dict_name = nlpo3.DICT_NAME
-            return
-        words = _clean_words(custom_dict) if custom_dict is not None else set(thai_words())
-        if extra_words is not None:
-            words |= _clean_words(extra_words)
-        if not words:
-            raise ValueError("The dictionary has no words")
-        self._dict_name = nlpo3.load_words(frozenset(words))
+        custom = frozenset(_clean_words(custom_dict)) if custom_dict is not None else None
+        extra = frozenset(_clean_words(extra_words)) if extra_words is not None else frozenset()
+        self._dict_name = _dict_name(custom, extra)
 
     def tokenize(self, text: str, keep_whitespace: bool = True, join_broken_num: bool = True) -> List[Token]:
         """Split ``text`` into words, keeping each token's start/end offset.
@@ -69,7 +64,7 @@ def tokenize(
     ``keep_whitespace=False`` drops tokens made only of spaces (tabs and new lines stay).
     ``join_broken_num=True`` rejoins formatted numbers that segmentation split, e.g. ``19:32``.
     ``extra_words`` adds words to the bundled dictionary and ``custom_dict`` replaces it;
-    to call many times with the same words, create a ``Tokenizer`` once instead.
+    repeated calls with the same words reuse the dictionary loaded the first time.
     """
     return Tokenizer(custom_dict, extra_words).tokenize(text, keep_whitespace, join_broken_num)
 
@@ -148,6 +143,24 @@ def sent_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
     if not keep_whitespace:
         sentences = [sentence.strip(" ") for sentence in sentences if sentence.strip(" ")]
     return sentences
+
+
+@functools.lru_cache(maxsize=None)
+def _dict_name(custom: Optional[FrozenSet[str]], extra: FrozenSet[str]) -> str:
+    """Return the nlpo3 dictionary for these words, loading it only if it is new.
+
+    Cached by the words passed in, so repeated calls skip merging with the 62k bundled words.
+    """
+    if custom is None:
+        if extra <= thai_words():  # nothing new: use the bundled dictionary, not a copy of it
+            return nlpo3.DICT_NAME
+        return nlpo3.load_words(thai_words() | extra)
+    words = custom | extra
+    if not words:
+        raise ValueError("The dictionary has no words")
+    if words == thai_words():
+        return nlpo3.DICT_NAME
+    return nlpo3.load_words(words)
 
 
 def _clean_words(words: Iterable[str]) -> Set[str]:
