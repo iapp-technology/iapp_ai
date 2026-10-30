@@ -140,6 +140,38 @@ len(provinces())
 `provinces(details=True)` also gives each province's abbreviation and English
 name. Names are matched exactly, so `กทม` and `Bangkok` are not tagged.
 
+## Numbers and digits
+
+`iapp_nlp.util` reads numbers and amounts of money aloud in Thai, and converts
+between Thai and Arabic digits. This helps prepare text for text-to-speech, or
+clean up digits read by OCR.
+
+```python
+from iapp_nlp.util import (
+    arabic_digit_to_thai_digit,
+    bahttext,
+    digit_to_text,
+    num_to_thaiword,
+    thai_digit_to_arabic_digit,
+)
+
+bahttext(150.50)
+# 'หนึ่งร้อยห้าสิบบาทห้าสิบสตางค์'
+num_to_thaiword(2569)
+# 'สองพันห้าร้อยหกสิบเก้า'
+digit_to_text("โทร 0812345678")
+# 'โทร ศูนย์แปดหนึ่งสองสามสี่ห้าหกเจ็ดแปด'
+thai_digit_to_arabic_digit("ยอด ๑๒,๕๐๐.๕๐ บาท")
+# 'ยอด 12,500.50 บาท'
+arabic_digit_to_thai_digit("พ.ศ. 2569")
+# 'พ.ศ. ๒๕๖๙'
+```
+
+`num_to_thaiword_float` reads decimals digit by digit (`3.14` → `สามจุดหนึ่งสี่`), and
+`text_to_arabic_digit` / `text_to_thai_digit` turn one Thai digit word into a
+digit (`"เก้า"` → `"9"`). The code follows PyThaiNLP, used under the Apache
+License 2.0 (see `LICENSE-APACHE`).
+
 ## Command line
 
 ```bash
