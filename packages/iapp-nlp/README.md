@@ -118,6 +118,28 @@ It also trims spaces at both ends and collapses blank lines. Letters are never
 changed, so a misspelled word stays misspelled. The rules are from PyThaiNLP's
 `normalize`, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
+## Stopwords and provinces
+
+`iapp_nlp.corpus` has two word lists, and `iapp_nlp.tag.tag_provinces` marks the
+words that are province names.
+
+```python
+from iapp_nlp import word_tokenize
+from iapp_nlp.corpus import provinces, thai_stopwords
+from iapp_nlp.tag import tag_provinces
+
+words = word_tokenize("ผมไปเชียงใหม่กับกรุงเทพมหานคร", keep_whitespace=False)
+[w for w in words if w not in thai_stopwords()]
+# ['ผม', 'เชียงใหม่', 'กรุงเทพมหานคร']
+tag_provinces(words)
+# [('ผม', 'O'), ('ไป', 'O'), ('เชียงใหม่', 'B-LOCATION'), ('กับ', 'O'), ('กรุงเทพมหานคร', 'B-LOCATION')]
+len(provinces())
+# 77
+```
+
+`provinces(details=True)` also gives each province's abbreviation and English
+name. Names are matched exactly, so `กทม` and `Bangkok` are not tagged.
+
 ## Command line
 
 ```bash
@@ -142,3 +164,8 @@ The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legac
 - The dictionary `iapp_nlp/data/words_th.txt` is `words_th.txt` from
   [PyThaiNLP](https://github.com/PyThaiNLP/pythainlp), released under
   [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+- The stopword list `iapp_nlp/data/stopwords_th.txt` and the province list
+  `iapp_nlp/data/thailand_provinces_th.csv` are from PyThaiNLP, released under
+  CC0 1.0. The stopwords come from a thesis by เพ็ญศิริ ลี้ตระกูล (Thammasat
+  University, 2008). The loaders and `tag_provinces` follow PyThaiNLP's code,
+  used under the Apache License 2.0 (see `LICENSE-APACHE`).
