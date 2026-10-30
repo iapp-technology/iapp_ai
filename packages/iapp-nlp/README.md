@@ -172,6 +172,31 @@ arabic_digit_to_thai_digit("พ.ศ. 2569")
 digit (`"เก้า"` → `"9"`). The code follows PyThaiNLP, used under the Apache
 License 2.0 (see `LICENSE-APACHE`).
 
+## Thai dates
+
+`iapp_nlp.util` converts Buddhist Era years and reads and writes dates with Thai
+month and weekday names.
+
+```python
+from datetime import datetime
+from iapp_nlp.util import convert_years, thai_strftime, thai_strptime, thaiword_to_date
+
+convert_years("2569", src="be", target="ad")
+# '2026'
+thai_strptime("15 ก.ค. 2565", "%d %B %Y")
+# datetime.datetime(2022, 7, 15, 0, 0, tzinfo=zoneinfo.ZoneInfo(key='Asia/Bangkok'))
+thai_strftime(datetime(2026, 10, 30), "%A %d %B %Y")
+# 'วันศุกร์ 30 ตุลาคม 2569'
+thai_strftime(datetime(2026, 10, 30), "%a %-d %b %y")
+# 'ศ 30 ต.ค. 69'
+thaiword_to_date("พรุ่งนี้", datetime(2026, 10, 30))
+# datetime.datetime(2026, 10, 31, 0, 0)
+```
+
+`reign_year_to_ad` and `now_reign_year` convert reign years. On Windows, the
+Thai time zone comes from the `tzdata` package, which pip installs there. The
+code follows PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
+
 ## Command line
 
 ```bash
@@ -190,7 +215,7 @@ The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legac
 
 ## Notes
 
-- Needs Python 3.9 or later.
+- Needs Python 3.9 or later. On Windows, pip also installs `tzdata` for the Thai time zone.
 - nlpO3 has no prebuilt wheel for Linux on ARM (aarch64), so there pip builds it
   from source and needs a [Rust toolchain](https://rustup.rs).
 - The dictionary `iapp_nlp/data/words_th.txt` is `words_th.txt` from

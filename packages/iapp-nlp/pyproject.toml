@@ -20,7 +20,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Text Processing :: Linguistic",
 ]
-dependencies = ["nlpo3>=1.4.0", "python-crfsuite>=0.9.11"]
+dependencies = [
+    "nlpo3>=1.4.0",
+    "python-crfsuite>=0.9.11",
+    "tzdata; sys_platform == 'win32'",
+]
 
 [project.urls]
 Homepage = "https://iapp.co.th"
