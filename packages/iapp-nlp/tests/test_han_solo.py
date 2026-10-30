@@ -1,6 +1,7 @@
 import threading
 
-from iapp_nlp import han_solo, syllable_tokenize
+from iapp_nlp import syllable_tokenize
+from iapp_nlp.tokenizer import han_solo
 
 
 def test_splits_formal_text_into_syllables():

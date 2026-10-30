@@ -132,7 +132,7 @@ version of PyThaiNLP's default `newmm` engine, using a dictionary of 62,107
 Thai words. The tokenizer is built for Thai: English is split at digits, so
 `iPhone15` becomes `iPhone` `15`.
 
-The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer`.
+The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legacy`.
 
 ## Notes
 

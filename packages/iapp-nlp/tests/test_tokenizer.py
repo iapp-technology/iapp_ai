@@ -1,4 +1,4 @@
-from iapp_nlp.tokenizer import Token, tokenize, word_tokenize
+from iapp_nlp.tokenizer.legacy import Token, tokenize, word_tokenize
 
 
 def test_english_splits_punctuation():

@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from . import crfcut, han_solo, nlpo3, tcc_p
-from .tokenizer import Token
+from .token import Token
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
 _FORMATTED_NUMBER_RE = re.compile(r"\d+(?:[.,:]\d+)+")

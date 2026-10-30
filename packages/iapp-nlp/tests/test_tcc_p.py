@@ -1,7 +1,7 @@
 import re
 
 from iapp_nlp import subword_tokenize
-from iapp_nlp import tcc_p
+from iapp_nlp.tokenizer import tcc_p
 
 # vowels and marks written above or below a consonant; a cluster never starts with one
 _ATTACHED_MARK_RE = re.compile("^[ัิ-ฺ็-๎]")

@@ -2,7 +2,7 @@
 
 import sys
 
-from .core import word_tokenize
+from .tokenizer import word_tokenize
 
 
 def main() -> None:

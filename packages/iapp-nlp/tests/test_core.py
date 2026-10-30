@@ -3,7 +3,8 @@ import sys
 import threading
 
 from iapp_nlp import Token, tokenize, word_tokenize
-from iapp_nlp import cli, nlpo3
+from iapp_nlp import cli
+from iapp_nlp.tokenizer import nlpo3
 
 
 def test_thai_sentence_splits_into_words():

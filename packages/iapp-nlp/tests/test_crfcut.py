@@ -1,7 +1,7 @@
 import threading
 
 from iapp_nlp import sent_tokenize
-from iapp_nlp import crfcut
+from iapp_nlp.tokenizer import crfcut
 
 
 def test_model_finds_sentence_ends_inside_one_line():
