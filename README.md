@@ -2,8 +2,9 @@
 
 Official Python clients for the [iApp AI Marketplace](https://iapp.co.th) —
 30+ Thai-focused AI APIs (OCR, eKYC, Thai NLP, LLMs, speech, image/video
-generation, smart city). This repository is a monorepo of three packages that
-share a single core.
+generation, smart city), plus a free offline Thai NLP library. This repository
+is a monorepo of four packages: the SDK and the MCP server share a single core,
+and `iapp-nlp` stands on its own.
 
 ## Packages
 
@@ -11,7 +12,8 @@ share a single core.
 |---|---|---|
 | [`packages/iapp-sdk`](packages/iapp-sdk) | [`iapp-ai`](https://pypi.org/project/iapp-ai/) | Synchronous Python **SDK** — `from iapp_ai import api`. Thin wrappers returning raw `requests.Response`. |
 | [`packages/iapp-mcp`](packages/iapp-mcp) | [`iapp-mcp`](https://pypi.org/project/iapp-mcp/) | **MCP server** for AI assistants (Claude, etc.) exposing the marketplace as tools. Also on [npm](https://www.npmjs.com/package/iapp-mcp). |
-| [`packages/iapp-core`](packages/iapp-core) | [`iapp-core`](https://pypi.org/project/iapp-core/) | Shared **core**: base URL, API-key auth, error handling, response formatting, and the sync + async HTTP transport. A dependency of the other two. |
+| [`packages/iapp-core`](packages/iapp-core) | [`iapp-core`](https://pypi.org/project/iapp-core/) | Shared **core**: base URL, API-key auth, error handling, response formatting, and the sync + async HTTP transport. A dependency of the SDK and the MCP server. |
+| [`packages/iapp-nlp`](packages/iapp-nlp) | `iapp-nlp` | Free Thai **NLP** library that runs offline and requires no API key. Its tools include word, subword, syllable and sentence tokenization and more. |
 
 > **Backward compatibility:** existing SDK users are unaffected — `pip install iapp_ai`
 > and `from iapp_ai import api` keep working exactly as before. The MCP server is
@@ -28,22 +30,32 @@ share a single core.
   ```
 - **Connecting an AI assistant (Claude, etc.) to iApp?** → the MCP server:
   `uvx iapp-mcp` (see [its README](packages/iapp-mcp/README.md) for client config).
+- **Using free Thai NLP tools without an API key?** → the NLP library: `pip install iapp-nlp`
+  ```python
+  from iapp_nlp import normalize, word_tokenize
+  text = "วันนี้ฝนตกหนักมาาาก"         # repeated vowel typo
+  word_tokenize(text)
+  # ['วันนี้', 'ฝน', 'ตกหนัก', 'มา', 'าาก']
+  word_tokenize(normalize(text))
+  # ['วันนี้', 'ฝน', 'ตกหนัก', 'มาก']
+  ```
 
-Get an API key at [iapp.co.th](https://iapp.co.th) → **API Keys** → **Create New API Key**.
+The SDK and the MCP server need an API key: get one at [iapp.co.th](https://iapp.co.th) → **API Keys** → **Create New API Key**.
 
 ## Development
 
 This is a [uv](https://docs.astral.sh/uv/) workspace. From the repo root:
 
 ```bash
-uv sync                 # create a venv with all three packages installed editable
+uv sync --all-packages  # create a venv with all four packages installed editable
 uv run pytest packages/iapp-sdk/tests -q
 uv build --all-packages # build wheels/sdists for every package
 ```
 
 The SDK and MCP server both depend on `iapp-core` via `[tool.uv.sources]`
 (workspace) for local dev, and on a published `iapp-core` version when released.
-Release order: **iapp-core → iapp-ai / iapp-mcp**.
+Release order: **iapp-core → iapp-ai / iapp-mcp**. `iapp-nlp` has no internal
+dependency and can be released on its own.
 
 ## Support
 
