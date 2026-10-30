@@ -1,13 +1,7 @@
-"""Thai text normalization: repeated, misordered and stray vowels and marks.
-
-The rules come from PyThaiNLP's ``pythainlp/util/normalize.py`` (commit
-8fe2ab7d) and its Thai character sets in ``pythainlp/__init__.py``.
-
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package. Changed by iApp Technology: only
-``normalize`` is public, and the maiyamok helpers (which need PyThaiNLP's
-tokenizer) are left out.
-"""
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Thai text normalization: repeated, misordered and stray vowels and marks."""
 
 import re
 from typing import List, Tuple
