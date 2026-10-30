@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
@@ -7,7 +7,8 @@ name = "iapp-mcp"
 version = "2.0.0"
 description = "MCP server for iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, LLM, Speech, Image/Video Generation"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [
     { name = "iApp Technology Co., Ltd.", email = "dev@iapp.co.th" },
@@ -16,7 +17,6 @@ keywords = ["mcp", "iapp", "thai", "ai", "ocr", "ekyc", "nlp", "speech", "llm"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
