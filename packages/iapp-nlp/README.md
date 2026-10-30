@@ -253,3 +253,14 @@ The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legac
   CC0 1.0. The stopwords come from a thesis by เพ็ญศิริ ลี้ตระกูล (Thammasat
   University, 2008). The loaders and `tag_provinces` follow PyThaiNLP's code,
   used under the Apache License 2.0 (see `LICENSE-APACHE`).
+
+## License
+
+`MIT AND Apache-2.0 AND CC-BY-4.0`:
+
+- iApp Technology's own code: MIT (see `LICENSE`).
+- Code from PyThaiNLP and Han-solo, and the Han-solo model: Apache License 2.0
+  (see `LICENSE-APACHE`). Each such file starts with SPDX lines naming its source.
+- The sentence model `sentenceseg_crfcut.model`:
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- The word, stopword and province lists: CC0 1.0.

@@ -64,4 +64,4 @@ dependency and can be released on its own.
 
 ## License
 
-MIT © iApp Technology Co., Ltd.
+MIT © iApp Technology Co., Ltd. `iapp-nlp` also includes Apache-2.0 code and a CC BY 4.0 model; see [its README](packages/iapp-nlp/README.md#license).

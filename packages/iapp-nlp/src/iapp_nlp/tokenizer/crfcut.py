@@ -6,6 +6,9 @@
 ``_ENDERS``, ``_STARTERS``, ``_extract_features`` and the label rules in
 ``segment`` must stay as they are: the model was trained on exactly these
 features.
+
+Model ``data/sentenceseg_crfcut.model``: PyThaiNLP Project, used unchanged under
+CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 """
 
 import threading
