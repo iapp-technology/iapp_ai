@@ -36,6 +36,13 @@ def test_blank_lines_stay_on_a_sentence():
     assert sent_tokenize("\n\nขึ้นต้นด้วยบรรทัดว่าง") == ["\n\nขึ้นต้นด้วยบรรทัดว่าง"]
 
 
+def test_spaces_before_a_line_break_stay_on_the_sentence():
+    # "?" ends the sentence, so the space and line break after it must not become a sentence
+    assert sent_tokenize("ไปไหนมา? \nกินข้าว") == ["ไปไหนมา? \n", "กินข้าว"]
+    assert sent_tokenize("จบแล้ว. \r\nต่อ") == ["จบแล้ว. \r\n", "ต่อ"]
+    assert sent_tokenize("ว่างไหม?\t\r\n!") == ["ว่างไหม?\t\r\n", "!"]
+
+
 def test_no_text_is_lost():
     texts = ["ว่างไหม?\nไปกัน ", "สวัสดีครับ! ", "   ", "\n", "ดร.สมชาย ไปประชุมที่ กทม. เมื่อวาน\n\n"]
     for text in texts:

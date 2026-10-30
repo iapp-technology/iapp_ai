@@ -207,8 +207,9 @@ def segment(text: str) -> List[str]:
     sentence = ""
     for i, w in enumerate(toks):
         sentence = sentence + w
-        # Empty strings should not be part of output.
-        if labs[i] == "E" and sentence != "":
+        # Empty strings should not be part of output, and neither should
+        # spaces alone: they stay with the sentence before them
+        if labs[i] == "E" and sentence.strip():
             sentences.append(sentence)
             sentence = ""
 
