@@ -166,10 +166,10 @@ def convert_years(year: str, src: str = "be", target: str = "ad") -> str:
 
 
 def _find_month(text: str) -> int:
+    # an exact match: "1" is a substring of "10", "11" and "12"
     for i, m in enumerate(thai_full_month_lists):
-        for j in m:
-            if j in text:
-                return i + 1
+        if text in m:
+            return i + 1
     return 0  # Not found in list
 
 

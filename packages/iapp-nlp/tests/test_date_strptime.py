@@ -295,6 +295,14 @@ class ThaiStrptimeTestCase(unittest.TestCase):
                 with self.assertRaises(IndexError):
                     thai_strptime(text, fmt)
 
+    def test_numeric_months(self) -> None:
+        # Fixed in iapp_nlp: the month was found by substring, so "10", "11"
+        # and "12" matched January's "1"
+        for month in range(1, 13):
+            for text in (str(month), f"{month:02d}"):
+                with self.subTest(text=text):
+                    self.assertEqual(thai_strptime(f"15 {text} 2565", "%d %B %Y").month, month)
+
     def test_invalid_pattern(self) -> None:
         with self.assertRaises(re.error):
             thai_strptime("15 ก.ค. 2565", "(%d %B %Y")
