@@ -1,19 +1,11 @@
-"""Thai sentence segmentation with PyThaiNLP's CRF model (crfcut).
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
+"""Thai sentence segmentation with a CRF model (crfcut), trained on TED subtitles.
 
 ``_ENDERS``, ``_STARTERS``, ``_extract_features`` and the label rules in
-``segment`` come from PyThaiNLP's ``pythainlp/tokenize/crfcut.py``
-(commit 8fe2ab7d). They must stay as they are: the model was trained on
-exactly these features.
-
-Code: Copyright 2016-2026 PyThaiNLP Project, Apache License 2.0
-(see LICENSE-APACHE in this package). Changed by iApp Technology: words come
-from ``iapp_nlp.word_tokenize`` (nlpo3, same output as newmm), the model loads
-lazily, a lock guards the tagger, and spaces left after the last sentence end
-are kept on that sentence instead of being dropped.
-
-Model ``data/sentenceseg_crfcut.model``: PyThaiNLP Project, trained on TED
-subtitles, Creative Commons Attribution 4.0
-(https://creativecommons.org/licenses/by/4.0/), used unchanged.
+``segment`` must stay as they are: the model was trained on exactly these
+features.
 """
 
 import threading

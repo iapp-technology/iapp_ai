@@ -1,14 +1,15 @@
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
 """Thai Character Cluster (TCC) segmentation with the improved rules that newmm uses.
 
-The rule table (``_RE_TCC``) comes from PyThaiNLP's ``pythainlp/tokenize/tcc_p.py``
-(commit 8fe2ab7d), which follows Theeramunkong et al. 2000
-(https://doi.org/10.1145/355214.355225). Credits: TCC by Jakkrit TeCho,
-grammar by Wittawat Jitkrittum, Python code by Korakot Chaovavanich.
+The rules follow Theeramunkong et al. 2000 (https://doi.org/10.1145/355214.355225).
 
-Copyright 2016-2026 PyThaiNLP Project. Licensed under the Apache License 2.0;
-see LICENSE-APACHE in this package. Changed by iApp Technology: ``segment``
-matches at a position instead of slicing the rest of the text, so it runs in
-linear time.
+Credits:
+
+* TCC: Jakkrit TeCho
+* Grammar: Wittawat Jitkrittum (https://github.com/wittawatj/jtcc/blob/master/TCC.g)
+* Python code: Korakot Chaovavanich
 """
 
 import re

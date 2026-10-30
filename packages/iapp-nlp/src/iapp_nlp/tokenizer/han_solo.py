@@ -1,15 +1,14 @@
+# SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
+# SPDX-FileCopyrightText: Copyright 2019 Ponrawee Prasertsom
+# SPDX-FileContributor: iApp Technology
+# SPDX-License-Identifier: Apache-2.0
 """Thai syllable segmentation with the Han-solo CRF model.
 
-``Featurizer`` and ``segment`` come from PyThaiNLP's ``pythainlp/tokenize/han_solo.py``
-(commit 8fe2ab7d); ``Featurizer`` is from ssg (https://github.com/ponrawee/ssg).
-They must stay as they are: the model was trained on exactly these features.
 Han-solo: https://github.com/PyThaiNLP/Han-solo
+``Featurizer`` comes from ssg: https://github.com/ponrawee/ssg
 
-Code: Copyright 2016-2026 PyThaiNLP Project, Copyright 2019 Ponrawee Prasertsom.
-Model ``data/han_solo.crfsuite``: Han-solo project, used unchanged.
-Both under the Apache License 2.0 (see LICENSE-APACHE in this package).
-Changed by iApp Technology: the model file is closed once loaded and a lock
-guards the tagger.
+``Featurizer`` and ``segment`` must stay as they are: the model was trained on
+exactly these features.
 """
 
 import threading
