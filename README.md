@@ -13,7 +13,7 @@ and `iapp-nlp` stands on its own.
 | [`packages/iapp-sdk`](packages/iapp-sdk) | [`iapp-ai`](https://pypi.org/project/iapp-ai/) | Synchronous Python **SDK** — `from iapp_ai import api`. Thin wrappers returning raw `requests.Response`. |
 | [`packages/iapp-mcp`](packages/iapp-mcp) | [`iapp-mcp`](https://pypi.org/project/iapp-mcp/) | **MCP server** for AI assistants (Claude, etc.) exposing the marketplace as tools. Also on [npm](https://www.npmjs.com/package/iapp-mcp). |
 | [`packages/iapp-core`](packages/iapp-core) | [`iapp-core`](https://pypi.org/project/iapp-core/) | Shared **core**: base URL, API-key auth, error handling, response formatting, and the sync + async HTTP transport. A dependency of the SDK and the MCP server. |
-| [`packages/iapp-nlp`](packages/iapp-nlp) | `iapp-nlp` | Free Thai **NLP** library that runs offline and requires no API key. Its tools include word, subword and syllable tokenization and more. |
+| [`packages/iapp-nlp`](packages/iapp-nlp) | `iapp-nlp` | Free Thai **NLP** library that runs offline and requires no API key. Its tools include word tokenization with the OpenThai2.0-LATTE-WordSeg-Lite model, subword and syllable tokenization, and more. |
 
 > **Backward compatibility:** existing SDK users are unaffected — `pip install iapp_ai`
 > and `from iapp_ai import api` keep working exactly as before. The MCP server is
@@ -35,9 +35,9 @@ and `iapp-nlp` stands on its own.
   from iapp_nlp import normalize, word_tokenize
   text = "วันนี้ฝนตกหนักมาาาก"         # repeated vowel typo
   word_tokenize(text)
-  # ['วันนี้', 'ฝน', 'ตกหนัก', 'มา', 'าาก']
+  # ['วัน', 'นี้', 'ฝน', 'ตก', 'หนัก', 'มาาาก']
   word_tokenize(normalize(text))
-  # ['วันนี้', 'ฝน', 'ตกหนัก', 'มาก']
+  # ['วัน', 'นี้', 'ฝน', 'ตก', 'หนัก', 'มาก']
   ```
 
 The SDK and the MCP server need an API key: get one at [iapp.co.th](https://iapp.co.th) → **API Keys** → **Create New API Key**.
@@ -64,4 +64,4 @@ dependency and can be released on its own.
 
 ## License
 
-MIT © iApp Technology Co., Ltd. `iapp-nlp` also includes code and a model under Apache-2.0; see [its README](packages/iapp-nlp/README.md#license).
+MIT © iApp Technology Co., Ltd. `iapp-nlp` also includes Apache-2.0 code, and model files under CC BY-SA 4.0 (commercial use allowed); see [its README](packages/iapp-nlp/README.md#license).

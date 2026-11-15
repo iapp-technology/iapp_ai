@@ -32,3 +32,15 @@ select = ["E4", "E7", "E9", "F"]
 python_version = "3.10"
 
 ignore_missing_imports = true
+
+# The OpenThai2.0-LATTE-WordSeg-Lite runtime, kept as its authors wrote it: it allows for models
+# with one unit, where the unit is None, in ways that strict Optional checking rejects.
+[[tool.mypy.overrides]]
+module = "iapp_nlp.tokenizer.latte"
+strict_optional = false
+disable_error_code = ["var-annotated"]
+
+# onnxruntime (needed by iapp-nlp) 1.24 and later declare Python >= 3.10 but ship no wheels for
+# 3.10, and uv does not skip them the way pip does, so lock the last release with 3.10 wheels.
+[tool.uv]
+constraint-dependencies = ["onnxruntime<1.24; python_full_version < '3.11'"]

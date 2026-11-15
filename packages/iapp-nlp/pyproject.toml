@@ -7,9 +7,9 @@ name = "iapp-nlp"
 version = "0.1.0"
 description = "Free, offline Thai word, subword and syllable tokenizer from iApp Technology (https://iapp.co.th)"
 readme = "README.md"
-license = "MIT AND Apache-2.0"
-license-files = ["LICENSE", "LICENSE-APACHE"]
-requires-python = ">=3.9"
+license = "MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016"
+license-files = ["LICENSE", "LICENSE-APACHE", "LICENSES/*", "NOTICE"]
+requires-python = ">=3.10"
 authors = [
     { name = "iApp Technology Co., Ltd.", email = "dev@iapp.co.th" },
 ]
@@ -21,14 +21,15 @@ classifiers = [
     "Topic :: Text Processing :: Linguistic",
 ]
 dependencies = [
-    "nlpo3>=1.4.0",
+    "numpy>=1.21",
+    "onnxruntime>=1.15",
     "python-crfsuite>=0.9.11",
     "tzdata",
 ]
 
 [project.urls]
 Homepage = "https://iapp.co.th"
-Repository = "https://github.com/iapp-technology/iapp_ai"
+Repository = "https://github.com/iapp-technology/iapp_ai/tree/develop/packages/iapp-nlp"
 
 [project.scripts]
 iapp-tokenize = "iapp_nlp.cli:main"

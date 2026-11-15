@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Word lists bundled with iapp_nlp: Thai stopwords and Thailand provinces."""
+"""Word lists bundled with iapp_nlp: Thai words, Thai stopwords and Thailand provinces."""
 
 import warnings
 from importlib.resources import files
@@ -18,7 +18,10 @@ _province_details: List[Dict[str, str]] = []
 
 
 def thai_words() -> FrozenSet[str]:
-    """Return the words of the bundled dictionary that ``word_tokenize`` uses."""
+    """Return the 62,106 Thai words of PyThaiNLP's word list ``words_th.txt``.
+
+    ``word_tokenize`` does not use this list: its model has a dictionary of its own.
+    """
     global _words
     if not _words:
         _words = frozenset(filter(None, _read_lines(_WORDS_FILE)))

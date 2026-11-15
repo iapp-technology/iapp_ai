@@ -1,0 +1,45 @@
+iapp-nlp includes OpenThai2.0-LATTE-WordSeg-Lite, whose notice follows unchanged. Its paths are
+these in iapp-nlp:
+
+- src/openthai_latte_wordseg_lite/_runtime.py: iapp_nlp/tokenizer/latte.py, changed to read the
+  model files from iapp_nlp/data/latte/ and to start with an SPDX license line
+- assets/ (model.int8.onnx, lexicon.txt.gz, charclass.npz, manifest.json): iapp_nlp/data/latte/,
+  unchanged
+- tests/test_basic.py: tests/test_latte.py, changed to import from iapp_nlp
+- LICENSES/Apache-2.0.txt: LICENSE-APACHE
+
+------------------------------------------------------------------------------------------------
+
+OpenThai2.0-LATTE-WordSeg-Lite
+Copyright 2026 OpenThai, iApp Technology Co., Ltd. and the LATTE authors
+
+Code (src/openthai_latte_wordseg_lite, tools, tests): Apache License 2.0 (LICENSES/Apache-2.0.txt).
+Model weights (assets/model.int8.onnx), dictionary (assets/lexicon.txt.gz) and character table (assets/charclass.npz):
+Creative Commons Attribution-ShareAlike 4.0 International (LICENSES/CC-BY-SA-4.0.txt). If you modify the
+weights or the dictionary and share them, share them under the same licence and keep this notice.
+
+The model was trained only on the following data, which permit commercial use:
+
+- VISTEC-TP-TH-2021 (Limkonchotiwat et al., 2021), CC BY-SA 3.0
+  https://github.com/mrpeerat/OSKut
+- UD_Thai-TUD, Universal Dependencies, CC BY-SA 4.0
+  https://github.com/UniversalDependencies/UD_Thai-TUD
+- Wisesight-1000 word segmentation samples and Wisesight sentiment train/validation (PyThaiNLP), CC0 1.0
+  https://github.com/PyThaiNLP/wisesight-sentiment
+- khammoon data (Typhoon; Sirichotedumrong et al., arXiv:2611.13012), only the 5,014 WangchanThaiInstruct
+  rows licensed CC BY-SA 4.0, with their labels as released under that licence (LLM segmentation by
+  Qwen3-30B-A3B-Instruct-2507, Apache-2.0, corrected by the khammoon authors with rules and a model fine-tuned
+  on their human labels of BEST2009 sentences; the dataset card allows commercial use of these rows only)
+  https://huggingface.co/datasets/typhoon-ai/khammoon-data
+  WangchanThaiInstruct (Limkonchotiwat et al., EMNLP 2025), VISTEC / AIResearch
+- Thai Wikipedia (dump 2023-11-01), CC BY-SA 3.0 / GFDL, unlabelled text
+  https://huggingface.co/datasets/wikimedia/wikipedia
+- Dictionary entries from: PyThaiNLP word list (CC0 1.0); ICU Thai break-iterator dictionary
+  (Copyright (C) 2016 and later: Unicode, Inc. and others; Copyright (c) 2006-2015 International Business
+  Machines Corporation, Apple Inc., and others; Unicode-DFS-2016, full text in LICENSES/Unicode-DFS-2016.txt);
+  Volubilis 23.1 by Francis Bastien (CC BY-SA 4.0); and the vocabulary of the training corpora above.
+  The dictionary (assets/lexicon.txt.gz) is a modified, merged word list: the sources were combined, entries
+  of 2 to 16 characters kept, and entries that look like personal data removed. The merged list is released
+  under CC BY-SA 4.0; the Unicode copyright and permission notice above applies to the ICU entries.
+
+Teacher models (used only to train, not distributed) were built on XLM-RoBERTa large (MIT License).

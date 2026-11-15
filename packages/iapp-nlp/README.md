@@ -1,7 +1,7 @@
 # iapp-nlp
 
 Free Thai word, subword and syllable tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
-No API key, runs offline, and the Thai dictionary and models are included.
+No API key, runs offline, and the Thai models are included.
 
 ```bash
 pip install iapp-nlp
@@ -10,57 +10,96 @@ pip install iapp-nlp
 ```python
 from iapp_nlp import word_tokenize, tokenize
 
-word_tokenize("นายกรัฐมนตรีเดินทางไปเชียงใหม่เมื่อวานนี้")
-# ['นายกรัฐมนตรี', 'เดินทาง', 'ไป', 'เชียงใหม่', 'เมื่อวาน', 'นี้']
+word_tokenize("แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ")
+# ['แม่น้ำ', 'เจ้าพระยา', 'ไหล', 'ผ่าน', 'กรุงเทพ']
 
 tokenize("สวัสดี hello")
 # [Token(text='สวัสดี', start=0, end=6), Token(text=' ', start=6, end=7), Token(text='hello', start=7, end=12)]
 ```
 
 `tokenize` returns each word with its `start`/`end` offset in the input, so
-`text[token.start:token.end] == token.text`.
+`text[token.start:token.end] == token.text`. Words are found by the
+OpenThai2.0-LATTE-WordSeg-Lite model, which runs on the CPU (see
+[How it works](#how-it-works)).
 
 ## Options
 
 | Option | Default | What it does |
 |---|---|---|
-| `keep_whitespace` | `True` | `False` drops tokens made only of spaces. Tabs, new lines and zero-width spaces stay. |
-| `join_broken_num` | `True` | Rejoins numbers like `19:32`, `1,234.5` and `127.0.0.1` (Thai digits too) into one token. |
+| `keep_whitespace` | `True` | Each whitespace character is a token of its own. `False` drops spaces; tabs, new lines and zero-width spaces stay. |
+| `join_broken_num` | `True` | Rejoins numbers like `4.1`, `19:32`, `1,234.5` and `127.0.0.1` (Thai digits too) into one token. |
+| `unit` | `"short"` | How finely to split: `"long"`, `"short"` or `"minimal"` (see [Units](#units)). |
+| `extra_words` | `None` | Words for the model to look out for, such as names (see [Your own words](#your-own-words)). |
 
 ```python
 word_tokenize("วันนี้ อากาศดีมาก", keep_whitespace=False)
-# ['วันนี้', 'อากาศ', 'ดีมาก']
+# ['วัน', 'นี้', 'อากาศ', 'ดี', 'มาก']
 
-word_tokenize("นัดเวลา 19:32น.")
-# ['นัด', 'เวลา', ' ', '19:32', 'น.']
-word_tokenize("นัดเวลา 19:32น.", join_broken_num=False)
-# ['นัด', 'เวลา', ' ', '19', ':', '32', 'น.']
+word_tokenize("ข้อ 4.1 ระบุว่า")
+# ['ข้อ', ' ', '4.1', ' ', 'ระบุ', 'ว่า']
+word_tokenize("ข้อ 4.1 ระบุว่า", join_broken_num=False)
+# ['ข้อ', ' ', '4', '.', '1', ' ', 'ระบุ', 'ว่า']
+```
+
+A run of Latin letters or of digits, Thai digits too, is never split, but a
+letter run and a digit run can be: `iPhone15` gives `iPhone` `15`.
+
+## Units
+
+Thai has no single rule for what a word is, so the model gives three units,
+from coarse to fine: `long` keeps compounds whole, `short` gives words, and
+`minimal` splits words into their smallest meaningful parts.
+
+| `unit` | เจ้าหน้าที่การศึกษาเปิดเผยว่า |
+|---|---|
+| `"long"` | เจ้าหน้าที่ \| การศึกษา \| เปิดเผย \| ว่า |
+| `"short"` (default) | เจ้า \| หน้าที่ \| การ \| ศึกษา \| เปิด \| เผย \| ว่า |
+| `"minimal"` | เจ้า \| หน้า \| ที่ \| การ \| ศึกษา \| เปิด \| เผย \| ว่า |
+
+```python
+word_tokenize("เจ้าหน้าที่การศึกษาเปิดเผยว่า", unit="long")
+# ['เจ้าหน้าที่', 'การศึกษา', 'เปิดเผย', 'ว่า']
 ```
 
 ## Your own words
 
-Names and new words that are not in the dictionary come out in pieces. Add them
-with `extra_words`, or replace the whole dictionary with `custom_dict`.
+Names and new words can come out in pieces. `extra_words` adds them to the
+model's dictionary:
 
 ```python
-from iapp_nlp import Tokenizer, word_tokenize
-
-word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย")
-# ['ชา', 'ไข่', 'มุ', 'กบ', 'ราวน์', 'ชู', 'การ์', 'อร่อย']
-word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย", extra_words=["บราวน์ชูการ์"])
-# ['ชา', 'ไข่มุก', 'บราวน์ชูการ์', 'อร่อย']
-
-tokenizer = Tokenizer(extra_words=["บราวน์ชูการ์"])
-tokenizer.word_tokenize("ชาไข่มุกบราวน์ชูการ์อร่อย")
-# ['ชา', 'ไข่มุก', 'บราวน์ชูการ์', 'อร่อย']
+word_tokenize("ไอแอพพ์เทคโนโลยีอยู่ที่กรุงเทพ")
+# ['ไอแอพพ์', 'เทคโนโลยี', 'อยู่', 'ที่', 'กรุงเทพ']
+word_tokenize("ไอแอพพ์เทคโนโลยีอยู่ที่กรุงเทพ", extra_words=["ไอแอพพ์เทคโนโลยี"])
+# ['ไอแอพพ์เทคโนโลยี', 'อยู่', 'ที่', 'กรุงเทพ']
 ```
 
-- `iapp_nlp.corpus.thai_words()` returns the bundled words, so
-  `custom_dict=thai_words() - {"..."}` removes words.
-- Each distinct set of words is loaded once and takes about 50 MB that stays in
-  memory until the process ends, since nlpO3 cannot unload a dictionary. Keep
-  to a few fixed word sets rather than building new ones per request. Words
-  already in the bundled dictionary add nothing.
+- The words are hints, not rules: the model weighs them against the text around
+  them and can still split them. `unit="long"` keeps them whole most often.
+- Words with spaces, or shorter than 2 or longer than 16 characters, are ignored.
+- Each distinct set of words loads the model again, which takes about 0.1
+  seconds and 10 MB that stays in memory until the process ends. Keep to a few
+  fixed word sets rather than building new ones per request.
+- `iapp_nlp.corpus.thai_words()` returns PyThaiNLP's list of 62,106 Thai words.
+  The model does not use it.
+
+## Many texts at once
+
+`Tokenizer` loads the model when you make it, so a server can load it at
+start-up. Its batch methods split many texts in one call, which is faster than
+one call per text.
+
+```python
+from iapp_nlp import Tokenizer
+
+tokenizer = Tokenizer()  # also takes unit= and extra_words=
+tokenizer.word_tokenize_batch(["ฉันกินข้าวที่บ้าน", "วันนี้อากาศดีมาก"])
+# [['ฉัน', 'กิน', 'ข้าว', 'ที่', 'บ้าน'], ['วัน', 'นี้', 'อากาศ', 'ดี', 'มาก']]
+```
+
+`tokenize_batch` gives the tokens with their offsets, and `tokenize` and
+`word_tokenize` work as the functions of the same name. One tokenizer can serve
+many threads at once. About 1% of texts can come out slightly differently in a
+batch than alone (see [How it works](#how-it-works)).
 
 ## Subwords (Thai Character Clusters)
 
@@ -205,22 +244,43 @@ follows PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ```bash
 iapp-tokenize "Hello, world! สวัสดีครับ ยินดีต้อนรับ"
-# Hello | , | world | ! | สวัสดี | ครับ | ยินดีต้อนรับ
+# Hello | , | world | ! | สวัสดี | ครับ | ยินดี | ต้อนรับ
+iapp-tokenize --unit long "เจ้าหน้าที่การศึกษาเปิดเผยว่า"
+# เจ้าหน้าที่ | การศึกษา | เปิดเผย | ว่า
 ```
+
+Without text, `iapp-tokenize` reads standard input.
 
 ## How it works
 
-Words are found with [nlpO3](https://github.com/PyThaiNLP/nlpo3), a Rust
-version of PyThaiNLP's default `newmm` engine, using a dictionary of 62,106
-Thai words. The tokenizer is built for Thai: English is split at digits, so
-`iPhone15` becomes `iPhone` `15`.
+Words are found by OpenThai2.0-LATTE-WordSeg-Lite, a model from OpenThai and
+iApp Technology with 1.17 million parameters and a dictionary of 177,385 words.
+For each character it reads the dictionary words around it and decides whether
+a word starts there, for all three units at once. Its authors measured an
+average word F1 of 85.6 on seven Thai test sets, against 70.9 for PyThaiNLP's
+dictionary-based `newmm`.
+
+- It runs on the CPU with [ONNX Runtime](https://onnxruntime.ai) and NumPy,
+  which pip installs. The model (3 MB) and its dictionary (0.8 MB) are in the
+  package.
+- The model loads on first use, in about 0.2 seconds, and a process that uses
+  it takes up to about 140 MB of memory.
+- On one CPU thread it splits about 60,000 characters per second one text at a
+  time, and about 100,000 with the batch methods. For more, run several
+  processes rather than more threads.
+- The model's int8 scales are worked out per batch, so 0.4 to 1.3% of lines can
+  come out slightly differently in a batch than alone.
+- It is built for Thai: other scripts pass through.
 
 ## Notes
 
-- Needs Python 3.9 or later. pip also installs `tzdata` for the Thai time zone.
-- nlpO3 has no prebuilt wheel for Linux on ARM (aarch64), so there pip builds it
-  from source and needs a [Rust toolchain](https://rustup.rs).
-- The dictionary `iapp_nlp/data/words_th.txt` is `words_th.txt` from
+- Needs Python 3.10 or later. pip also installs NumPy, ONNX Runtime and
+  `tzdata` (for the Thai time zone).
+- ONNX Runtime has wheels for Linux (x86-64 and ARM64, glibc), macOS and
+  Windows, so pip cannot install iapp-nlp on Alpine Linux and other musl-based
+  systems, or on 32-bit Linux. Intel Macs and Python 3.10 get ONNX Runtime
+  1.23, its last release for them.
+- The word list `iapp_nlp/data/words_th.txt` is `words_th.txt` from
   [PyThaiNLP](https://github.com/PyThaiNLP/pythainlp), released under
   [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 - The stopword list `iapp_nlp/data/stopwords_th.txt` and the province list
@@ -231,9 +291,19 @@ Thai words. The tokenizer is built for Thai: English is split at digits, so
 
 ## License
 
-`MIT AND Apache-2.0`:
+`MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`:
 
 - iApp Technology's own code: MIT (see `LICENSE`).
 - Code from PyThaiNLP and Han-solo, and the Han-solo model: Apache License 2.0
   (see `LICENSE-APACHE`). Each such file starts with SPDX lines naming its source.
+- The OpenThai2.0-LATTE-WordSeg-Lite code, `iapp_nlp/tokenizer/latte.py`:
+  Apache License 2.0 (see `LICENSE-APACHE` and `NOTICE`).
+- Its model files in `iapp_nlp/data/latte/` (the network, the dictionary and
+  the character table): [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+  (see `LICENSES/CC-BY-SA-4.0.txt`). Commercial use allowed. If you modify these
+  files and share them, share them under the same license; this does not reach
+  code that only uses them. The dictionary's entries from ICU also carry the
+  Unicode license (see `LICENSES/Unicode-DFS-2016.txt`). The model was trained
+  only on data whose licenses allow commercial use; `NOTICE` lists the sources
+  and their attributions.
 - The word, stopword and province lists: CC0 1.0.

@@ -1,11 +1,18 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for thai_stopwords and provinces."""
+"""Tests for thai_words, thai_stopwords and provinces."""
 
 import pytest
 
-from iapp_nlp.corpus import common, provinces, thai_stopwords
+from iapp_nlp.corpus import common, provinces, thai_stopwords, thai_words
+
+
+def test_thai_words():
+    words = thai_words()
+    assert isinstance(words, frozenset)
+    assert len(words) == 62106  # 62,107 lines, "โรม่า" is listed twice
+    assert {"นายกรัฐมนตรี", "เชียงใหม่"} <= words
 
 
 def test_thai_stopwords():

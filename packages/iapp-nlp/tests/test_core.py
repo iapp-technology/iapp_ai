@@ -1,16 +1,42 @@
 import io
+import subprocess
 import sys
 import threading
 
-from iapp_nlp import Token, tokenize, word_tokenize
-from iapp_nlp import cli
-from iapp_nlp.tokenizer import nlpo3
+import pytest
+
+from iapp_nlp import Token, cli, tokenize, word_tokenize
+from iapp_nlp.tokenizer import core, latte
+
+# The examples below were chosen with a clear margin (|logit| >= 0.7 at every boundary the model
+# decides), so that small numeric differences between CPUs or ONNX Runtime versions do not flip them.
 
 
 def test_thai_sentence_splits_into_words():
-    assert word_tokenize("นายกรัฐมนตรีเดินทางไปเชียงใหม่") == [
-        "นายกรัฐมนตรี", "เดินทาง", "ไป", "เชียงใหม่",
-    ]
+    assert word_tokenize("แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ") == ["แม่น้ำ", "เจ้าพระยา", "ไหล", "ผ่าน", "กรุงเทพ"]
+
+
+@pytest.mark.parametrize(
+    "unit, words",
+    [
+        ("long", ["เจ้าหน้าที่", "การศึกษา", "เปิดเผย", "ว่า"]),
+        ("short", ["เจ้า", "หน้าที่", "การ", "ศึกษา", "เปิด", "เผย", "ว่า"]),
+        ("minimal", ["เจ้า", "หน้า", "ที่", "การ", "ศึกษา", "เปิด", "เผย", "ว่า"]),
+    ],
+)
+def test_units(unit, words):
+    assert word_tokenize("เจ้าหน้าที่การศึกษาเปิดเผยว่า", unit=unit) == words
+
+
+def test_default_unit_is_short():
+    text = "เจ้าหน้าที่การศึกษาเปิดเผยว่า"
+    assert word_tokenize(text) == word_tokenize(text, unit="short")
+
+
+@pytest.mark.parametrize("unit", ["paragraph", "word", "Short", "", None])
+def test_unknown_unit_is_an_error(unit):
+    with pytest.raises(ValueError, match="unit must be one of"):
+        word_tokenize("ทดสอบ", unit=unit)
 
 
 def test_offsets_point_back_into_text():
@@ -21,10 +47,14 @@ def test_offsets_point_back_into_text():
 
 
 def test_english_splits_at_digits():
-    # accepted on purpose: the whole text goes to nlpo3, which splits English at digits
+    # runs of Latin letters and of digits stay whole, but a letter run and a digit run can split
     assert word_tokenize("ซื้อ iPhone15ราคา 30000 บาท!") == [
         "ซื้อ", " ", "iPhone", "15", "ราคา", " ", "30000", " ", "บาท", "!",
     ]
+
+
+def test_each_whitespace_character_is_a_token():
+    assert word_tokenize("ไป  ไหน") == ["ไป", " ", " ", "ไหน"]
 
 
 def test_keep_whitespace_false_drops_only_spaces():
@@ -34,15 +64,37 @@ def test_keep_whitespace_false_drops_only_spaces():
     ]
 
 
-def test_keep_whitespace_false_trims_spaces_and_keeps_offsets():
+def test_keep_whitespace_false_keeps_offsets():
     text = "abc  \t def"
     assert tokenize(text, keep_whitespace=False) == [
         Token("abc", 0, 3), Token("\t", 5, 6), Token("def", 7, 10),
     ]
 
 
-def test_zero_width_space_is_kept():
-    assert word_tokenize("สวัสดี​ครับ", keep_whitespace=False) == ["สวัสดี", "​", "ครับ"]
+@pytest.mark.parametrize(
+    "text, words",
+    [
+        ("สวัสดี​ครับ", ["สวัสดี", "​", "ครับ"]),
+        ("abc​def", ["abc", "​", "def"]),  # the model alone keeps this whole
+    ],
+)
+def test_zero_width_space_is_a_token_of_its_own(text, words):
+    assert word_tokenize(text, keep_whitespace=False) == words
+
+
+@pytest.mark.parametrize("unit", core.UNITS)
+def test_thai_digit_runs_are_never_split(unit):
+    # the model alone splits this number into ๐๘ ๑ ๒ ๓ ๔ ๕ ๖๗๘
+    assert word_tokenize("โทร ๐๘๑๒๓๔๕๖๗๘", unit=unit) == ["โทร", " ", "๐๘๑๒๓๔๕๖๗๘"]
+
+
+@pytest.mark.parametrize("unit", core.UNITS)
+@pytest.mark.parametrize("text", ["โทร 0812345678", "ราคา1,250บาท เวลา 12:30 น.", "ข้อ 4.1 ระบุว่า", "ก3"])
+def test_thai_digits_split_like_arabic_digits(text, unit):
+    thai = text.translate(str.maketrans("0123456789", "๐๑๒๓๔๕๖๗๘๙"))
+    arabic_words = word_tokenize(text, join_broken_num=False, unit=unit)
+    thai_words = word_tokenize(thai, join_broken_num=False, unit=unit)
+    assert [len(word) for word in thai_words] == [len(word) for word in arabic_words]
 
 
 def test_formatted_numbers_are_joined():
@@ -51,12 +103,16 @@ def test_formatted_numbers_are_joined():
     ]
 
 
-def test_formatted_numbers_join_thai_digits():
-    assert word_tokenize("๑๒:๓๐ น.") == ["๑๒:๓๐", " ", "น."]
-
-
 def test_join_broken_num_false_leaves_numbers_split():
-    assert word_tokenize("19:32น", join_broken_num=False) == ["19", ":", "32", "น"]
+    text = "ข้อ 4.1 ระบุว่า"
+    assert word_tokenize(text, keep_whitespace=False) == ["ข้อ", "4.1", "ระบุ", "ว่า"]
+    assert word_tokenize(text, keep_whitespace=False, join_broken_num=False) == [
+        "ข้อ", "4", ".", "1", "ระบุ", "ว่า",
+    ]
+
+
+def test_formatted_numbers_join_thai_digits():
+    assert word_tokenize("ข้อ ๔.๑ ระบุว่า", keep_whitespace=False) == ["ข้อ", "๔.๑", "ระบุ", "ว่า"]
 
 
 def test_numbers_split_by_spaces_are_not_joined():
@@ -68,24 +124,36 @@ def test_empty_string():
     assert word_tokenize("") == []
 
 
-def test_dictionary_loads_once_across_threads():
+def test_model_loads_once_across_threads(monkeypatch):
+    loads = []
+    segmenter = latte.Segmenter
+    monkeypatch.setattr(core, "_segmenters", {})
+    monkeypatch.setattr(latte, "Segmenter", lambda **kwargs: loads.append(kwargs) or segmenter(**kwargs))
     results = []
     threads = [
-        threading.Thread(target=lambda: results.append(word_tokenize("เชียงใหม่")))
+        threading.Thread(target=lambda: results.append(word_tokenize("ไปเชียงใหม่")))
         for _ in range(8)
     ]
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
-    nlpo3.load_dict()  # loading again is a no-op, not an error
-    assert results == [["เชียงใหม่"]] * 8
+    assert len(loads) == 1
+    assert results == [["ไป", "เชียงใหม่"]] * 8
+
+
+def test_import_loads_neither_numpy_nor_onnxruntime():
+    # they load on the first word tokenization, so the rest of the package starts fast
+    code = "import sys, iapp_nlp; print(sorted({'numpy', 'onnxruntime'} & set(sys.modules)))"
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "[]"
 
 
 def test_cli_prints_words_without_spaces(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["iapp-tokenize", "นายกรัฐมนตรี", "เดินทาง"])
+    monkeypatch.setattr(sys, "argv", ["iapp-tokenize", "ผมไป", "เชียงใหม่"])
     cli.main()
-    assert capsys.readouterr().out == "นายกรัฐมนตรี | เดินทาง\n"
+    assert capsys.readouterr().out == "ผม | ไป | เชียงใหม่\n"
 
 
 def test_cli_reads_stdin(monkeypatch, capsys):
@@ -93,3 +161,15 @@ def test_cli_reads_stdin(monkeypatch, capsys):
     monkeypatch.setattr(sys, "stdin", io.StringIO("ไปเชียงใหม่\n"))
     cli.main()
     assert capsys.readouterr().out == "ไป | เชียงใหม่\n"
+
+
+def test_cli_unit(capsys):
+    cli.main(["--unit", "long", "เจ้าหน้าที่การศึกษาเปิดเผยว่า"])
+    assert capsys.readouterr().out == "เจ้าหน้าที่ | การศึกษา | เปิดเผย | ว่า\n"
+
+
+def test_cli_rejects_an_unknown_unit(capsys):
+    with pytest.raises(SystemExit) as exit_info:
+        cli.main(["--unit", "word", "ทดสอบ"])
+    assert exit_info.value.code == 2
+    assert "invalid choice" in capsys.readouterr().err

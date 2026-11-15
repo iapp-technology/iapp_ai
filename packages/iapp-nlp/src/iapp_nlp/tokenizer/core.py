@@ -1,83 +1,134 @@
-"""Thai word tokenizer: nlpo3 segmentation plus whitespace and number clean-up."""
+"""Thai tokenizers: words with OpenThai2.0-LATTE-WordSeg-Lite, plus whitespace and number clean-up;
+subwords with TCC and syllables with Han-solo."""
 
-import functools
 import re
-from typing import FrozenSet, Iterable, List, Optional, Set
+import threading
+from typing import TYPE_CHECKING, Dict, FrozenSet, Iterable, List, Optional, Set
 
-from ..corpus import thai_words
-from . import han_solo, nlpo3, tcc_p
+from . import han_solo, tcc_p
 from .token import Token
+
+if TYPE_CHECKING:
+    from .latte import Segmenter
+
+# Word units, coarse to fine
+UNITS = ("long", "short", "minimal")
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
 _FORMATTED_NUMBER_RE = re.compile(r"\d+(?:[.,:]\d+)+")
 # Whitespace other than plain spaces: tabs, new lines, carriage returns
 _LINE_BREAK_RE = re.compile(r"[\t\n\r\f\v]+")
+# What the model reads in place of some characters, one for one so that offsets stay the same:
+# Thai digits as Arabic digits, whose runs it never splits, and a zero-width space as a space,
+# which always separates words and comes out as a token of its own
+_MODEL_VIEW = str.maketrans({**{chr(0x0E50 + d): str(d) for d in range(10)}, "​": " "})
+
+_segmenters: Dict[FrozenSet[str], "Segmenter"] = {}
+_segmenters_lock = threading.Lock()
 
 
 class Tokenizer:
-    """Word tokenizer with its own dictionary, loaded once so it can be reused cheaply.
+    """Thai word tokenizer with the OpenThai2.0-LATTE-WordSeg-Lite model.
 
-    ``extra_words`` adds words to the bundled dictionary; ``custom_dict`` replaces it.
-    With both, ``extra_words`` is added to ``custom_dict``. Each distinct dictionary takes
-    about 50 MB that stays in memory until the process ends, so keep to a few fixed word sets.
+    The model loads when the first tokenizer is made (about 0.2 s), so make one at start-up and
+    reuse it. Tokenizers with the same ``extra_words`` share one loaded model, and one tokenizer
+    can serve many threads at once.
+
+    ``unit`` sets how finely words are split: ``"long"`` keeps compounds whole (การศึกษา),
+    ``"short"`` splits them into words (การ ศึกษา), and ``"minimal"`` splits words into their
+    smallest meaningful parts (โรง เรียน).
+
+    ``extra_words`` are hints, not rules: the model finds them in its dictionary but can still
+    split them, depending on the text around them. Words with spaces, or shorter than 2 or longer
+    than 16 characters, are ignored. Each distinct set of words loads the model again, about
+    10 MB that stays in memory until the process ends, so keep to a few fixed word sets.
     """
 
-    def __init__(self, custom_dict: Optional[Iterable[str]] = None, extra_words: Optional[Iterable[str]] = None):
-        custom = frozenset(_clean_words(custom_dict)) if custom_dict is not None else None
-        extra = frozenset(_clean_words(extra_words)) if extra_words is not None else frozenset()
-        self._dict_name = _dict_name(custom, extra)
+    def __init__(self, unit: str = "short", extra_words: Optional[Iterable[str]] = None):
+        if unit not in UNITS:
+            raise ValueError(f"unit must be one of {', '.join(map(repr, UNITS))}, not {unit!r}")
+        words = frozenset(_clean_words(extra_words)) if extra_words is not None else frozenset()
+        self.unit = unit
+        self._segmenter = _segmenter(words)
 
     def tokenize(self, text: str, keep_whitespace: bool = True, join_broken_num: bool = True) -> List[Token]:
         """Split ``text`` into words, keeping each token's start/end offset.
 
-        ``keep_whitespace=False`` drops tokens made only of spaces (tabs and new lines stay).
-        ``join_broken_num=True`` rejoins formatted numbers that segmentation split, e.g. ``19:32``.
+        Each whitespace character is a token of its own. ``keep_whitespace=False`` drops spaces;
+        tabs, new lines and zero-width spaces stay. ``join_broken_num=True`` rejoins formatted
+        numbers that segmentation split, e.g. ``19:32``.
         """
-        if not text:
-            return []
-        tokens = []
-        start = 0
-        # the pieces add up to text, so offsets are running lengths
-        for piece in nlpo3.segment(text, self._dict_name):
-            tokens.append(Token(piece, start, start + len(piece)))
-            start += len(piece)
-        if join_broken_num:
-            tokens = _join_formatted_numbers(text, tokens)
-        if not keep_whitespace:
-            tokens = _strip_spaces(tokens)
-        return tokens
+        return self.tokenize_batch([text], keep_whitespace, join_broken_num)[0]
 
     def word_tokenize(self, text: str, keep_whitespace: bool = True, join_broken_num: bool = True) -> List[str]:
         """Split ``text`` into a list of word strings."""
         return [token.text for token in self.tokenize(text, keep_whitespace, join_broken_num)]
+
+    def tokenize_batch(
+        self, texts: Iterable[str], keep_whitespace: bool = True, join_broken_num: bool = True
+    ) -> List[List[Token]]:
+        """``tokenize`` each text, faster than one call per text.
+
+        The model's int8 scales are worked out per batch, so about 1% of texts can come out
+        slightly differently than when tokenized alone.
+        """
+        if isinstance(texts, str):
+            raise TypeError("Pass a list of texts, not a single string")
+        texts = list(texts)
+        views = [text.translate(_MODEL_VIEW) for text in texts]
+        result = []
+        for text, pieces in zip(texts, self._segmenter.tokenize_batch(views, True, self.unit)):
+            tokens = []
+            start = 0
+            # the pieces add up to the text, so offsets are running lengths
+            for piece in pieces:
+                end = start + len(piece)
+                tokens.append(Token(text[start:end], start, end))
+                start = end
+            if join_broken_num:
+                tokens = _join_formatted_numbers(text, tokens)
+            if not keep_whitespace:
+                tokens = _strip_spaces(tokens)
+            result.append(tokens)
+        return result
+
+    def word_tokenize_batch(
+        self, texts: Iterable[str], keep_whitespace: bool = True, join_broken_num: bool = True
+    ) -> List[List[str]]:
+        """``word_tokenize`` each text, faster than one call per text (see ``tokenize_batch``)."""
+        return [
+            [token.text for token in tokens]
+            for tokens in self.tokenize_batch(texts, keep_whitespace, join_broken_num)
+        ]
 
 
 def tokenize(
     text: str,
     keep_whitespace: bool = True,
     join_broken_num: bool = True,
-    custom_dict: Optional[Iterable[str]] = None,
+    unit: str = "short",
     extra_words: Optional[Iterable[str]] = None,
 ) -> List[Token]:
     """Split ``text`` into words, keeping each token's start/end offset.
 
-    ``keep_whitespace=False`` drops tokens made only of spaces (tabs and new lines stay).
-    ``join_broken_num=True`` rejoins formatted numbers that segmentation split, e.g. ``19:32``.
-    ``extra_words`` adds words to the bundled dictionary and ``custom_dict`` replaces it;
-    repeated calls with the same words reuse the dictionary loaded the first time.
+    Each whitespace character is a token of its own. ``keep_whitespace=False`` drops spaces;
+    tabs, new lines and zero-width spaces stay. ``join_broken_num=True`` rejoins formatted
+    numbers that segmentation split, e.g. ``19:32``. ``unit`` is ``"long"``, ``"short"`` or
+    ``"minimal"``, and ``extra_words`` are hints the model can still split (see ``Tokenizer``).
+    The model loads on the first call and stays loaded for later calls with the same ``extra_words``.
     """
-    return Tokenizer(custom_dict, extra_words).tokenize(text, keep_whitespace, join_broken_num)
+    return Tokenizer(unit, extra_words).tokenize(text, keep_whitespace, join_broken_num)
 
 
 def word_tokenize(
     text: str,
     keep_whitespace: bool = True,
     join_broken_num: bool = True,
-    custom_dict: Optional[Iterable[str]] = None,
+    unit: str = "short",
     extra_words: Optional[Iterable[str]] = None,
 ) -> List[str]:
-    """Split ``text`` into a list of word strings."""
-    return [token.text for token in tokenize(text, keep_whitespace, join_broken_num, custom_dict, extra_words)]
+    """Split ``text`` into a list of word strings (see ``tokenize``)."""
+    return [token.text for token in tokenize(text, keep_whitespace, join_broken_num, unit, extra_words)]
 
 
 def subword_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
@@ -117,26 +168,24 @@ def syllable_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
     return syllables
 
 
-@functools.lru_cache(maxsize=None)
-def _dict_name(custom: Optional[FrozenSet[str]], extra: FrozenSet[str]) -> str:
-    """Return the nlpo3 dictionary for these words, loading it only if it is new.
+def _segmenter(words: FrozenSet[str]) -> "Segmenter":
+    """Return the segmenter for these extra words, loading it the first time they are asked for."""
+    segmenter = _segmenters.get(words)
+    if segmenter is None:
+        # concurrent first calls wait for one load instead of each loading a copy
+        with _segmenters_lock:
+            segmenter = _segmenters.get(words)
+            if segmenter is None:
+                # imported here so that numpy and ONNX Runtime load only when words are first needed
+                from .latte import Segmenter
 
-    Cached by the words passed in, so repeated calls skip merging with the 62k bundled words.
-    """
-    if custom is None:
-        if extra <= thai_words():  # nothing new: use the bundled dictionary, not a copy of it
-            return nlpo3.DICT_NAME
-        return nlpo3.load_words(thai_words() | extra)
-    words = custom | extra
-    if not words:
-        raise ValueError("The dictionary has no words")
-    if words == thai_words():
-        return nlpo3.DICT_NAME
-    return nlpo3.load_words(words)
+                segmenter = Segmenter(user_words=sorted(words))
+                _segmenters[words] = segmenter
+    return segmenter
 
 
 def _clean_words(words: Iterable[str]) -> Set[str]:
-    """Strip each word and drop blanks; a word may not span lines, as the dictionary file has one per line."""
+    """Strip each word and drop blanks; a word cannot contain a line break."""
     if isinstance(words, str):
         raise TypeError("Pass a list of words, not a single string")
     cleaned = set()
