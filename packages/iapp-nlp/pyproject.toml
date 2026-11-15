@@ -5,9 +5,9 @@ build-backend = "hatchling.build"
 [project]
 name = "iapp-nlp"
 version = "0.1.0"
-description = "Free, offline Thai word, subword, syllable and sentence tokenizer from iApp Technology (https://iapp.co.th)"
+description = "Free, offline Thai word, subword and syllable tokenizer from iApp Technology (https://iapp.co.th)"
 readme = "README.md"
-license = "MIT AND Apache-2.0 AND CC-BY-4.0"
+license = "MIT AND Apache-2.0"
 license-files = ["LICENSE", "LICENSE-APACHE"]
 requires-python = ">=3.9"
 authors = [

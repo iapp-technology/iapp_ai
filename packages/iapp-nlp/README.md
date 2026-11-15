@@ -1,6 +1,6 @@
 # iapp-nlp
 
-Free Thai word, subword, syllable and sentence tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
+Free Thai word, subword and syllable tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
 No API key, runs offline, and the Thai dictionary and models are included.
 
 ```bash
@@ -61,7 +61,6 @@ tokenizer.word_tokenize("ชาไข่มุกบราวน์ชูกา�
   memory until the process ends, since nlpO3 cannot unload a dictionary. Keep
   to a few fixed word sets rather than building new ones per request. Words
   already in the bundled dictionary add nothing.
-- `sent_tokenize` always uses the bundled dictionary, since its model was trained on it.
 
 ## Subwords (Thai Character Clusters)
 
@@ -100,28 +99,6 @@ syllable_tokenize("ม่ายยยย อร่อยมากกกก", kee
 
 The model and feature code come from [Han-solo](https://github.com/PyThaiNLP/Han-solo)
 and PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
-
-## Sentences
-
-`sent_tokenize` splits text into sentences. Thai has no full stop, so a CRF
-model decides which spaces end a sentence.
-
-```python
-from iapp_nlp import sent_tokenize
-
-sent_tokenize("หิวข้าวมากๆ แต่ไม่รู้จะกินอะไรดี")
-# ['หิวข้าวมากๆ ', 'แต่ไม่รู้จะกินอะไรดี']
-sent_tokenize("สวัสดีครับ! วันนี้ว่างไหม? ไปเที่ยวกัน", keep_whitespace=False)
-# ['สวัสดีครับ!', 'วันนี้ว่างไหม?', 'ไปเที่ยวกัน']
-```
-
-- A new line always ends a sentence; blank lines stay on the sentence before them.
-- `!`, `.` and `?` end a sentence, so abbreviations such as `ดร.` and `กทม.` do too.
-- Joining the sentences gives back the input text.
-
-The model is PyThaiNLP's `crfcut` (trained on TED subtitles), used under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the feature code comes
-from PyThaiNLP under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Normalize
 
@@ -238,8 +215,6 @@ version of PyThaiNLP's default `newmm` engine, using a dictionary of 62,106
 Thai words. The tokenizer is built for Thai: English is split at digits, so
 `iPhone15` becomes `iPhone` `15`.
 
-The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legacy`.
-
 ## Notes
 
 - Needs Python 3.9 or later. pip also installs `tzdata` for the Thai time zone.
@@ -256,11 +231,9 @@ The earlier rule-based tokenizer is still available as `iapp_nlp.tokenizer.legac
 
 ## License
 
-`MIT AND Apache-2.0 AND CC-BY-4.0`:
+`MIT AND Apache-2.0`:
 
 - iApp Technology's own code: MIT (see `LICENSE`).
 - Code from PyThaiNLP and Han-solo, and the Han-solo model: Apache License 2.0
   (see `LICENSE-APACHE`). Each such file starts with SPDX lines naming its source.
-- The sentence model `sentenceseg_crfcut.model`:
-  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - The word, stopword and province lists: CC0 1.0.
