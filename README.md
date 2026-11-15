@@ -57,6 +57,12 @@ The SDK and MCP server both depend on `iapp-core` via `[tool.uv.sources]`
 Release order: **iapp-core → iapp-ai / iapp-mcp**. `iapp-nlp` has no internal
 dependency and can be released on its own.
 
+To release one package, push a tag named `<PyPI name>-v<version>`, such as
+`iapp-nlp-v0.1.0`, whose version matches the package's `pyproject.toml`. The
+[release workflow](.github/workflows/release.yml) builds and checks only that
+package, then publishes it to PyPI once a reviewer approves the `pypi`
+environment.
+
 ## Support
 
 - Documentation: [iapp.co.th/docs/intro](https://iapp.co.th/docs/intro)

@@ -3,18 +3,24 @@
 
 Subcommands::
 
-    python scripts/release.py build
-        Build every package in dependency order (core -> sdk -> mcp -> nlp)
-        into ./dist with a single command. core is built first because the sdk
-        and mcp depend on it; nlp needs no other package from this repo.
+    python scripts/release.py build [--tag TAG]
+        Build into ./dist. With a release tag ``<PyPI name>-v<version>``, such
+        as ``iapp-nlp-v0.1.0``, build only that package, once the tag's version
+        matches its pyproject.toml. Without one, build every package in
+        dependency order (core -> sdk -> mcp -> nlp): core first because the
+        sdk and mcp depend on it; nlp needs no other package from this repo.
 
     python scripts/release.py bump <core|sdk|mcp|nlp> <version>
         Set one package's version in its pyproject.toml and keep its
         __init__ __version__ in sync.
 
-    python scripts/release.py check
-        pip install every wheel in ./dist into a throwaway venv, then import
-        each package and confirm its __version__ matches the wheel version.
+    python scripts/release.py check [--tag TAG]
+        Check the files in ./dist, only the tagged package's with a tag: run
+        ``twine check --strict``, pip install the wheels into a throwaway venv,
+        then import each package and confirm its __version__ matches the wheel
+        version. For iapp-nlp, also check the model files against the SHA-256
+        in their manifest, the license files, and one sentence split into words.
+        Needs twine, e.g. ``uv run --with twine python scripts/release.py check``.
 
 Build uses ``python -m build`` (PEP 517), so no extra tooling is required; the
 GitHub Actions release workflow calls the same entry point.
@@ -23,6 +29,7 @@ GitHub Actions release workflow calls the same entry point.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import re
 import subprocess
 import sys
@@ -43,9 +50,31 @@ PACKAGES = {
 # core first: sdk and mcp depend on it. nlp needs no other package from this repo.
 BUILD_ORDER = ["core", "sdk", "mcp", "nlp"]
 
-_VERSION_RE = re.compile(r'^version\s*=\s*"[^"]*"', re.MULTILINE)
+_VERSION_RE = re.compile(r'^version\s*=\s*"([^"]*)"', re.MULTILINE)
 _DUNDER_RE = re.compile(r'^__version__\s*=\s*"[^"]*"', re.MULTILINE)
 _NAME_RE = re.compile(r'^name\s*=\s*"([^"]*)"', re.MULTILINE)
+# <PyPI name>-v<version>; the name may contain "-v", the version starts with a digit
+_TAG_RE = re.compile(r"^(?P<name>.+)-v(?P<version>[0-9]\S*)$")
+
+# Run in the throwaway venv after installing the iapp-nlp wheel
+NLP_SMOKE_TEST = """
+import hashlib, json
+from importlib.metadata import files
+from importlib.resources import files as package_files
+from iapp_nlp import word_tokenize
+
+latte = package_files("iapp_nlp") / "data" / "latte"
+manifest = json.loads((latte / "manifest.json").read_text(encoding="utf-8"))
+model = manifest["model"]
+for name, digest in {model["file"]: model["sha256"], **manifest["files_sha256"]}.items():
+    assert hashlib.sha256((latte / name).read_bytes()).hexdigest() == digest, f"{name} does not match manifest.json"
+licenses = {str(f).split("/licenses/", 1)[1] for f in files("iapp-nlp") if "/licenses/" in str(f)}
+for name in ("LICENSE", "LICENSE-APACHE", "LICENSES/CC-BY-SA-4.0.txt", "LICENSES/Unicode-DFS-2016.txt", "NOTICE"):
+    assert name in licenses, f"{name} is missing from the wheel"
+words = word_tokenize("แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ")
+assert words == ["แม่น้ำ", "เจ้าพระยา", "ไหล", "ผ่าน", "กรุงเทพ"], words
+print("ok iapp_nlp: model files match manifest.json, license files present, words:", "|".join(words))
+"""
 
 
 def set_project_version(pyproject_text: str, version: str) -> str:
@@ -64,15 +93,72 @@ def set_dunder_version(init_text: str, version: str) -> str:
 
 def project_name(pyproject_text: str) -> str:
     """Return the first ``name = "..."`` in pyproject.toml as a wheel name (``-`` -> ``_``)."""
+    return _pypi_name(pyproject_text).replace("-", "_")
+
+
+def project_version(pyproject_text: str) -> str:
+    """Return the first ``version = "..."`` in pyproject.toml."""
+    m = _VERSION_RE.search(pyproject_text)
+    if not m:
+        raise ValueError("no `version = \"...\"` line found in pyproject.toml")
+    return m.group(1)
+
+
+def _pypi_name(pyproject_text: str) -> str:
     m = _NAME_RE.search(pyproject_text)
     if not m:
         raise ValueError("no `name = \"...\"` line found in pyproject.toml")
-    return m.group(1).replace("-", "_")
+    return m.group(1)
+
+
+def projects() -> dict[str, tuple[str, str]]:
+    """Map each package to the (PyPI name, version) in its pyproject.toml."""
+    out = {}
+    for pkg, (pkg_dir, _) in PACKAGES.items():
+        text = (ROOT / pkg_dir / "pyproject.toml").read_text()
+        out[pkg] = (_pypi_name(text), project_version(text))
+    return out
+
+
+def tag_package(tag: str, projects: dict[str, tuple[str, str]]) -> str:
+    """Return the package that release tag ``tag`` names, once its version matches.
+
+    ``projects`` maps each package to its (PyPI name, version), as :func:`projects`
+    gives; with ``{"nlp": ("iapp-nlp", "0.1.0")}``, ``iapp-nlp-v0.1.0`` gives ``"nlp"``.
+    """
+    m = _TAG_RE.match(tag)
+    for pkg, (name, version) in projects.items():
+        if m and m.group("name") == name:
+            if m.group("version") != version:
+                raise ValueError(
+                    f"tag {tag} is for {name} {m.group('version')}, "
+                    f"but its pyproject.toml says version {version}"
+                )
+            return pkg
+    examples = ", ".join(f"{name}-v{version}" for name, version in projects.values())
+    raise ValueError(f"{tag!r} is not a release tag: use <PyPI name>-v<version>, e.g. {examples}")
 
 
 def wheel_versions(wheel_names: list[str]) -> dict[str, str]:
     """Map wheel name to version from filenames like ``iapp_core-0.1.0-py3-none-any.whl``."""
     return dict(name.split("-")[:2] for name in wheel_names)
+
+
+def dist_files(wheel_names: set[str], dist: Path) -> list[Path]:
+    """The wheels and sdists in ``dist`` of the packages with these wheel names."""
+    return sorted(
+        f for f in dist.glob("*")
+        if f.name.endswith((".whl", ".tar.gz")) and f.name.split("-")[0] in wheel_names
+    )
+
+
+def _packages(tag: str | None) -> list[str]:
+    if tag is None:
+        return BUILD_ORDER
+    try:
+        return [tag_package(tag, projects())]
+    except ValueError as e:
+        raise SystemExit(str(e)) from None
 
 
 def bump(pkg: str, version: str) -> None:
@@ -87,57 +173,67 @@ def bump(pkg: str, version: str) -> None:
     print(f"bumped {pkg} -> {version}")
 
 
-def build() -> None:
+def build(pkgs: list[str]) -> None:
     DIST.mkdir(exist_ok=True)
-    for pkg in BUILD_ORDER:
+    for pkg in pkgs:
         pkg_dir = ROOT / PACKAGES[pkg][0]
         print(f"== building {pkg} ({pkg_dir.name}) ==")
         subprocess.run(
             [sys.executable, "-m", "build", "--outdir", str(DIST), str(pkg_dir)],
             check=True,
         )
-    print(f"built {len(BUILD_ORDER)} packages into {DIST}")
+    print(f"built {len(pkgs)} package(s) into {DIST}")
 
 
-def check() -> None:
-    wheels = sorted(DIST.glob("*.whl"))
+def check(pkgs: list[str]) -> None:
+    names = {pkg: project_name((ROOT / PACKAGES[pkg][0] / "pyproject.toml").read_text()) for pkg in pkgs}
+    files = dist_files(set(names.values()), DIST)
+    wheels = [f for f in files if f.suffix == ".whl"]
     if not wheels:
         raise SystemExit(f"no wheels in {DIST}; run `build` first")
+    if importlib.util.find_spec("twine") is None:
+        raise SystemExit("check needs twine: uv run --with twine python scripts/release.py check")
+    subprocess.run([sys.executable, "-m", "twine", "check", "--strict", *map(str, files)], check=True)
     versions = wheel_versions([whl.name for whl in wheels])
     with tempfile.TemporaryDirectory() as tmp:
         # a clean venv: the repo .venv has editable installs that would always import
         venv.create(tmp, with_pip=True)
         py = str(Path(tmp) / "bin" / "python")
-        # all wheels in one call so iapp-core resolves from ./dist, not PyPI
+        # all wheels in one call so iapp-core resolves from ./dist, not PyPI, when it was built too
         subprocess.run([py, "-m", "pip", "install", *map(str, wheels)], check=True)
-        for pkg in BUILD_ORDER:
-            pkg_dir, init_rel = PACKAGES[pkg]
-            name = project_name((ROOT / pkg_dir / "pyproject.toml").read_text())
+        for pkg in pkgs:
+            name = names[pkg]
             if name not in versions:
                 raise SystemExit(f"no wheel for {pkg} ({name}) in {DIST}")
-            mod = Path(init_rel).parent.name
+            mod = Path(PACKAGES[pkg][1]).parent.name
             want = versions[name]
+            # -I: import the installed package, never one from the current directory
             subprocess.run(
-                [py, "-c", f"import {mod}; assert {mod}.__version__ == {want!r}, {mod}.__version__"],
+                [py, "-I", "-c", f"import {mod}; assert {mod}.__version__ == {want!r}, {mod}.__version__"],
                 check=True,
             )
-            print(f"ok {mod} {want}")
-    print(f"installed and imported {len(wheels)} wheels in a clean venv")
+            print(f"ok {mod} {want}", flush=True)  # before the smoke test's own output
+            if pkg == "nlp":
+                subprocess.run([py, "-I", "-c", NLP_SMOKE_TEST], check=True)
+    print(f"checked {len(files)} files and installed and imported {len(wheels)} wheel(s) in a clean venv")
 
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="iApp AI monorepo release helper")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("build", help="build core -> sdk -> mcp -> nlp into ./dist")
-    sub.add_parser("check", help="pip install ./dist wheels into a clean venv and import them")
+    tag_help = "release tag <PyPI name>-v<version>, e.g. iapp-nlp-v0.1.0: only that package"
+    build_p = sub.add_parser("build", help="build core -> sdk -> mcp -> nlp, or the tagged package, into ./dist")
+    build_p.add_argument("--tag", help=tag_help)
+    check_p = sub.add_parser("check", help="twine check the ./dist files, then install and import the wheels")
+    check_p.add_argument("--tag", help=tag_help)
     bump_p = sub.add_parser("bump", help="set a package version")
     bump_p.add_argument("package", choices=list(PACKAGES))
     bump_p.add_argument("version")
     args = parser.parse_args(argv)
     if args.cmd == "build":
-        build()
+        build(_packages(args.tag))
     elif args.cmd == "check":
-        check()
+        check(_packages(args.tag))
     elif args.cmd == "bump":
         bump(args.package, args.version)
 
