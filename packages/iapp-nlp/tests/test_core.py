@@ -1,4 +1,5 @@
 import io
+import os
 import subprocess
 import sys
 import threading
@@ -225,3 +226,22 @@ def test_cli_rejects_an_unknown_unit(capsys):
         cli.main(["--unit", "word", "ทดสอบ"])
     assert exit_info.value.code == 2
     assert "invalid choice" in capsys.readouterr().err
+
+
+def _run_cli(stdin: bytes) -> subprocess.CompletedProcess:
+    # cp1252 stands in for the ANSI code page of a redirected stream on English Windows, which has no Thai
+    env = {**os.environ, "PYTHONIOENCODING": "cp1252"}
+    return subprocess.run([sys.executable, "-m", "iapp_nlp.cli"], input=stdin, capture_output=True, env=env)
+
+
+@pytest.mark.parametrize("bom", [b"", b"\xef\xbb\xbf"])
+def test_cli_reads_and_writes_utf8_whatever_the_locale(bom):
+    result = _run_cli(bom + "ไปเชียงใหม่\n".encode())
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.decode("utf-8").strip() == "ไป | เชียงใหม่"
+
+
+def test_cli_rejects_input_that_is_not_utf8():
+    result = _run_cli("ไปเชียงใหม่\n".encode("cp874"))
+    assert result.returncode == 1
+    assert b"the input is not UTF-8" in result.stderr

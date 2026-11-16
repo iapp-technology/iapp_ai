@@ -19,8 +19,16 @@ def main(argv: Optional[List[str]] = None) -> None:
         "minimal splits words into their smallest meaningful parts",
     )
     args = parser.parse_args(argv)
+    # UTF-8 whatever the console's locale: on Windows a redirected stream used the ANSI code page and failed
+    # on Thai; utf-8-sig drops a byte-order mark at the start of the input
+    for stream, encoding in ((sys.stdin, "utf-8-sig"), (sys.stdout, "utf-8")):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding=encoding)
     # strip so the new line that ends stdin input does not print as a token
-    text = (" ".join(args.text) or sys.stdin.read()).strip()
+    try:
+        text = (" ".join(args.text).lstrip("\ufeff") or sys.stdin.read()).strip()
+    except UnicodeDecodeError:
+        sys.exit("the input is not UTF-8: save the file as UTF-8 and run again")
     print(" | ".join(word_tokenize(text, keep_whitespace=False, unit=args.unit)))
 
 
