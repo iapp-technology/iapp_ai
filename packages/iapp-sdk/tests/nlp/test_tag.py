@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Tests for tag_provinces."""
 
-from iapp_nlp import word_tokenize
-from iapp_nlp.tag import tag_provinces
+from iapp_ai.nlp import word_tokenize
+from iapp_ai.nlp.tag import tag_provinces
 
 
 def test_tag_provinces():

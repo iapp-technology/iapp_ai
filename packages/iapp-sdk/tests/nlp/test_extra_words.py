@@ -2,8 +2,8 @@
 
 import pytest
 
-from iapp_nlp import Token, Tokenizer, tokenize, word_tokenize
-from iapp_nlp.tokenizer import core, latte
+from iapp_ai.nlp import Token, Tokenizer, tokenize, word_tokenize
+from iapp_ai.nlp.tokenizer import core, latte
 
 TEXT = "ไอแอพพ์เทคโนโลยีอยู่ที่กรุงเทพ"
 NAME = "ไอแอพพ์เทคโนโลยี"

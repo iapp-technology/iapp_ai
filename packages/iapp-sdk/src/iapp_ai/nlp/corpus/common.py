@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Word lists bundled with iapp_nlp: Thai words, Thai stopwords and Thailand provinces."""
+"""Word lists bundled with iapp_ai.nlp: Thai words, Thai stopwords and Thailand provinces."""
 
 import warnings
 from importlib.resources import files
@@ -86,4 +86,4 @@ def provinces(details: bool = False) -> Union[FrozenSet[str], List[Dict[str, str
 
 def _read_lines(filename: str) -> List[str]:
     # utf-8-sig drops the byte order mark at the start of stopwords_th.txt
-    return (files("iapp_nlp") / "data" / filename).read_text(encoding="utf-8-sig").splitlines()
+    return (files("iapp_ai.nlp") / "data" / filename).read_text(encoding="utf-8-sig").splitlines()

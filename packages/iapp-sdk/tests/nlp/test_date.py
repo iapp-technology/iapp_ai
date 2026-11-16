@@ -8,7 +8,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from iapp_nlp.util import (
+from iapp_ai.nlp.util import (
     convert_years,
     now_reign_year,
     reign_year_to_ad,

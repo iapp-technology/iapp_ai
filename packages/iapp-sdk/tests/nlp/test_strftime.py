@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Characterization tests for iapp_nlp.util.strftime.
+"""Characterization tests for iapp_ai.nlp.util.strftime.
 
 Golden data was recorded from the pre-refactor implementation.
 Directives that the C library of Windows rejects are skipped there.
@@ -13,8 +13,8 @@ import unittest
 import warnings
 from datetime import datetime, timedelta, timezone
 
-from iapp_nlp.util import thai_strftime
-from iapp_nlp.util.strftime import _NEED_L10N, _thai_strftime
+from iapp_ai.nlp.util import thai_strftime
+from iapp_ai.nlp.util.strftime import _NEED_L10N, _thai_strftime
 
 _TZ = timezone(timedelta(hours=7))
 
@@ -634,7 +634,7 @@ class _FixedStrftime(datetime):
 class ThaiStrftimeTestCase(unittest.TestCase):
     def test_type_hints_resolve(self) -> None:
         # datetime and Callable must stay runtime imports
-        import iapp_nlp.util.strftime as module
+        import iapp_ai.nlp.util.strftime as module
 
         self.assertIn("fmt", typing.get_type_hints(thai_strftime))
         typing.get_type_hints(module)

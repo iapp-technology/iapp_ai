@@ -5,7 +5,7 @@
 
 import unittest
 
-from iapp_nlp.util import (
+from iapp_ai.nlp.util import (
     arabic_digit_to_thai_digit,
     bahttext,
     digit_to_text,

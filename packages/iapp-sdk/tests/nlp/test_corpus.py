@@ -5,7 +5,7 @@
 
 import pytest
 
-from iapp_nlp.corpus import common, provinces, thai_stopwords, thai_words
+from iapp_ai.nlp.corpus import common, provinces, thai_stopwords, thai_words
 
 
 def test_thai_words():

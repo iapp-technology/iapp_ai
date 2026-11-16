@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Characterization tests for iapp_nlp.util.date.thai_strptime.
+"""Characterization tests for iapp_ai.nlp.util.date.thai_strptime.
 
 Golden data was recorded from the pre-refactor implementation.
 """
@@ -11,7 +11,7 @@ import unittest
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from iapp_nlp.util import thai_strptime
+from iapp_ai.nlp.util import thai_strptime
 
 _BANGKOK = ZoneInfo("Asia/Bangkok")
 _UTC = ZoneInfo("UTC")
@@ -296,7 +296,7 @@ class ThaiStrptimeTestCase(unittest.TestCase):
                     thai_strptime(text, fmt)
 
     def test_numeric_months(self) -> None:
-        # Fixed in iapp_nlp: the month was found by substring, so "10", "11"
+        # Fixed in iapp_ai.nlp: the month was found by substring, so "10", "11"
         # and "12" matched January's "1"
         for month in range(1, 13):
             for text in (str(month), f"{month:02d}"):

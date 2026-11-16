@@ -5,8 +5,8 @@ import threading
 
 import pytest
 
-from iapp_nlp import Token, Tokenizer, cli, tokenize, word_tokenize, word_tokenize_nbest
-from iapp_nlp.tokenizer import core, latte
+from iapp_ai.nlp import Token, Tokenizer, cli, tokenize, word_tokenize, word_tokenize_nbest
+from iapp_ai.nlp.tokenizer import core, latte
 
 # The examples below were chosen with a clear margin (|logit| >= 0.7 at every boundary the model
 # decides), so that small numeric differences between CPUs or ONNX Runtime versions do not flip them.
@@ -196,7 +196,7 @@ def test_model_loads_once_across_threads(monkeypatch):
 
 def test_import_loads_neither_numpy_nor_onnxruntime():
     # they load on the first word tokenization, so the rest of the package starts fast
-    code = "import sys, iapp_nlp; print(sorted({'numpy', 'onnxruntime'} & set(sys.modules)))"
+    code = "import sys, iapp_ai.nlp; print(sorted({'numpy', 'onnxruntime'} & set(sys.modules)))"
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "[]"

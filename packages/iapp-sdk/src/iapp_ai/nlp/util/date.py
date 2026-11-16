@@ -143,7 +143,7 @@ def convert_years(year: str, src: str = "be", target: str = "ad") -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import convert_years
+        >>> from iapp_ai.nlp.util import convert_years
         >>> # Convert Buddhist Era (BE) to Anno Domini (AD)
         >>> convert_years("2566", src="be", target="ad")
         '2023'
@@ -250,7 +250,7 @@ def thai_strptime(
 
     :Example:
 
-        >>> from iapp_nlp.util import thai_strptime
+        >>> from iapp_ai.nlp.util import thai_strptime
 
         >>> thai_strptime("15 ก.ค. 2565 09:00:01", "%d %B %Y %H:%M:%S")
         datetime.datetime(2022, 7, 15, 9, 0, 1, tzinfo=zoneinfo.ZoneInfo(key='Asia/Bangkok'))
@@ -292,7 +292,7 @@ def now_reign_year() -> int:
 
     :Example:
 
-        >>> from iapp_nlp.util import now_reign_year  # doctest: +SKIP
+        >>> from iapp_ai.nlp.util import now_reign_year  # doctest: +SKIP
         >>> text = "เป็นปีที่ {reign_year} ในรัชกาลปัจจุบัน"\\  # doctest: +SKIP
         ...     .format(reign_year=now_reign_year())
         >>> print(text)  # doctest: +SKIP
@@ -318,7 +318,7 @@ def reign_year_to_ad(reign_year: int, reign: int) -> int:
 
     :Example:
 
-        >>> from iapp_nlp.util import reign_year_to_ad
+        >>> from iapp_ai.nlp.util import reign_year_to_ad
         >>> print(
         ...     "The 4th reign year of the King Rama X is in",
         ...     reign_year_to_ad(4, 10),
@@ -357,7 +357,7 @@ def thaiword_to_date(
     :Example:
 
         >>> from datetime import datetime
-        >>> from iapp_nlp.util import thaiword_to_date
+        >>> from iapp_ai.nlp.util import thaiword_to_date
 
         >>> thaiword_to_date("พรุ่งนี้", datetime(2024, 1, 31))
         datetime.datetime(2024, 2, 1, 0, 0)
