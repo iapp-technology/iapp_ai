@@ -5,9 +5,9 @@ import subprocess
 import sys
 
 CODE = """
-import iapp_nlp
-from iapp_nlp.util import thai_strptime
-print(iapp_nlp.word_tokenize("สวัสดีครับ"), thai_strptime("15 ก.ค. 2565", "%d %B %Y").tzinfo)
+import iapp_ai.nlp
+from iapp_ai.nlp.util import thai_strptime
+print(iapp_ai.nlp.word_tokenize("สวัสดีครับ"), thai_strptime("15 ก.ค. 2565", "%d %B %Y").tzinfo)
 """
 
 

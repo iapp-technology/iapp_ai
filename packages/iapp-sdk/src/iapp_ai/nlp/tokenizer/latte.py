@@ -6,7 +6,7 @@ each line of a text loses its whitespace; every character gets an id (frequent c
 Unicode-class bucket, and 13 dictionary bits (which dictionary words of each length bucket start,
 end or continue there); the network gives one word-start logit per character; a word starts where
 the logit is >= 0 unless Thai spelling rules it out; words are mapped back onto the original text,
-runs of Latin letters or digits are never split, and every whitespace character is its own token.
+runs of ASCII letters or of digits are never split, and every whitespace character is its own token.
 A line longer than MAX_WINDOW characters is read in overlapping windows, so memory stays bounded.
 """
 from __future__ import annotations
@@ -155,8 +155,11 @@ def _user_words(user_words: Iterable[str] | None, max_len: int) -> list[str]:
 
 
 def _same_run(a: str, b: str) -> bool:
-    """Two adjacent characters of one Latin-letter run or one digit run (never split)."""
-    return a.isascii() and b.isascii() and ((a.isalpha() and b.isalpha()) or (a.isdigit() and b.isdigit()))
+    """Two adjacent characters of one run of ASCII letters or of one run of digits (never split). Digits are the
+    decimal digits of any script: Thai digits (๐-๙) stay together like 0-9."""
+    if a.isdecimal() and b.isdecimal():
+        return True
+    return a.isascii() and b.isascii() and a.isalpha() and b.isalpha()
 
 
 def _batches(lengths: Sequence[int], batch_chars: int) -> list[list[int]]:
@@ -289,7 +292,7 @@ class Segmenter:
     def tokenize_batch(self, texts: Sequence[str], keep_whitespace: bool = True,
                        unit: str | None = None) -> list[list[str]]:
         """Tokens of each text. Every whitespace character is a token of its own (dropped when
-        ``keep_whitespace`` is False); runs of Latin letters or digits are never split. ``unit``
+        ``keep_whitespace`` is False); runs of ASCII letters or of digits are never split. ``unit``
         overrides the segmenter's unit for this call."""
         if isinstance(texts, str):
             raise TypeError("tokenize_batch takes a list of texts; for one text use tokenize")
@@ -331,7 +334,7 @@ class Segmenter:
         the model: the readings of an ambiguous phrase, such as ตา|กลม and ตาก|ลม.
 
         Every piece is a dictionary word or a word that the model cuts in one of its units. Whitespace always
-        separates and runs of Latin letters or digits stay whole, as in :meth:`tokenize`, whose result comes
+        separates and runs of ASCII letters or of digits stay whole, as in :meth:`tokenize`, whose result comes
         first. The probability of a segmentation is the product of the model's start and no-start
         probabilities over the characters (a measure of plausibility, not calibrated). At most MAX_NBEST
         readings of a text of at most MAX_NBEST_CHARS characters, whitespace not counted."""

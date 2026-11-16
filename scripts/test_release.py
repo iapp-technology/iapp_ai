@@ -56,7 +56,7 @@ def test_wheel_versions_from_filenames():
 
 
 def test_project_version():
-    assert release.project_version('[project]\nname = "iapp-nlp"\nversion = "0.1.0"\n') == "0.1.0"
+    assert release.project_version('[project]\nname = "iapp-ai"\nversion = "2.0.0"\n') == "2.0.0"
 
 
 def test_project_version_errors_when_absent():
@@ -68,31 +68,32 @@ def test_projects_read_each_pyproject():
     projects = release.projects()
     assert set(projects) == set(release.PACKAGES)
     assert projects["sdk"][0] == "iapp-ai"
-    assert projects["nlp"][0] == "iapp-nlp"
 
 
 PROJECTS = {
     "core": ("iapp-core", "0.1.0"),
     "sdk": ("iapp-ai", "2.0.0"),
     "mcp": ("iapp-mcp", "2.0.0"),
-    "nlp": ("iapp-nlp", "0.1.0"),
 }
 
 
 @pytest.mark.parametrize(
     "tag, pkg",
-    [("iapp-core-v0.1.0", "core"), ("iapp-ai-v2.0.0", "sdk"), ("iapp-mcp-v2.0.0", "mcp"), ("iapp-nlp-v0.1.0", "nlp")],
+    [("iapp-core-v0.1.0", "core"), ("iapp-ai-v2.0.0", "sdk"), ("iapp-mcp-v2.0.0", "mcp")],
 )
 def test_tag_package(tag, pkg):
     assert release.tag_package(tag, PROJECTS) == pkg
 
 
 def test_tag_package_needs_the_pyproject_version():
-    with pytest.raises(ValueError, match="pyproject.toml says version 0.1.0"):
-        release.tag_package("iapp-nlp-v0.1.1", PROJECTS)
+    with pytest.raises(ValueError, match="pyproject.toml says version 2.0.0"):
+        release.tag_package("iapp-ai-v2.0.1", PROJECTS)
 
 
-@pytest.mark.parametrize("tag", ["v2.0.0", "iapp-nlp-0.1.0", "iapp-nlp-v", "nlp-v0.1.0", "iapp-vision-v1.0.0"])
+# iapp-nlp-v0.1.0: iapp-nlp is no longer released from here; it moved into iapp-ai as iapp_ai.nlp
+@pytest.mark.parametrize(
+    "tag", ["v2.0.0", "iapp-ai-2.0.0", "iapp-ai-v", "ai-v2.0.0", "iapp-vision-v1.0.0", "iapp-nlp-v0.1.0"]
+)
 def test_tag_package_rejects_other_tags(tag):
     with pytest.raises(ValueError, match="not a release tag"):
         release.tag_package(tag, PROJECTS)
@@ -100,10 +101,17 @@ def test_tag_package_rejects_other_tags(tag):
 
 def test_dist_files_picks_one_package(tmp_path):
     for name in [
-        "iapp_nlp-0.1.0-py3-none-any.whl", "iapp_nlp-0.1.0.tar.gz",
-        "iapp_ai-2.0.0-py3-none-any.whl", "iapp_core-0.1.0.tar.gz", ".gitignore",
+        "iapp_ai-2.0.0-py3-none-any.whl", "iapp_ai-2.0.0.tar.gz",
+        "iapp_core-0.1.0-py3-none-any.whl", "iapp_core-0.1.0.tar.gz", ".gitignore",
     ]:
         (tmp_path / name).touch()
-    assert [f.name for f in release.dist_files({"iapp_nlp"}, tmp_path)] == [
-        "iapp_nlp-0.1.0-py3-none-any.whl", "iapp_nlp-0.1.0.tar.gz",
+    assert [f.name for f in release.dist_files({"iapp_ai"}, tmp_path)] == [
+        "iapp_ai-2.0.0-py3-none-any.whl", "iapp_ai-2.0.0.tar.gz",
+    ]
+
+
+def test_with_nlp_extra_adds_the_extra_to_iapp_ai_only():
+    wheels = [Path("dist/iapp_core-0.1.0-py3-none-any.whl"), Path("dist/iapp_ai-2.0.0-py3-none-any.whl")]
+    assert release.with_nlp_extra(wheels) == [
+        "dist/iapp_core-0.1.0-py3-none-any.whl", "dist/iapp_ai-2.0.0-py3-none-any.whl[nlp]",
     ]

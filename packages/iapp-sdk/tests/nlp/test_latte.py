@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Behaviour of the OpenThai2.0-LATTE-WordSeg-Lite runtime: its tests/test_basic.py, importing from iapp_nlp."""
+"""Behaviour of the OpenThai2.0-LATTE-WordSeg-Lite runtime: its tests/test_basic.py, importing from iapp_ai.nlp."""
 import hashlib
 import json
 import warnings
 
 import pytest
 
-from iapp_nlp import Tokenizer, word_tokenize
-from iapp_nlp.tokenizer import latte
-from iapp_nlp.tokenizer.latte import Segmenter
+from iapp_ai.nlp import Tokenizer, word_tokenize
+from iapp_ai.nlp.tokenizer import latte
+from iapp_ai.nlp.tokenizer.latte import Segmenter
 
 ASSETS = latte.ASSETS
 
@@ -40,6 +40,10 @@ def test_latin_and_digit_runs_are_never_split(seg):
     toks = seg.tokenize("ดาวน์โหลดinternationalizationที่github.comเวอร์ชัน20261113")
     for run in ("internationalization", "github", "com", "20261113"):
         assert any(run in t for t in toks), (run, toks)
+
+
+def test_thai_digit_runs_are_never_split(seg):
+    assert seg.tokenize("เลขที่๑๐๙๘๗๖") == ["เลข", "ที่", "๑๐๙๘๗๖"]    # 0.1.1 gave ๑๐ ๙๘๗๖
 
 
 def test_whitespace_tokens(seg):

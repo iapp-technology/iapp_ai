@@ -1,12 +1,13 @@
 import io
+import os
 import subprocess
 import sys
 import threading
 
 import pytest
 
-from iapp_nlp import Token, Tokenizer, cli, tokenize, word_tokenize, word_tokenize_nbest
-from iapp_nlp.tokenizer import core, latte
+from iapp_ai.nlp import Token, Tokenizer, cli, tokenize, word_tokenize, word_tokenize_nbest
+from iapp_ai.nlp.tokenizer import core, latte
 
 # The examples below were chosen with a clear margin (|logit| >= 0.7 at every boundary the model
 # decides), so that small numeric differences between CPUs or ONNX Runtime versions do not flip them.
@@ -84,7 +85,7 @@ def test_zero_width_space_is_a_token_of_its_own(text, words):
 
 @pytest.mark.parametrize("unit", core.UNITS)
 def test_thai_digit_runs_are_never_split(unit):
-    # the model alone splits this number into ๐๘ ๑ ๒ ๓ ๔ ๕ ๖๗๘
+    # the model alone split this number into ๐๘ ๑ ๒ ๓ ๔ ๕ ๖๗๘ before LATTE WordSeg Lite 0.1.2
     assert word_tokenize("โทร ๐๘๑๒๓๔๕๖๗๘", unit=unit) == ["โทร", " ", "๐๘๑๒๓๔๕๖๗๘"]
 
 
@@ -195,11 +196,49 @@ def test_model_loads_once_across_threads(monkeypatch):
 
 
 def test_import_loads_neither_numpy_nor_onnxruntime():
-    # they load on the first word tokenization, so the rest of the package starts fast
-    code = "import sys, iapp_nlp; print(sorted({'numpy', 'onnxruntime'} & set(sys.modules)))"
+    # the SDK alone does not load the nlp package, and numpy and ONNX Runtime load on the first
+    # word tokenization, so the rest of the package starts fast
+    code = (
+        "import sys, iapp_ai; print('iapp_ai.nlp' in sys.modules); "
+        "import iapp_ai.nlp; print(sorted({'numpy', 'onnxruntime'} & set(sys.modules)))"
+    )
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "[]"
+    assert result.stdout.split() == ["False", "[]"]
+
+
+# Run with a module of the nlp extra made unimportable, as on `pip install iapp-ai` without [nlp]
+WITHOUT_EXTRA = "import sys; sys.modules[{module!r}] = None\n"
+
+
+@pytest.mark.parametrize("module", ["numpy", "onnxruntime"])
+def test_without_the_nlp_extra_only_the_tokenizer_says_to_install_it(module):
+    code = WITHOUT_EXTRA.format(module=module) + (
+        "from iapp_ai.nlp import normalize, word_tokenize\n"
+        "from iapp_ai.nlp.corpus import thai_stopwords\n"
+        "from iapp_ai.nlp.util import bahttext\n"
+        "print(normalize('เเปลก'), bahttext(150.5), 'กับ' in thai_stopwords())\n"
+        "try:\n"
+        "    word_tokenize('ไปเชียงใหม่')\n"
+        "except ImportError as e:\n"
+        "    print(e, '|', e.name)\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == [
+        "แปลก หนึ่งร้อยห้าสิบบาทห้าสิบสตางค์ True",
+        f'The Thai word tokenizer needs numpy and ONNX Runtime: pip install "iapp-ai[nlp]" | {module}',
+    ]
+
+
+def test_cli_without_the_nlp_extra_says_to_install_it():
+    code = WITHOUT_EXTRA.format(module="onnxruntime") + "from iapp_ai.nlp import cli\ncli.main(['ไปเชียงใหม่'])\n"
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert result.stderr.strip() == (
+        'iapp-tokenize: The Thai word tokenizer needs numpy and ONNX Runtime: pip install "iapp-ai[nlp]"'
+    )
 
 
 def test_cli_prints_words_without_spaces(monkeypatch, capsys):
@@ -225,3 +264,22 @@ def test_cli_rejects_an_unknown_unit(capsys):
         cli.main(["--unit", "word", "ทดสอบ"])
     assert exit_info.value.code == 2
     assert "invalid choice" in capsys.readouterr().err
+
+
+def _run_cli(stdin: bytes) -> subprocess.CompletedProcess:
+    # cp1252 stands in for the ANSI code page of a redirected stream on English Windows, which has no Thai
+    env = {**os.environ, "PYTHONIOENCODING": "cp1252"}
+    return subprocess.run([sys.executable, "-m", "iapp_ai.nlp.cli"], input=stdin, capture_output=True, env=env)
+
+
+@pytest.mark.parametrize("bom", [b"", b"\xef\xbb\xbf"])
+def test_cli_reads_and_writes_utf8_whatever_the_locale(bom):
+    result = _run_cli(bom + "ไปเชียงใหม่\n".encode())
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.decode("utf-8").strip() == "ไป | เชียงใหม่"
+
+
+def test_cli_rejects_input_that_is_not_utf8():
+    result = _run_cli("ไปเชียงใหม่\n".encode("cp874"))
+    assert result.returncode == 1
+    assert b"the input is not UTF-8" in result.stderr

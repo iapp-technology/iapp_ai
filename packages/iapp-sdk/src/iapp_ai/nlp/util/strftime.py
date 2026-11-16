@@ -325,7 +325,7 @@ def thai_strftime(
     :Example:
 
         >>> from datetime import datetime
-        >>> from iapp_nlp.util import thai_strftime
+        >>> from iapp_ai.nlp.util import thai_strftime
 
         >>> datetime_obj = datetime(year=2019, month=6, day=9, \\
         ...     hour=5, minute=59, second=0, microsecond=0)
