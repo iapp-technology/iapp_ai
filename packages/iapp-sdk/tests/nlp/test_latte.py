@@ -42,6 +42,10 @@ def test_latin_and_digit_runs_are_never_split(seg):
         assert any(run in t for t in toks), (run, toks)
 
 
+def test_thai_digit_runs_are_never_split(seg):
+    assert seg.tokenize("เลขที่๑๐๙๘๗๖") == ["เลข", "ที่", "๑๐๙๘๗๖"]    # 0.1.1 gave ๑๐ ๙๘๗๖
+
+
 def test_whitespace_tokens(seg):
     assert seg.tokenize("ไป  ไหน") == ["ไป", " ", " ", "ไหน"]
     assert seg.tokenize("ไป  ไหน", keep_whitespace=False) == ["ไป", "ไหน"]
