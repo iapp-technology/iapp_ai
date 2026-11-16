@@ -1,0 +1,47 @@
+{
+ "model": {
+  "file": "model.int8.onnx",
+  "parameters": 1168771,
+  "config": {
+   "emb_dim": 64,
+   "use_lexicon": true,
+   "lex_dim": 32,
+   "channels": 128,
+   "widths": [
+    3,
+    5,
+    7
+   ],
+   "hidden": 128,
+   "layers": 2,
+   "dropout": 0.2,
+   "styles": [],
+   "style_dim": 16,
+   "levels": [
+    "large",
+    "word",
+    "sub"
+   ]
+  },
+  "source_run": "runs/th-ccsub-lv3-student-lex-60k",
+  "sha256": "2f8d349528b3d8342f5cb9150a4e07e774f07e40e892367dbe18bd41ea1d29f3",
+  "units": [
+   "long",
+   "short",
+   "minimal"
+  ],
+  "default_unit": "short",
+  "unnested_units": [
+   "minimal"
+  ]
+ },
+ "max_word_len": 16,
+ "lexicon": "lexicon.txt.gz",
+ "charclass": "charclass.npz",
+ "lexicon_words": 177385,
+ "lexicon_dropped": 12652,
+ "files_sha256": {
+  "lexicon.txt.gz": "dc611971a797e105620ac2791311e8d9c1c5f0c2944527786a712ed5e2571d5a",
+  "charclass.npz": "078ea02fd7db27f56c5cf4bb785087785ab4929d4473f1fbd5ddfbc6ec8b41d6"
+ }
+}

@@ -1,0 +1,47 @@
+name: Release
+
+# Release one package by pushing a tag named <PyPI name>-v<version>, such as
+# iapp-nlp-v0.1.0, iapp-core-v0.1.1, iapp-ai-v2.0.0 or iapp-mcp-v2.2.0. The tag's
+# version must match the package's pyproject.toml. Only that package is built,
+# checked and, once a reviewer approves the pypi environment, published to PyPI
+# via trusted publishing (OIDC).
+on:
+  push:
+    tags:
+      - "iapp-core-v*"
+      - "iapp-ai-v*"
+      - "iapp-mcp-v*"
+      - "iapp-nlp-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Build the tagged package
+        run: uv run --with build python scripts/release.py build --tag "$GITHUB_REF_NAME"
+      - name: Check it with twine, then install and import it in a clean venv
+        run: uv run --with twine --managed-python --python 3.12 python scripts/release.py check --tag "$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # trusted publishing to PyPI
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
