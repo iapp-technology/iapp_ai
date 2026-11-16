@@ -1,11 +1,20 @@
-<img src="logo-iapp.png" alt="iApp Technology" width="240">
+<p align="center">
+  <img src="logo-iapp.png" alt="iApp Technology" width="240">
+</p>
 
-[![iapp-ai on PyPI](https://img.shields.io/pypi/v/iapp-ai?label=iapp-ai)](https://pypi.org/project/iapp-ai/)
-[![iapp-mcp on PyPI](https://img.shields.io/pypi/v/iapp-mcp?label=iapp-mcp)](https://pypi.org/project/iapp-mcp/)
-[![iapp-mcp on npm](https://img.shields.io/npm/v/iapp-mcp?label=npm%20iapp-mcp)](https://www.npmjs.com/package/iapp-mcp)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](#license)
+<p align="center">
+  <a href="https://pypi.org/project/iapp-ai/"><img src="https://img.shields.io/pypi/v/iapp-ai?label=iapp-ai" alt="iapp-ai on PyPI"></a>
+  <a href="https://pypi.org/project/iapp-mcp/"><img src="https://img.shields.io/pypi/v/iapp-mcp?label=iapp-mcp" alt="iapp-mcp on PyPI"></a>
+  <a href="https://www.npmjs.com/package/iapp-mcp"><img src="https://img.shields.io/npm/v/iapp-mcp?label=npm%20iapp-mcp" alt="iapp-mcp on npm"></a>
+  <a href="#license"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
+</p>
 
-[Website](https://iapp.co.th) | [Documentation](https://iapp.co.th/docs/intro) | [Get an API key](#api-key) | [Support](#support)
+<p align="center">
+  <a href="https://iapp.co.th">Website</a> |
+  <a href="https://iapp.co.th/docs/intro">Documentation</a> |
+  <a href="#api-key">Get an API key</a> |
+  <a href="#support">Support</a>
+</p>
 
 Official Python clients for the [iApp AI Marketplace](https://iapp.co.th): 30+
 Thai-focused AI APIs for OCR, eKYC, Thai NLP, LLMs, speech, image and video
@@ -13,12 +22,12 @@ generation, and smart city, plus a free Thai NLP library that runs offline.
 
 ## Packages
 
-| Package | Install | Use it to |
+| Package | Install | Description |
 |---|---|---|
-| [`iapp-ai`](packages/iapp-sdk) | `pip install iapp-ai` | Call iApp APIs from Python code. Each method returns the raw `requests.Response`. |
-| [`iapp-mcp`](packages/iapp-mcp) | `uvx iapp-mcp` or `npx -y iapp-mcp` | Connect an AI assistant such as Claude to iApp APIs through the Model Context Protocol. |
-| [`iapp-nlp`](packages/iapp-nlp) | `pip install iapp-nlp` | Segment and clean Thai text offline, with no API key. Words are split by the OpenThai2.0-LATTE-WordSeg-Lite model. |
-| [`iapp-core`](packages/iapp-core) | installed with `iapp-ai` and `iapp-mcp` | Shared base URL, API-key auth, error handling and HTTP transport. You do not install it yourself. |
+| [iapp-ai](packages/iapp-sdk) | `pip install iapp-ai` | Python SDK for the iApp APIs |
+| [iapp-mcp](packages/iapp-mcp) | `uvx iapp-mcp` | MCP server for AI assistants such as Claude |
+| [iapp-nlp](packages/iapp-nlp) | `pip install iapp-nlp` | Offline Thai NLP, no API key needed |
+| [iapp-core](packages/iapp-core) | installed as a dependency | Shared core of the SDK and the MCP server |
 
 ## What the APIs cover
 
