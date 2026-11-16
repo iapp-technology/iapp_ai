@@ -2,7 +2,7 @@
 
 import re
 import threading
-from typing import TYPE_CHECKING, Dict, FrozenSet, Iterable, List, Optional, Set
+from typing import TYPE_CHECKING, Dict, FrozenSet, Iterable, List, Optional, Set, Tuple
 
 from .token import Token
 
@@ -77,13 +77,7 @@ class Tokenizer:
         views = [text.translate(_MODEL_VIEW) for text in texts]
         result = []
         for text, pieces in zip(texts, self._segmenter.tokenize_batch(views, True, self.unit)):
-            tokens = []
-            start = 0
-            # the pieces add up to the text, so offsets are running lengths
-            for piece in pieces:
-                end = start + len(piece)
-                tokens.append(Token(text[start:end], start, end))
-                start = end
+            tokens = _tokens(text, pieces)
             if join_broken_num:
                 tokens = _join_formatted_numbers(text, tokens)
             if not keep_whitespace:
@@ -99,6 +93,32 @@ class Tokenizer:
             [token.text for token in tokens]
             for tokens in self.tokenize_batch(texts, keep_whitespace, join_broken_num)
         ]
+
+    def word_tokenize_nbest(
+        self, text: str, n: int = 10, keep_whitespace: bool = True
+    ) -> List[Tuple[List[str], float]]:
+        """The ``n`` most likely ways to split a short ``text``, best first, each with its probability.
+
+        Useful for ambiguous phrases: ``ตากลม`` gives ``ตา กลม``, ``ตากลม`` and ``ตาก ลม``. The first
+        is ``word_tokenize(text)``. Formatted numbers are rejoined as in ``word_tokenize``, so readings
+        that differ only inside a number count once and fewer than ``n`` can come back. The
+        probabilities rank the readings; they are not calibrated. ``text`` can have at most 10,000
+        characters (whitespace not counted) and ``n`` is 1 to 100, else ``ValueError``.
+        """
+        if not isinstance(text, str):
+            raise TypeError(f"text must be a str, not {type(text).__name__}")
+        readings: List[Tuple[List[str], float]] = []
+        seen = set()
+        for pieces, probability in self._segmenter.tokenize_nbest(text.translate(_MODEL_VIEW), n, self.unit):
+            tokens = _join_formatted_numbers(text, _tokens(text, pieces))
+            if not keep_whitespace:
+                tokens = _strip_spaces(tokens)
+            words = [token.text for token in tokens]
+            # readings come best first, so a reading that a joined number makes a copy of is a worse one
+            if tuple(words) not in seen:
+                seen.add(tuple(words))
+                readings.append((words, probability))
+        return readings
 
 
 def tokenize(
@@ -130,6 +150,19 @@ def word_tokenize(
     return [token.text for token in tokenize(text, keep_whitespace, join_broken_num, unit, extra_words)]
 
 
+def word_tokenize_nbest(
+    text: str,
+    n: int = 10,
+    keep_whitespace: bool = True,
+    unit: str = "short",
+    extra_words: Optional[Iterable[str]] = None,
+) -> List[Tuple[List[str], float]]:
+    """The ``n`` most likely ways to split a short ``text`` into words, best first, each with its
+    probability: ``word_tokenize_nbest("ตากลม", 3)`` gives ``ตา กลม``, ``ตากลม`` and ``ตาก ลม``
+    (see ``Tokenizer.word_tokenize_nbest``)."""
+    return Tokenizer(unit, extra_words).word_tokenize_nbest(text, n, keep_whitespace)
+
+
 def _segmenter(words: FrozenSet[str]) -> "Segmenter":
     """Return the segmenter for these extra words, loading it the first time they are asked for."""
     segmenter = _segmenters.get(words)
@@ -158,6 +191,17 @@ def _clean_words(words: Iterable[str]) -> Set[str]:
         if word:
             cleaned.add(word)
     return cleaned
+
+
+def _tokens(text: str, pieces: List[str]) -> List[Token]:
+    """Tokens of ``text`` cut where the model cut its view of it; the pieces add up to the text."""
+    tokens = []
+    start = 0
+    for piece in pieces:
+        end = start + len(piece)
+        tokens.append(Token(text[start:end], start, end))
+        start = end
+    return tokens
 
 
 def _join_formatted_numbers(text: str, tokens: List[Token]) -> List[Token]:

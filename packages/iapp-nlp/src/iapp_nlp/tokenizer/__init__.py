@@ -1,6 +1,6 @@
 """Thai word tokenizer (OpenThai2.0-LATTE-WordSeg-Lite)."""
 
-from .core import Tokenizer, tokenize, word_tokenize
+from .core import Tokenizer, tokenize, word_tokenize, word_tokenize_nbest
 from .token import Token
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "Tokenizer",
     "tokenize",
     "word_tokenize",
+    "word_tokenize_nbest",
 ]

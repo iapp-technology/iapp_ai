@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 
-from .tokenizer import Token, Tokenizer, tokenize, word_tokenize
+from .tokenizer import Token, Tokenizer, tokenize, word_tokenize, word_tokenize_nbest
 from .util import normalize
 
 __all__ = [
@@ -11,4 +11,5 @@ __all__ = [
     "normalize",
     "tokenize",
     "word_tokenize",
+    "word_tokenize_nbest",
 ]

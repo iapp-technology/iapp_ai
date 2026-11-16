@@ -102,6 +102,31 @@ tokenizer.word_tokenize_batch(["ฉันกินข้าวที่บ้า
 many threads at once. About 1% of texts can come out slightly differently in a
 batch than alone (see [How it works](#how-it-works)).
 
+## Several readings
+
+Some phrases can be read in more than one way. `word_tokenize_nbest` gives the
+`n` most likely splits of a short text, best first, each with its probability.
+
+```python
+from iapp_nlp import word_tokenize_nbest
+
+for words, probability in word_tokenize_nbest("ตากลม", 3):
+    print(words, round(probability, 2))
+# ['ตา', 'กลม'] 0.42
+# ['ตากลม'] 0.41
+# ['ตาก', 'ลม'] 0.08
+```
+
+- The first reading is always `word_tokenize(text)`. The right reading is often
+  in the list but not always first.
+- It takes `keep_whitespace`, `unit` and `extra_words` as `word_tokenize` does,
+  and `Tokenizer` has a `word_tokenize_nbest` method too.
+- Formatted numbers are rejoined, so readings that differ only inside a number
+  such as `12:30` count once and fewer than `n` can come back.
+- The probabilities rank the readings; they are not calibrated.
+- Texts of up to 10,000 characters (whitespace not counted) and `n` from 1 to
+  100, else `ValueError`.
+
 ## Normalize
 
 `normalize` fixes common Thai typing errors before you tokenize: repeated or

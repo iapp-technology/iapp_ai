@@ -5,7 +5,7 @@ import threading
 
 import pytest
 
-from iapp_nlp import Token, cli, tokenize, word_tokenize
+from iapp_nlp import Token, Tokenizer, cli, tokenize, word_tokenize, word_tokenize_nbest
 from iapp_nlp.tokenizer import core, latte
 
 # The examples below were chosen with a clear margin (|logit| >= 0.7 at every boundary the model
@@ -130,6 +130,50 @@ def test_text_must_be_a_string(bad):
         word_tokenize(bad)
     with pytest.raises(TypeError, match="text must be a str"):
         core.Tokenizer().word_tokenize_batch(["ไทย", bad])
+    with pytest.raises(TypeError, match="text must be a str"):
+        word_tokenize_nbest(bad)
+
+
+def test_nbest_gives_the_readings_of_an_ambiguous_phrase():
+    readings = word_tokenize_nbest("ตากลม", 3)
+    assert sorted(words for words, _ in readings) == [["ตา", "กลม"], ["ตาก", "ลม"], ["ตากลม"]]
+    assert readings[0][0] == word_tokenize("ตากลม")
+
+
+@pytest.mark.parametrize("unit", core.UNITS)
+@pytest.mark.parametrize("text", ["ไปหามเหสี", "ราคา ๑๒,๕๐๐ บาท", "ประชุม 12:30 น.", "สวัสดี\nครับ", ""])
+def test_nbest_starts_with_word_tokenize(text, unit):
+    readings = word_tokenize_nbest(text, 5, unit=unit)
+    assert readings[0][0] == word_tokenize(text, unit=unit)
+    assert all("".join(words) == text for words, _ in readings)
+    probabilities = [probability for _, probability in readings[1:]]
+    assert probabilities == sorted(probabilities, reverse=True)
+
+
+def test_nbest_joins_numbers_and_drops_the_copies_this_makes():
+    readings = word_tokenize_nbest("ประชุม 12:30 น.", 10)
+    assert all("12:30" in words for words, _ in readings)
+    assert len({tuple(words) for words, _ in readings}) == len(readings)
+
+
+def test_nbest_keep_whitespace_false_drops_only_spaces():
+    for words, _ in word_tokenize_nbest("ตากลม iPhone\n15", 3, keep_whitespace=False):
+        assert " " not in words and "\n" in words
+
+
+def test_nbest_with_a_tokenizer():
+    tokenizer = Tokenizer(unit="long")
+    [(words, probability)] = tokenizer.word_tokenize_nbest("เจ้าหน้าที่การศึกษา", 1)
+    assert words == tokenizer.word_tokenize("เจ้าหน้าที่การศึกษา") == ["เจ้าหน้าที่", "การศึกษา"]
+    assert 0 < probability <= 1
+
+
+@pytest.mark.parametrize("n", [0, 101])
+def test_nbest_limits(n):
+    with pytest.raises(ValueError, match="n must be between 1 and 100"):
+        word_tokenize_nbest("ตากลม", n)
+    with pytest.raises(ValueError, match="at most 10,000 characters"):
+        word_tokenize_nbest("ก" * 10_001)
 
 
 def test_model_loads_once_across_threads(monkeypatch):
