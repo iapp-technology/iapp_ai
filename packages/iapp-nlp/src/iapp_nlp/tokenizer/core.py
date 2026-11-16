@@ -71,6 +71,9 @@ class Tokenizer:
         if isinstance(texts, str):
             raise TypeError("Pass a list of texts, not a single string")
         texts = list(texts)
+        for text in texts:
+            if not isinstance(text, str):
+                raise TypeError(f"text must be a str, not {type(text).__name__}")
         views = [text.translate(_MODEL_VIEW) for text in texts]
         result = []
         for text, pieces in zip(texts, self._segmenter.tokenize_batch(views, True, self.unit)):

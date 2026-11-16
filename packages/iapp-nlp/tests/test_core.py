@@ -124,6 +124,14 @@ def test_empty_string():
     assert word_tokenize("") == []
 
 
+@pytest.mark.parametrize("bad", [None, 42, "ไทย".encode(), ["ไทย"]])
+def test_text_must_be_a_string(bad):
+    with pytest.raises(TypeError, match="text must be a str"):
+        word_tokenize(bad)
+    with pytest.raises(TypeError, match="text must be a str"):
+        core.Tokenizer().word_tokenize_batch(["ไทย", bad])
+
+
 def test_model_loads_once_across_threads(monkeypatch):
     loads = []
     segmenter = latte.Segmenter
