@@ -28,7 +28,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://iapp.co.th"
-Repository = "https://github.com/iapp-technology/iapp_ai/tree/develop/packages/iapp-nlp"
+Repository = "https://github.com/iapp-technology/iapp_ai/tree/main/packages/iapp-nlp"
 
 [project.scripts]
 iapp-tokenize = "iapp_nlp.cli:main"
