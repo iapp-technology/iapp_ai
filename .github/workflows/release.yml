@@ -1,7 +1,7 @@
 name: Release
 
 # Release one package by pushing a tag named <PyPI name>-v<version>, such as
-# iapp-nlp-v0.1.0, iapp-core-v0.1.1, iapp-ai-v2.0.0 or iapp-mcp-v2.2.0. The tag's
+# iapp-core-v0.1.1, iapp-ai-v2.0.0 or iapp-mcp-v2.2.0. The tag's
 # version must match the package's pyproject.toml. Only that package is built,
 # checked and, once a reviewer approves the pypi environment, published to PyPI
 # via trusted publishing (OIDC).
@@ -11,7 +11,6 @@ on:
       - "iapp-core-v*"
       - "iapp-ai-v*"
       - "iapp-mcp-v*"
-      - "iapp-nlp-v*"
 
 permissions:
   contents: read
