@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Behaviour of the OpenThai2.0-LATTE-WordSeg-Lite runtime: its tests/test_basic.py, importing from iapp_nlp."""
+"""Behaviour of the OpenThai2.0-LATTE-WordSeg-Lite runtime: its tests/test_basic.py, importing from iapp_ai.nlp."""
 import hashlib
 import json
 import warnings
 
 import pytest
 
-from iapp_nlp import Tokenizer, word_tokenize
-from iapp_nlp.tokenizer import latte
-from iapp_nlp.tokenizer.latte import Segmenter
+from iapp_ai.nlp import Tokenizer, word_tokenize
+from iapp_ai.nlp.tokenizer import latte
+from iapp_ai.nlp.tokenizer.latte import Segmenter
 
 ASSETS = latte.ASSETS
 

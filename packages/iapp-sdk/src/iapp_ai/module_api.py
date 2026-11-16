@@ -18,14 +18,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
-from iapp_core import (
-    API_BASE,
-    build_output_path,
-    build_url,
-    get_api_key,
-    open_input_files,
-    request_sync,
-)
+from iapp_core import API_BASE, get_api_key, request_sync
+
+# iapp-core 0.1.1, the newest on PyPI, lacks these three, so iapp_ai keeps its own copies for now
+from ._core_compat import build_output_path, build_url, open_input_files
 
 
 taskGuid = ""

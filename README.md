@@ -18,15 +18,14 @@
 
 Official Python clients for the [iApp AI Marketplace](https://iapp.co.th): 30+
 Thai-focused AI APIs for OCR, eKYC, Thai NLP, LLMs, speech, image and video
-generation, and smart city, plus a free Thai NLP library that runs offline.
+generation, and smart city, plus free Thai NLP in the SDK that runs offline.
 
 ## Packages
 
 | Package | Install | Description |
 |---|---|---|
-| [iapp-ai](packages/iapp-sdk) | `pip install iapp-ai` | Python SDK for the iApp APIs |
+| [iapp-ai](packages/iapp-sdk) | `pip install iapp-ai` | Python SDK for the iApp APIs, with offline Thai NLP |
 | [iapp-mcp](packages/iapp-mcp) | `uvx iapp-mcp` | MCP server for AI assistants such as Claude |
-| [iapp-nlp](packages/iapp-nlp) | `pip install iapp-nlp` | Offline Thai NLP, no API key needed |
 | [iapp-core](packages/iapp-core) | installed as a dependency | Shared core of the SDK and the MCP server |
 
 ## What the APIs cover
@@ -79,12 +78,15 @@ Other ways to install and configure it are in the [`iapp-mcp` README](packages/i
 
 ### Thai NLP, offline
 
+`iapp_ai.nlp`, in iapp-ai 2.0.0 and later, needs no API key. The `nlp` extra
+adds what its word tokenizer needs:
+
 ```bash
-pip install iapp-nlp
+pip install "iapp-ai[nlp]"
 ```
 
 ```python
-from iapp_nlp import normalize, word_tokenize
+from iapp_ai.nlp import normalize, word_tokenize
 
 text = "วันนี้ฝนตกหนักมาาาก"         # repeated vowel typo
 word_tokenize(text)
@@ -93,9 +95,12 @@ word_tokenize(normalize(text))
 # ['วัน', 'นี้', 'ฝน', 'ตก', 'หนัก', 'มาก']
 ```
 
+More in the [`iapp_ai.nlp` guide](packages/iapp-sdk/docs/nlp.md). It replaces
+the `iapp-nlp` package.
+
 ## API key
 
-The SDK and the MCP server need an API key; `iapp-nlp` does not.
+The SDK's API methods and the MCP server need an API key; `iapp_ai.nlp` does not.
 
 1. Sign in or register at [iapp.co.th](https://iapp.co.th).
 2. Open **API Keys** in the control panel.
@@ -114,18 +119,17 @@ published separately as `iapp-mcp`.
 This is a [uv](https://docs.astral.sh/uv/) workspace. From the repository root:
 
 ```bash
-uv sync --all-packages   # one virtual environment with all four packages, editable
+uv sync --all-packages --all-extras   # one virtual environment with all three packages and their extras, editable
 uv run pytest packages scripts -q
-uv build --all-packages  # wheels and sdists for every package
+uv build --all-packages              # wheels and sdists for every package
 ```
 
 The SDK and the MCP server depend on `iapp-core` through `[tool.uv.sources]`
 during development and on a published `iapp-core` version when released.
-Release order: `iapp-core`, then `iapp-ai` and `iapp-mcp`. `iapp-nlp` has no
-internal dependency and is released on its own.
+Release order: `iapp-core`, then `iapp-ai` and `iapp-mcp`.
 
 To release one package, push a tag named `<PyPI name>-v<version>`, such as
-`iapp-nlp-v0.1.0`, whose version matches the package's `pyproject.toml`. The
+`iapp-ai-v2.0.0`, whose version matches the package's `pyproject.toml`. The
 [release workflow](.github/workflows/release.yml) builds and checks only that
 package, then publishes it to PyPI once a reviewer approves the `pypi`
 environment.
@@ -137,6 +141,6 @@ environment.
 
 ## License
 
-MIT © iApp Technology Co., Ltd. `iapp-nlp` also includes Apache-2.0 code and
-model files under CC BY-SA 4.0 (commercial use allowed); see
-[its license section](packages/iapp-nlp/README.md#license).
+MIT © iApp Technology Co., Ltd. `iapp-ai` also includes Apache-2.0 code and
+model files under CC BY-SA 4.0 (commercial use allowed) in `iapp_ai.nlp`; see
+[the license section of its guide](packages/iapp-sdk/docs/nlp.md#license).

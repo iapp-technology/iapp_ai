@@ -5,31 +5,47 @@ build-backend = "hatchling.build"
 [project]
 name = "iapp-ai"
 version = "2.0.0"
-description = "Python SDK for the iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, speech and more"
+description = "Python SDK for the iApp AI Marketplace APIs (https://iapp.co.th) — Thai OCR, eKYC, NLP, speech and more — plus an offline Thai word tokenizer"
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE"]
-requires-python = ">=3.8"
+license = "MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016"
+license-files = ["LICENSE", "LICENSE-APACHE", "LICENSES/*", "NOTICE"]
+requires-python = ">=3.10"
 authors = [
     { name = "Kobkrit Viriyayudhakorn", email = "kobkrit@iapp.co.th" },
     { name = "iApp Technology Co., Ltd.", email = "dev@iapp.co.th" },
 ]
-keywords = ["iapp", "thai", "ai", "ocr", "ekyc", "nlp", "speech", "sdk"]
+keywords = ["iapp", "thai", "ai", "ocr", "ekyc", "nlp", "speech", "sdk", "tokenizer"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
 ]
 dependencies = [
     "iapp-core>=0.1.0,<0.2.0",
     "requests>=2.20.0",
+    # the Thai time zone for iapp_ai.nlp.util, on systems without a time zone database
+    "tzdata",
+]
+
+[project.optional-dependencies]
+# The offline Thai word tokenizer in iapp_ai.nlp; the rest of iapp_ai.nlp needs neither.
+nlp = [
+    "numpy>=1.21",
+    "onnxruntime>=1.15",
 ]
 
 [project.urls]
 Homepage = "https://iapp.co.th"
 Documentation = "https://iapp.co.th/docs/intro"
 Repository = "https://github.com/iapp-technology/iapp_ai"
+
+[project.scripts]
+iapp-tokenize = "iapp_ai.nlp.cli:main"
 
 [tool.uv.sources]
 iapp-core = { workspace = true }

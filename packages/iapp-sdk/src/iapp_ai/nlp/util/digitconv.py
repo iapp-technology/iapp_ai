@@ -84,7 +84,7 @@ def thai_digit_to_arabic_digit(text: str) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import thai_digit_to_arabic_digit
+        >>> from iapp_ai.nlp.util import thai_digit_to_arabic_digit
         >>> text = "เป็นจำนวน ๑๒๓,๔๐๐.๒๕ บาท"
         >>> thai_digit_to_arabic_digit(text)
         'เป็นจำนวน 123,400.25 บาท'
@@ -111,7 +111,7 @@ def arabic_digit_to_thai_digit(text: str) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import arabic_digit_to_thai_digit
+        >>> from iapp_ai.nlp.util import arabic_digit_to_thai_digit
         >>> text = "เป็นจำนวน 123,400.25 บาท"
         >>> arabic_digit_to_thai_digit(text)
         'เป็นจำนวน ๑๒๓,๔๐๐.๒๕ บาท'
@@ -136,7 +136,7 @@ def digit_to_text(text: str) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import digit_to_text
+        >>> from iapp_ai.nlp.util import digit_to_text
         >>> digit_to_text("เบอร์โทร 0812345678")
         'เบอร์โทร ศูนย์แปดหนึ่งสองสามสี่ห้าหกเจ็ดแปด'
         >>> digit_to_text("123")
@@ -169,7 +169,7 @@ def text_to_arabic_digit(text: str) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import text_to_arabic_digit  # doctest: +SKIP
+        >>> from iapp_ai.nlp.util import text_to_arabic_digit  # doctest: +SKIP
 
         >>> text_to_arabic_digit("ศูนย์")  # doctest: +SKIP
         0
@@ -207,7 +207,7 @@ def text_to_thai_digit(text: str) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import text_to_thai_digit  # doctest: +SKIP
+        >>> from iapp_ai.nlp.util import text_to_thai_digit  # doctest: +SKIP
 
         >>> text_to_thai_digit("ศูนย์")  # doctest: +SKIP
         ๐

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2016-2026 PyThaiNLP Project
 # SPDX-FileContributor: iApp Technology
 # SPDX-License-Identifier: Apache-2.0
-"""Characterization tests for iapp_nlp.util.numtoword.
+"""Characterization tests for iapp_ai.nlp.util.numtoword.
 
 Golden data was recorded from the pre-refactor implementation.
 """
@@ -10,8 +10,8 @@ import unittest
 from decimal import Decimal
 from unittest import mock
 
-from iapp_nlp.util import num_to_thaiword, num_to_thaiword_float
-from iapp_nlp.util.numtoword import _expand_exponent
+from iapp_ai.nlp.util import num_to_thaiword, num_to_thaiword_float
+from iapp_ai.nlp.util.numtoword import _expand_exponent
 
 _NAN = float("nan")
 _INF = float("inf")
@@ -175,7 +175,7 @@ class NumToThaiwordFloatTestCase(unittest.TestCase):
     def test_result_without_decimal_point(self) -> None:
         # Defensive branch: str() of a non-integer float always has a point.
         with mock.patch(
-            "iapp_nlp.util.numtoword._expand_exponent", return_value="12"
+            "iapp_ai.nlp.util.numtoword._expand_exponent", return_value="12"
         ):
             self.assertEqual(num_to_thaiword_float(0.5), "สิบสอง")
 

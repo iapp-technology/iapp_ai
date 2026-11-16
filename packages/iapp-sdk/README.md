@@ -3,7 +3,8 @@
 Synchronous Python SDK for the [iApp AI Marketplace](https://iapp.co.th) APIs
 (Thai OCR, eKYC, face, NLP, speech, and more). Each method is a thin wrapper that
 returns the raw [`requests.Response`](https://requests.readthedocs.io/), so you
-keep full control over status codes and parsing.
+keep full control over status codes and parsing. It also includes
+[offline Thai NLP](#offline-thai-nlp), `iapp_ai.nlp`, which needs no API key.
 
 > Looking to connect an AI assistant (Claude, etc.) to iApp instead of calling
 > from code? Use the MCP server: [`iapp-mcp`](../iapp-mcp).
@@ -12,7 +13,10 @@ keep full control over status codes and parsing.
 
 ```bash
 pip install iapp-ai
+pip install "iapp-ai[nlp]"   # also the offline Thai word tokenizer
 ```
+
+Requires Python 3.10 or later; on Python 3.8 and 3.9, pip installs iapp-ai 1.4.0.
 
 ### Pre-release builds (TestPyPI)
 
@@ -53,11 +57,46 @@ print(resp.json())
 
 Get an API key at [iapp.co.th](https://iapp.co.th) → **API Keys** → **Create New API Key**.
 
+## Offline Thai NLP
+
+`iapp_ai.nlp` splits Thai text into words and cleans up and converts Thai text
+on your own machine, with no API key, no network calls and no iApp credits.
+
+```bash
+pip install "iapp-ai[nlp]"
+```
+
+```python
+from iapp_ai.nlp import normalize, word_tokenize
+
+word_tokenize("แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ")
+# ['แม่น้ำ', 'เจ้าพระยา', 'ไหล', 'ผ่าน', 'กรุงเทพ']
+word_tokenize(normalize("วันนี้ฝนตกหนักมาาาก"))   # fixes the repeated vowel first
+# ['วัน', 'นี้', 'ฝน', 'ตก', 'หนัก', 'มาก']
+```
+
+- The word tokenizers (`word_tokenize`, `tokenize`, `word_tokenize_nbest`,
+  `Tokenizer` and the `iapp-tokenize` command) use the
+  OpenThai2.0-LATTE-WordSeg-Lite model, which needs NumPy and ONNX Runtime from
+  the `nlp` extra. Without it they raise an `ImportError` that says to install it.
+- `normalize`, the Thai number and date helpers in `iapp_ai.nlp.util`, the word
+  lists in `iapp_ai.nlp.corpus` and the province tagger in `iapp_ai.nlp.tag`
+  work with plain `pip install iapp-ai`.
+- The NLP methods of `api`, such as `sentiment_analysis`, run on iApp's servers
+  and need an API key; `iapp_ai.nlp` does not.
+
+Units, your own words, batches, several readings, dates and the command line
+are in the [`iapp_ai.nlp` guide](https://github.com/iapp-technology/iapp_ai/blob/main/packages/iapp-sdk/docs/nlp.md).
+`iapp_ai.nlp` replaces the `iapp-nlp` package: install `iapp-ai[nlp]` and
+change `from iapp_nlp import ...` to `from iapp_ai.nlp import ...`.
+
 ## Backward compatibility
 
 This SDK is a **drop-in** for previous `iapp_ai` releases — the import path,
 class, method names/signatures, target endpoints, and raw `requests.Response`
 return values are all unchanged. Existing code keeps working without edits.
+It needs Python 3.10 or later; on Python 3.8 and 3.9, pip keeps installing
+iapp-ai 1.4.0.
 
 Internally the HTTP transport is now provided by the shared
 [`iapp-core`](../iapp-core) package (installed automatically as a dependency).
@@ -81,3 +120,8 @@ export/import/single/multi/facecrop), `face_liveness` / `info_face_liveness`,
 ## License
 
 MIT © iApp Technology Co., Ltd.
+
+`iapp_ai.nlp` includes code under the Apache License 2.0 and model files under
+CC BY-SA 4.0 (commercial use allowed), so the package as a whole is
+`MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`; see the
+[license section of the `iapp_ai.nlp` guide](https://github.com/iapp-technology/iapp_ai/blob/main/packages/iapp-sdk/docs/nlp.md#license).

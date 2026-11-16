@@ -8,7 +8,7 @@ The comment on each case names the normalization step it checks.
 
 import pytest
 
-from iapp_nlp import normalize
+from iapp_ai.nlp import normalize
 
 CASES = [
     ('เเปลก', 'แปลก'),  # normalize

@@ -12,6 +12,10 @@ if TYPE_CHECKING:
 # Word units, coarse to fine
 UNITS = ("long", "short", "minimal")
 
+# The modules the word tokenizer needs that only the nlp extra installs
+NLP_EXTRA_MODULES = ("numpy", "onnxruntime")
+MISSING_NLP_EXTRA = 'The Thai word tokenizer needs numpy and ONNX Runtime: pip install "iapp-ai[nlp]"'
+
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
 _FORMATTED_NUMBER_RE = re.compile(r"\d+(?:[.,:]\d+)+")
 # What the model reads in place of some characters, one for one so that offsets stay the same:
@@ -172,7 +176,13 @@ def _segmenter(words: FrozenSet[str]) -> "Segmenter":
             segmenter = _segmenters.get(words)
             if segmenter is None:
                 # imported here so that numpy and ONNX Runtime load only when words are first needed
-                from .latte import Segmenter
+                try:
+                    from .latte import Segmenter
+                except ImportError as e:
+                    # without the nlp extra; any other import error is a broken install, raised as is
+                    if e.name not in NLP_EXTRA_MODULES:
+                        raise
+                    raise ImportError(MISSING_NLP_EXTRA, name=e.name) from e
 
                 segmenter = Segmenter(user_words=sorted(words))
                 _segmenters[words] = segmenter

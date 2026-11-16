@@ -61,7 +61,7 @@ def bahttext(number: float) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import bahttext
+        >>> from iapp_ai.nlp.util import bahttext
         >>> bahttext(1)
         'หนึ่งบาทถ้วน'
         >>> bahttext(21)
@@ -131,7 +131,7 @@ def num_to_thaiword(number: Optional[int]) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import num_to_thaiword
+        >>> from iapp_ai.nlp.util import num_to_thaiword
         >>> num_to_thaiword(1)
         'หนึ่ง'
         >>> num_to_thaiword(11)
@@ -206,7 +206,7 @@ def num_to_thaiword_float(number: float) -> str:
 
     :Example:
 
-        >>> from iapp_nlp.util import num_to_thaiword_float
+        >>> from iapp_ai.nlp.util import num_to_thaiword_float
         >>> num_to_thaiword_float(123.45)
         'หนึ่งร้อยยี่สิบสามจุดสี่ห้า'
         >>> num_to_thaiword_float(3.14159)
