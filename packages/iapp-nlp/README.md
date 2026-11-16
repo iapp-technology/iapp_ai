@@ -1,11 +1,19 @@
 # iapp-nlp
 
-Free Thai word tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
-No API key, runs offline, and the Thai models are included.
+Thai word segmentation and text utilities for Python, by
+[iApp Technology](https://iapp.co.th). Runs offline on the CPU and needs no API
+key.
+
+## Installation
 
 ```bash
 pip install iapp-nlp
 ```
+
+Requires Python 3.10 or later. The segmentation model and its dictionary are
+included in the package.
+
+## Usage
 
 ```python
 from iapp_nlp import word_tokenize, tokenize
@@ -18,9 +26,32 @@ tokenize("สวัสดี hello")
 ```
 
 `tokenize` returns each word with its `start`/`end` offset in the input, so
-`text[token.start:token.end] == token.text`. Words are found by the
-OpenThai2.0-LATTE-WordSeg-Lite model, which runs on the CPU (see
-[How it works](#how-it-works)).
+`text[token.start:token.end] == token.text`.
+
+## Features
+
+- Word segmentation with the OpenThai2.0-LATTE-WordSeg-Lite model, at three
+  levels of granularity ([Units](#units))
+- Token offsets, batch processing and user word lists
+- Alternative segmentations of ambiguous text ([Several readings](#several-readings))
+- Normalization of common Thai typing errors ([Normalize](#normalize))
+- Thai stopwords, province names and a province tagger
+- Thai number and currency reading, and Thai/Arabic digit conversion
+- Thai date parsing and formatting with Buddhist Era years
+- A command-line tool, `iapp-tokenize`
+
+## Benchmark
+
+Word-level F1 averaged over seven Thai test sets, and throughput on one CPU
+thread, as reported by the model's authors.
+
+| Tokenizer | F1 | Characters/s |
+|---|---|---|
+| OpenThai2.0-LATTE-WordSeg-Lite (iApp) | 85.6 | 105K |
+| SEFR CUT | 84.5 | 1.9K |
+| DeepCut | 84.5 | 2.6K |
+| AttaCut-SC | 84.0 | 78K |
+| newmm (PyThaiNLP) | 70.9 | 937K |
 
 ## Options
 
@@ -80,7 +111,7 @@ word_tokenize("ไอแอพพ์เทคโนโลยีอยู่ท�
 - Each distinct set of words loads the model again, which takes about 0.1
   seconds and 10 MB that stays in memory until the process ends. Keep to a few
   fixed word sets rather than building new ones per request.
-- `iapp_nlp.corpus.thai_words()` returns PyThaiNLP's list of 62,106 Thai words.
+- `iapp_nlp.corpus.thai_words()` returns a list of 62,106 Thai words.
   The model does not use it.
 
 ## Many texts at once
@@ -145,8 +176,7 @@ normalize("พ ุ่มดอกไม้")  # space before a vowel
 ```
 
 It also trims spaces at both ends and collapses blank lines. Letters are never
-changed, so a misspelled word stays misspelled. The rules are from PyThaiNLP's
-`normalize`, used under the Apache License 2.0 (see `LICENSE-APACHE`).
+changed, so a misspelled word stays misspelled.
 
 ## Stopwords and provinces
 
@@ -199,8 +229,7 @@ arabic_digit_to_thai_digit("พ.ศ. 2569")
 
 `num_to_thaiword_float` reads decimals digit by digit (`3.14` → `สามจุดหนึ่งสี่`), and
 `text_to_arabic_digit` / `text_to_thai_digit` turn one Thai digit word into a
-digit (`"เก้า"` → `"9"`). The code follows PyThaiNLP, used under the Apache
-License 2.0 (see `LICENSE-APACHE`).
+digit (`"เก้า"` → `"9"`).
 
 ## Thai dates
 
@@ -225,8 +254,7 @@ thaiword_to_date("พรุ่งนี้", datetime(2026, 10, 30))
 
 `reign_year_to_ad` and `now_reign_year` convert reign years. The Thai time zone
 comes from the `tzdata` package, which pip installs, so it also works on systems
-without a time zone database such as Windows or slim containers. The code
-follows PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
+without a time zone database such as Windows or slim containers.
 
 ## Command line
 
@@ -244,9 +272,10 @@ Without text, `iapp-tokenize` reads standard input.
 Words are found by OpenThai2.0-LATTE-WordSeg-Lite, a model from OpenThai and
 iApp Technology with 1.17 million parameters and a dictionary of 177,385 words.
 For each character it reads the dictionary words around it and decides whether
-a word starts there, for all three units at once. Its authors measured an
-average word F1 of 85.6 on seven Thai test sets, against 70.9 for PyThaiNLP's
-dictionary-based `newmm`.
+a word starts there, for all three units at once. The model is a compact
+neural network distilled from larger LATTE models (XLM-RoBERTa large with
+lattice attention). Because it does not rely on the dictionary alone, it can
+also segment words that the dictionary does not contain.
 
 - It runs on the CPU with [ONNX Runtime](https://onnxruntime.ai) and NumPy,
   which pip installs. The model (3 MB) and its dictionary (0.8 MB) are in the
@@ -262,28 +291,36 @@ dictionary-based `newmm`.
 
 ## Notes
 
-- Needs Python 3.10 or later. pip also installs NumPy, ONNX Runtime and
+- Requires Python 3.10 or later. pip also installs NumPy, ONNX Runtime and
   `tzdata` (for the Thai time zone).
 - ONNX Runtime has wheels for Linux (x86-64 and ARM64, glibc), macOS and
   Windows, so pip cannot install iapp-nlp on Alpine Linux and other musl-based
   systems, or on 32-bit Linux. Intel Macs and Python 3.10 get ONNX Runtime
   1.23, its last release for them.
-- The word list `iapp_nlp/data/words_th.txt` is `words_th.txt` from
-  [PyThaiNLP](https://github.com/PyThaiNLP/pythainlp), released under
-  [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
-- The stopword list `iapp_nlp/data/stopwords_th.txt` and the province list
-  `iapp_nlp/data/thailand_provinces_th.csv` are from PyThaiNLP, released under
-  CC0 1.0. The stopwords come from a thesis by เพ็ญศิริ ลี้ตระกูล (Thammasat
-  University, 2008). The loaders and `tag_provinces` follow PyThaiNLP's code,
-  used under the Apache License 2.0 (see `LICENSE-APACHE`).
+- Everything runs locally: iapp-nlp makes no network calls and uses no iApp
+  credits.
+
+## Related packages
+
+- [iapp-ai](https://pypi.org/project/iapp-ai/): Python SDK for the iApp AI
+  Marketplace APIs (OCR, eKYC, speech, LLMs)
+- [iapp-mcp](https://pypi.org/project/iapp-mcp/): MCP server that connects AI
+  assistants to the same APIs
+
+## Support
+
+- Documentation: [iapp.co.th/docs/intro](https://iapp.co.th/docs/intro)
+- Email: support@iapp.co.th
 
 ## License
 
+MIT © iApp Technology Co., Ltd.
+
+Some parts of the package carry their own licenses, so the package as a whole is
 `MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`:
 
-- iApp Technology's own code: MIT (see `LICENSE`).
-- Code from PyThaiNLP: Apache License 2.0
-  (see `LICENSE-APACHE`). Each such file starts with SPDX lines naming its source.
+- Modules under the Apache License 2.0 (see `LICENSE-APACHE`) start with SPDX
+  lines naming their source.
 - The OpenThai2.0-LATTE-WordSeg-Lite code, `iapp_nlp/tokenizer/latte.py`:
   Apache License 2.0 (see `LICENSE-APACHE` and `NOTICE`).
 - Its model files in `iapp_nlp/data/latte/` (the network, the dictionary and
@@ -294,4 +331,5 @@ dictionary-based `newmm`.
   Unicode license (see `LICENSES/Unicode-DFS-2016.txt`). The model was trained
   only on data whose licenses allow commercial use; `NOTICE` lists the sources
   and their attributions.
-- The word, stopword and province lists: CC0 1.0.
+- The word, stopword and province lists in `iapp_nlp/data/`:
+  [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
