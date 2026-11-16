@@ -2,13 +2,15 @@
 #
 # This repo hosts three packages that share one core:
 #   packages/iapp-core  -> iapp-core  : shared transport/auth/errors/formatting
-#   packages/iapp-sdk   -> iapp-ai    : synchronous Python SDK (backward compatible)
+#   packages/iapp-sdk   -> iapp-ai    : synchronous Python SDK (backward compatible),
+#                                       with offline Thai NLP in iapp_ai.nlp
 #   packages/iapp-mcp   -> iapp-mcp   : iApp AI Marketplace MCP server
 #
 # Each package has its own pyproject.toml and is published independently.
+# packages/iapp-nlp only holds a README that points the old iapp-nlp package to iapp_ai.nlp.
 
 [tool.uv.workspace]
-members = ["packages/iapp-core", "packages/iapp-sdk", "packages/iapp-mcp", "packages/iapp-nlp"]
+members = ["packages/iapp-core", "packages/iapp-sdk", "packages/iapp-mcp"]
 
 # Dev tooling for the CI pipeline (A-5). Installed by `uv sync`.
 [dependency-groups]
@@ -36,11 +38,11 @@ ignore_missing_imports = true
 # The OpenThai2.0-LATTE-WordSeg-Lite runtime, kept as its authors wrote it: it allows for models
 # with one unit, where the unit is None, in ways that strict Optional checking rejects.
 [[tool.mypy.overrides]]
-module = "iapp_nlp.tokenizer.latte"
+module = "iapp_ai.nlp.tokenizer.latte"
 strict_optional = false
 disable_error_code = ["var-annotated"]
 
-# onnxruntime (needed by iapp-nlp) 1.24 and later declare Python >= 3.10 but ship no wheels for
+# onnxruntime (in iapp-ai's nlp extra) 1.24 and later declare Python >= 3.10 but ship no wheels for
 # 3.10, and uv does not skip them the way pip does, so lock the last release with 3.10 wheels.
 [tool.uv]
 constraint-dependencies = ["onnxruntime<1.24; python_full_version < '3.11'"]
