@@ -19,5 +19,11 @@ venv/
 # OS
 .DS_Store
 
+# Documentation
+docs/internal/lastest
+docs/internal/past
+docs/internal/old
+docs/internal/skill-document
+pythainlp
 # Internal docs (not for public repo)
 ENDPOINTS.md
