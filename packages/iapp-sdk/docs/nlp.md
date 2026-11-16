@@ -1,22 +1,36 @@
-# iapp-nlp
+# iapp_ai.nlp
 
-Thai word segmentation and text utilities for Python, by
-[iApp Technology](https://iapp.co.th). Runs offline on the CPU and needs no API
-key.
+Thai word segmentation and text utilities for Python, part of
+[iapp-ai](../README.md) by [iApp Technology](https://iapp.co.th). Runs offline
+on the CPU and needs no API key.
 
 ## Installation
 
 ```bash
-pip install iapp-nlp
+pip install "iapp-ai[nlp]"
 ```
 
-Requires Python 3.10 or later. The segmentation model and its dictionary are
-included in the package.
+Requires iapp-ai 2.0.0 or later and Python 3.10 or later. The segmentation
+model and its dictionary are included in the package.
+
+The `nlp` extra installs NumPy and ONNX Runtime, which only the word tokenizers
+need: `word_tokenize`, `tokenize`, `word_tokenize_nbest`, `Tokenizer` and the
+`iapp-tokenize` command. Without the extra, the first of them to run raises an
+`ImportError` that says to install it. Everything else (`normalize`,
+`iapp_ai.nlp.util`, `iapp_ai.nlp.corpus` and `iapp_ai.nlp.tag`) works with
+`pip install iapp-ai`.
+
+### Moving from iapp-nlp
+
+`iapp_ai.nlp` replaces the `iapp-nlp` package, which gets no more releases.
+Install `iapp-ai[nlp]` in place of `iapp-nlp`, and import from `iapp_ai.nlp` in
+place of `iapp_nlp`; the functions, their options and the `iapp-tokenize`
+command are the same. `iapp_nlp.__version__` is now `iapp_ai.__version__`.
 
 ## Usage
 
 ```python
-from iapp_nlp import word_tokenize, tokenize
+from iapp_ai.nlp import word_tokenize, tokenize
 
 word_tokenize("แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ")
 # ['แม่น้ำ', 'เจ้าพระยา', 'ไหล', 'ผ่าน', 'กรุงเทพ']
@@ -111,7 +125,7 @@ word_tokenize("ไอแอพพ์เทคโนโลยีอยู่ท�
 - Each distinct set of words loads the model again, which takes about 0.1
   seconds and 10 MB that stays in memory until the process ends. Keep to a few
   fixed word sets rather than building new ones per request.
-- `iapp_nlp.corpus.thai_words()` returns a list of 62,106 Thai words.
+- `iapp_ai.nlp.corpus.thai_words()` returns a list of 62,106 Thai words.
   The model does not use it.
 
 ## Many texts at once
@@ -121,7 +135,7 @@ start-up. Its batch methods split many texts in one call, which is faster than
 one call per text.
 
 ```python
-from iapp_nlp import Tokenizer
+from iapp_ai.nlp import Tokenizer
 
 tokenizer = Tokenizer()  # also takes unit= and extra_words=
 tokenizer.word_tokenize_batch(["ฉันกินข้าวที่บ้าน", "วันนี้อากาศดีมาก"])
@@ -139,7 +153,7 @@ Some phrases can be read in more than one way. `word_tokenize_nbest` gives the
 `n` most likely splits of a short text, best first, each with its probability.
 
 ```python
-from iapp_nlp import word_tokenize_nbest
+from iapp_ai.nlp import word_tokenize_nbest
 
 for words, probability in word_tokenize_nbest("ตากลม", 3):
     print(words, round(probability, 2))
@@ -165,7 +179,7 @@ misordered vowels and tone marks, spaces before a mark, zero-width characters
 and duplicate spaces.
 
 ```python
-from iapp_nlp import normalize
+from iapp_ai.nlp import normalize
 
 normalize("เเปลก")       # two Sara E
 # 'แปลก'
@@ -180,13 +194,13 @@ changed, so a misspelled word stays misspelled.
 
 ## Stopwords and provinces
 
-`iapp_nlp.corpus` has two word lists, and `iapp_nlp.tag.tag_provinces` marks the
+`iapp_ai.nlp.corpus` has two word lists, and `iapp_ai.nlp.tag.tag_provinces` marks the
 words that are province names.
 
 ```python
-from iapp_nlp import word_tokenize
-from iapp_nlp.corpus import provinces, thai_stopwords
-from iapp_nlp.tag import tag_provinces
+from iapp_ai.nlp import word_tokenize
+from iapp_ai.nlp.corpus import provinces, thai_stopwords
+from iapp_ai.nlp.tag import tag_provinces
 
 words = word_tokenize("ผมไปเชียงใหม่กับกรุงเทพมหานคร", keep_whitespace=False)
 [w for w in words if w not in thai_stopwords()]
@@ -202,12 +216,12 @@ name. Names are matched exactly, so `กทม` and `Bangkok` are not tagged.
 
 ## Numbers and digits
 
-`iapp_nlp.util` reads numbers and amounts of money aloud in Thai, and converts
+`iapp_ai.nlp.util` reads numbers and amounts of money aloud in Thai, and converts
 between Thai and Arabic digits. This helps prepare text for text-to-speech, or
 clean up digits read by OCR.
 
 ```python
-from iapp_nlp.util import (
+from iapp_ai.nlp.util import (
     arabic_digit_to_thai_digit,
     bahttext,
     digit_to_text,
@@ -233,12 +247,12 @@ digit (`"เก้า"` → `"9"`).
 
 ## Thai dates
 
-`iapp_nlp.util` converts Buddhist Era years and reads and writes dates with Thai
+`iapp_ai.nlp.util` converts Buddhist Era years and reads and writes dates with Thai
 month and weekday names.
 
 ```python
 from datetime import datetime
-from iapp_nlp.util import convert_years, thai_strftime, thai_strptime, thaiword_to_date
+from iapp_ai.nlp.util import convert_years, thai_strftime, thai_strptime, thaiword_to_date
 
 convert_years("2569", src="be", target="ad")
 # '2026'
@@ -253,8 +267,8 @@ thaiword_to_date("พรุ่งนี้", datetime(2026, 10, 30))
 ```
 
 `reign_year_to_ad` and `now_reign_year` convert reign years. The Thai time zone
-comes from the `tzdata` package, which pip installs, so it also works on systems
-without a time zone database such as Windows or slim containers.
+comes from the `tzdata` package, which `pip install iapp-ai` installs, so it also
+works on systems without a time zone database such as Windows or slim containers.
 
 ## Command line
 
@@ -278,8 +292,8 @@ lattice attention). Because it does not rely on the dictionary alone, it can
 also segment words that the dictionary does not contain.
 
 - It runs on the CPU with [ONNX Runtime](https://onnxruntime.ai) and NumPy,
-  which pip installs. The model (3 MB) and its dictionary (0.8 MB) are in the
-  package.
+  which the `nlp` extra installs. The model (3 MB) and its dictionary (0.8 MB)
+  are in the package.
 - The model loads on first use, in about 0.2 seconds, and a process that uses
   it takes up to about 140 MB of memory.
 - On one CPU thread it splits about 60,000 characters per second one text at a
@@ -291,19 +305,22 @@ also segment words that the dictionary does not contain.
 
 ## Notes
 
-- Requires Python 3.10 or later. pip also installs NumPy, ONNX Runtime and
-  `tzdata` (for the Thai time zone).
+- Requires Python 3.10 or later. `pip install iapp-ai` also installs `tzdata`
+  (for the Thai time zone), and the `nlp` extra adds NumPy and ONNX Runtime.
 - ONNX Runtime has wheels for Linux (x86-64 and ARM64, glibc), macOS and
-  Windows, so pip cannot install iapp-nlp on Alpine Linux and other musl-based
-  systems, or on 32-bit Linux. Intel Macs and Python 3.10 get ONNX Runtime
-  1.23, its last release for them.
-- Everything runs locally: iapp-nlp makes no network calls and uses no iApp
-  credits.
+  Windows, so pip cannot install the `nlp` extra on Alpine Linux and other
+  musl-based systems, or on 32-bit Linux; the rest of `iapp_ai.nlp` works
+  there. Intel Macs and Python 3.10 get ONNX Runtime 1.23, its last release for
+  them.
+- Everything runs locally: `iapp_ai.nlp` makes no network calls and uses no
+  iApp credits. The NLP methods of the SDK's `api`, such as
+  `sentiment_analysis`, are a different thing: they call iApp's servers and
+  need an API key.
 
 ## Related packages
 
-- [iapp-ai](https://pypi.org/project/iapp-ai/): Python SDK for the iApp AI
-  Marketplace APIs (OCR, eKYC, speech, LLMs)
+- [The rest of iapp-ai](../README.md): Python SDK for the iApp AI Marketplace
+  APIs (OCR, eKYC, speech, LLMs)
 - [iapp-mcp](https://pypi.org/project/iapp-mcp/): MCP server that connects AI
   assistants to the same APIs
 
@@ -314,22 +331,23 @@ also segment words that the dictionary does not contain.
 
 ## License
 
-MIT © iApp Technology Co., Ltd.
+MIT © iApp Technology Co., Ltd. (see [`LICENSE`](../LICENSE)).
 
-Some parts of the package carry their own licenses, so the package as a whole is
-`MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`:
+Some parts of `iapp_ai.nlp` carry their own licenses, so the iapp-ai package as
+a whole is `MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`:
 
-- Modules under the Apache License 2.0 (see `LICENSE-APACHE`) start with SPDX
-  lines naming their source.
-- The OpenThai2.0-LATTE-WordSeg-Lite code, `iapp_nlp/tokenizer/latte.py`:
-  Apache License 2.0 (see `LICENSE-APACHE` and `NOTICE`).
-- Its model files in `iapp_nlp/data/latte/` (the network, the dictionary and
+- Modules under the Apache License 2.0 (see [`LICENSE-APACHE`](../LICENSE-APACHE))
+  start with SPDX lines naming their source.
+- The OpenThai2.0-LATTE-WordSeg-Lite code, `iapp_ai/nlp/tokenizer/latte.py`:
+  Apache License 2.0 (see [`LICENSE-APACHE`](../LICENSE-APACHE) and [`NOTICE`](../NOTICE)).
+- Its model files in `iapp_ai/nlp/data/latte/` (the network, the dictionary and
   the character table): [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-  (see `LICENSES/CC-BY-SA-4.0.txt`). Commercial use allowed. If you modify these
-  files and share them, share them under the same license; this does not reach
-  code that only uses them. The dictionary's entries from ICU also carry the
-  Unicode license (see `LICENSES/Unicode-DFS-2016.txt`). The model was trained
-  only on data whose licenses allow commercial use; `NOTICE` lists the sources
-  and their attributions.
-- The word, stopword and province lists in `iapp_nlp/data/`:
+  (see [`LICENSES/CC-BY-SA-4.0.txt`](../LICENSES/CC-BY-SA-4.0.txt)). Commercial use
+  allowed. If you modify these files and share them, share them under the same
+  license; this does not reach code that only uses them. The dictionary's
+  entries from ICU also carry the Unicode license (see
+  [`LICENSES/Unicode-DFS-2016.txt`](../LICENSES/Unicode-DFS-2016.txt)). The model
+  was trained only on data whose licenses allow commercial use; [`NOTICE`](../NOTICE)
+  lists the sources and their attributions.
+- The word, stopword and province lists in `iapp_ai/nlp/data/`:
   [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
