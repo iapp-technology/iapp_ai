@@ -1,6 +1,6 @@
 # iapp-nlp
 
-Free Thai word, subword and syllable tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
+Free Thai word and syllable tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
 No API key, runs offline, and the Thai models are included.
 
 ```bash
@@ -100,24 +100,6 @@ tokenizer.word_tokenize_batch(["ฉันกินข้าวที่บ้า
 `word_tokenize` work as the functions of the same name. One tokenizer can serve
 many threads at once. About 1% of texts can come out slightly differently in a
 batch than alone (see [How it works](#how-it-works)).
-
-## Subwords (Thai Character Clusters)
-
-`subword_tokenize` splits text into Thai Character Clusters (TCC), the smallest
-pieces that can be cut without breaking a vowel or tone mark off its consonant.
-
-```python
-from iapp_nlp import subword_tokenize
-
-subword_tokenize("ขนมชั้น")
-# ['ข', 'น', 'ม', 'ชั้น']
-subword_tokenize("ประเทศไทย")
-# ['ป', 'ระ', 'เท', 'ศ', 'ไท', 'ย']
-```
-
-Non-Thai characters come out one at a time, and `keep_whitespace=False` works
-as in `word_tokenize`. The rules are the improved TCC rules from PyThaiNLP
-(`tcc_p`), used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Syllables
 

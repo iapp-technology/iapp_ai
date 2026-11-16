@@ -1,11 +1,11 @@
 """Thai tokenizers: words with OpenThai2.0-LATTE-WordSeg-Lite, plus whitespace and number clean-up;
-subwords with TCC and syllables with Han-solo."""
+syllables with Han-solo."""
 
 import re
 import threading
 from typing import TYPE_CHECKING, Dict, FrozenSet, Iterable, List, Optional, Set
 
-from . import han_solo, tcc_p
+from . import han_solo
 from .token import Token
 
 if TYPE_CHECKING:
@@ -129,20 +129,6 @@ def word_tokenize(
 ) -> List[str]:
     """Split ``text`` into a list of word strings (see ``tokenize``)."""
     return [token.text for token in tokenize(text, keep_whitespace, join_broken_num, unit, extra_words)]
-
-
-def subword_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
-    """Split ``text`` into Thai Character Clusters, e.g. ``ขนมชั้น`` -> ``ข`` ``น`` ``ม`` ``ชั้น``.
-
-    Non-Thai characters come out one at a time, as in PyThaiNLP.
-    ``keep_whitespace=False`` drops pieces made only of spaces (tabs and new lines stay).
-    """
-    if not text:
-        return []
-    pieces = tcc_p.segment(text)
-    if not keep_whitespace:
-        pieces = [piece.strip(" ") for piece in pieces if piece.strip(" ")]
-    return pieces
 
 
 def syllable_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
