@@ -36,7 +36,7 @@ class Tokenizer:
 
     ``extra_words`` are hints, not rules: the model finds them in its dictionary but can still
     split them, depending on the text around them. Words with spaces, or shorter than 2 or longer
-    than 16 characters, are ignored. Each distinct set of words loads the model again, about
+    than 16 characters, are left out with a ``UserWarning``. Each distinct set of words loads the model again, about
     10 MB that stays in memory until the process ends, so keep to a few fixed word sets.
     """
 

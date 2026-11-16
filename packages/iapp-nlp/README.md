@@ -75,7 +75,8 @@ word_tokenize("ไอแอพพ์เทคโนโลยีอยู่ท�
 
 - The words are hints, not rules: the model weighs them against the text around
   them and can still split them. `unit="long"` keeps them whole most often.
-- Words with spaces, or shorter than 2 or longer than 16 characters, are ignored.
+- Words with spaces, or shorter than 2 or longer than 16 characters, are left
+  out with a `UserWarning`.
 - Each distinct set of words loads the model again, which takes about 0.1
   seconds and 10 MB that stays in memory until the process ends. Keep to a few
   fixed word sets rather than building new ones per request.

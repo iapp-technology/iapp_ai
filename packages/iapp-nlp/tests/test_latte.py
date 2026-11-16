@@ -2,6 +2,7 @@
 """Behaviour of the OpenThai2.0-LATTE-WordSeg-Lite runtime: its tests/test_basic.py, importing from iapp_nlp."""
 import hashlib
 import json
+import warnings
 
 import pytest
 
@@ -188,3 +189,65 @@ def test_nbest_rejects_n_below_one(seg):
 def test_nbest_takom_order(seg):
     # the example of the post card (docs/sns/make_card.py checks this line)
     assert [t for t, _ in seg.tokenize_nbest("ตากลม", 3)] == [["ตา", "กลม"], ["ตากลม"], ["ตาก", "ลม"]]
+
+
+# ---------------------------------------------------------------- 0.1.1: long lines, input checks, limits
+PHRASES = ["เจ้าหน้าที่การศึกษาเปิดเผยว่า", "ฉันกินข้าวที่บ้านแล้วไปทำงานต่อ", "ประเทศไทยมีพื้นที่ประมาณห้าแสนตารางกิโลเมตร",
+           "การประชุมครั้งนี้มีผู้เข้าร่วมกว่าหนึ่งพันคนจากทั่วประเทศ", "วันนี้อากาศดีมาก", "แม่น้ำเจ้าพระยาไหลผ่านกรุงเทพ"]
+LONG = "".join(PHRASES[i % len(PHRASES)] for i in range(60))        # 2,050 characters, no whitespace
+
+
+@pytest.mark.parametrize("unit", ["long", "short", "minimal"])
+def test_long_lines_in_windows_match_the_whole_line(seg, monkeypatch, unit):
+    whole = seg.tokenize(LONG, unit=unit)
+    monkeypatch.setattr(latte, "MAX_WINDOW", 300)            # nine windows instead of one line
+    monkeypatch.setattr(latte, "WINDOW_CONTEXT", 100)
+    assert len(latte._windows(len(LONG))) > 1
+    assert seg.tokenize(LONG, unit=unit) == whole
+
+
+def test_windows_tile_the_line():
+    for n in (0, 1, 9_999, 10_000, 10_001, 25_000, 1_000_000):
+        w = latte._windows(n)
+        assert w[0][2] == 0 and w[-1][3] == n
+        assert all(a[3] == b[2] for a, b in zip(w, w[1:]))           # the kept parts tile the line
+        for start, end, keep_from, keep_to in w:
+            assert end - start <= latte.MAX_WINDOW
+            assert start == 0 or keep_from - start >= latte.WINDOW_CONTEXT
+            assert end == n or end - keep_to >= latte.WINDOW_CONTEXT
+
+
+@pytest.mark.parametrize("bad", [None, 42, "ไทย".encode(), ["ไทย"]])
+def test_text_must_be_a_string(seg, bad):
+    with pytest.raises(TypeError):
+        seg.tokenize(bad)
+    with pytest.raises(TypeError):
+        seg.tokenize_nbest(bad)
+    with pytest.raises(TypeError):
+        seg.tokenize_batch(["ไทย", bad])
+
+
+def test_batch_takes_a_list_not_one_string(seg):
+    with pytest.raises(TypeError):
+        seg.tokenize_batch("ไทย")
+    lines = ["ฉันกินข้าว", "ที่บ้าน"]
+    assert seg.tokenize_batch(t for t in lines) == seg.tokenize_batch(lines)    # any iterable, read once
+
+
+def test_user_words_the_dictionary_cannot_hold_warn(seg):
+    with pytest.warns(UserWarning, match="2 of the user words not used"):
+        custom = Segmenter(user_words=["ก", "ไทยแลนด์ฟู้ดเฟสติวัล", " บราวน์ชูการ์ ", ""])
+    assert "บราวน์ชูการ์" in custom.tokenize("ฉันชอบกินบราวน์ชูการ์ร้านนี้มาก")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert Segmenter(user_words=None).lexicon.size == seg.lexicon.size
+        Segmenter(user_words=["ไอแอพพ์"])
+    with pytest.raises(TypeError):
+        Segmenter(user_words="บราวน์ชูการ์")                       # one string, not a list of words
+
+
+def test_nbest_limits(seg):
+    with pytest.raises(ValueError):
+        seg.tokenize_nbest("ตากลม", latte.MAX_NBEST + 1)
+    with pytest.raises(ValueError):
+        seg.tokenize_nbest("ก" * (latte.MAX_NBEST_CHARS + 1))

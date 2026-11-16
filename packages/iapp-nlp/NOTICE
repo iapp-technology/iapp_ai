@@ -1,11 +1,12 @@
-iapp-nlp includes OpenThai2.0-LATTE-WordSeg-Lite, whose notice follows unchanged. Its paths are
+iapp-nlp includes OpenThai2.0-LATTE-WordSeg-Lite 0.1.1, whose notice follows unchanged. Its paths are
 these in iapp-nlp:
 
 - src/openthai_latte_wordseg_lite/_runtime.py: iapp_nlp/tokenizer/latte.py, changed to read the
   model files from iapp_nlp/data/latte/ and to start with an SPDX license line
 - assets/ (model.int8.onnx, lexicon.txt.gz, charclass.npz, manifest.json): iapp_nlp/data/latte/,
   unchanged
-- tests/test_basic.py: tests/test_latte.py, changed to import from iapp_nlp
+- tests/test_basic.py: tests/test_latte.py, changed to import from iapp_nlp and without
+  test_shared_segmenter_loads_once (iapp-nlp loads the model in iapp_nlp/tokenizer/core.py)
 - LICENSES/Apache-2.0.txt: LICENSE-APACHE
 
 ------------------------------------------------------------------------------------------------
