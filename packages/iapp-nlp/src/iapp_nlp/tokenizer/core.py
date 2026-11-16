@@ -1,11 +1,9 @@
-"""Thai tokenizers: words with OpenThai2.0-LATTE-WordSeg-Lite, plus whitespace and number clean-up;
-syllables with Han-solo."""
+"""Thai word tokenizer with OpenThai2.0-LATTE-WordSeg-Lite, plus whitespace and number clean-up."""
 
 import re
 import threading
 from typing import TYPE_CHECKING, Dict, FrozenSet, Iterable, List, Optional, Set
 
-from . import han_solo
 from .token import Token
 
 if TYPE_CHECKING:
@@ -16,8 +14,6 @@ UNITS = ("long", "short", "minimal")
 
 # Digits joined by "." "," or ":" (12:30, 1,234.5, 127.0.0.1); \d also matches Thai digits
 _FORMATTED_NUMBER_RE = re.compile(r"\d+(?:[.,:]\d+)+")
-# Whitespace other than plain spaces: tabs, new lines, carriage returns
-_LINE_BREAK_RE = re.compile(r"[\t\n\r\f\v]+")
 # What the model reads in place of some characters, one for one so that offsets stay the same:
 # Thai digits as Arabic digits, whose runs it never splits, and a zero-width space as a space,
 # which always separates words and comes out as a token of its own
@@ -129,29 +125,6 @@ def word_tokenize(
 ) -> List[str]:
     """Split ``text`` into a list of word strings (see ``tokenize``)."""
     return [token.text for token in tokenize(text, keep_whitespace, join_broken_num, unit, extra_words)]
-
-
-def syllable_tokenize(text: str, keep_whitespace: bool = True) -> List[str]:
-    """Split ``text`` into Thai syllables with the Han-solo CRF model, e.g. ``นายก`` -> ``นา`` ``ยก``.
-
-    Tabs and new lines come out as pieces of their own.
-    ``keep_whitespace=False`` drops pieces made only of spaces (tabs and new lines stay).
-    """
-    if not text:
-        return []
-    syllables: List[str] = []
-    pos = 0
-    # the model never saw tabs or new lines in training and glues them to a neighbour, so cut them out first
-    for match in _LINE_BREAK_RE.finditer(text):
-        if match.start() > pos:
-            syllables.extend(han_solo.segment(text[pos:match.start()]))
-        syllables.append(match.group())
-        pos = match.end()
-    if pos < len(text):
-        syllables.extend(han_solo.segment(text[pos:]))
-    if not keep_whitespace:
-        syllables = [syllable.strip(" ") for syllable in syllables if syllable.strip(" ")]
-    return syllables
 
 
 def _segmenter(words: FrozenSet[str]) -> "Segmenter":

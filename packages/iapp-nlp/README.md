@@ -1,6 +1,6 @@
 # iapp-nlp
 
-Free Thai word and syllable tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
+Free Thai word tokenizer and text normalizer from [iApp Technology](https://iapp.co.th).
 No API key, runs offline, and the Thai models are included.
 
 ```bash
@@ -100,26 +100,6 @@ tokenizer.word_tokenize_batch(["ฉันกินข้าวที่บ้า
 `word_tokenize` work as the functions of the same name. One tokenizer can serve
 many threads at once. About 1% of texts can come out slightly differently in a
 batch than alone (see [How it works](#how-it-works)).
-
-## Syllables
-
-`syllable_tokenize` splits text into syllables with the Han-solo CRF model,
-which also handles social media spelling such as repeated letters.
-
-```python
-from iapp_nlp import syllable_tokenize
-
-syllable_tokenize("นายกรัฐมนตรี")
-# ['นา', 'ยก', 'รัฐ', 'มน', 'ตรี']
-syllable_tokenize("ม่ายยยย อร่อยมากกกก", keep_whitespace=False)
-# ['ม่ายยยย', 'อร่อย', 'มากกกก']
-```
-
-- Tabs and new lines come out as pieces of their own.
-- Digits written right next to Thai can split wrongly: `iPhone15ราคา` gives `iPhone1` `5รา` `คา`.
-
-The model and feature code come from [Han-solo](https://github.com/PyThaiNLP/Han-solo)
-and PyThaiNLP, used under the Apache License 2.0 (see `LICENSE-APACHE`).
 
 ## Normalize
 
@@ -276,7 +256,7 @@ dictionary-based `newmm`.
 `MIT AND Apache-2.0 AND CC-BY-SA-4.0 AND Unicode-DFS-2016`:
 
 - iApp Technology's own code: MIT (see `LICENSE`).
-- Code from PyThaiNLP and Han-solo, and the Han-solo model: Apache License 2.0
+- Code from PyThaiNLP: Apache License 2.0
   (see `LICENSE-APACHE`). Each such file starts with SPDX lines naming its source.
 - The OpenThai2.0-LATTE-WordSeg-Lite code, `iapp_nlp/tokenizer/latte.py`:
   Apache License 2.0 (see `LICENSE-APACHE` and `NOTICE`).

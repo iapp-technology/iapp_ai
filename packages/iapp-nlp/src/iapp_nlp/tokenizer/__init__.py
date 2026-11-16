@@ -1,12 +1,11 @@
-"""Thai tokenizers: words (OpenThai2.0-LATTE-WordSeg-Lite), syllables (Han-solo)."""
+"""Thai word tokenizer (OpenThai2.0-LATTE-WordSeg-Lite)."""
 
-from .core import Tokenizer, syllable_tokenize, tokenize, word_tokenize
+from .core import Tokenizer, tokenize, word_tokenize
 from .token import Token
 
 __all__ = [
     "Token",
     "Tokenizer",
-    "syllable_tokenize",
     "tokenize",
     "word_tokenize",
 ]
