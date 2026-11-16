@@ -1,4 +1,4 @@
-iapp-nlp includes OpenThai2.0-LATTE-WordSeg-Lite 0.1.1, whose notice follows unchanged. Its paths are
+iapp-nlp includes OpenThai2.0-LATTE-WordSeg-Lite 0.1.2, whose notice follows unchanged. Its paths are
 these in iapp-nlp:
 
 - src/openthai_latte_wordseg_lite/_runtime.py: iapp_nlp/tokenizer/latte.py, changed to read the

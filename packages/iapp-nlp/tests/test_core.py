@@ -84,7 +84,7 @@ def test_zero_width_space_is_a_token_of_its_own(text, words):
 
 @pytest.mark.parametrize("unit", core.UNITS)
 def test_thai_digit_runs_are_never_split(unit):
-    # the model alone splits this number into ๐๘ ๑ ๒ ๓ ๔ ๕ ๖๗๘
+    # the model alone split this number into ๐๘ ๑ ๒ ๓ ๔ ๕ ๖๗๘ before LATTE WordSeg Lite 0.1.2
     assert word_tokenize("โทร ๐๘๑๒๓๔๕๖๗๘", unit=unit) == ["โทร", " ", "๐๘๑๒๓๔๕๖๗๘"]
 
 
